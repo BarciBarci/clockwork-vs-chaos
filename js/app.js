@@ -47,6 +47,8 @@
 
   var toastTimer = null;
   var dragState = null;
+  var lastDown = null;
+  var cellEls = [];
 
   function toast(message) {
     toastEl.textContent = message;
@@ -99,7 +101,18 @@
   }
 
   function updateGhost(cell, event) {
-    if (!ghostEl || !cell || state.mode === 'erase') {
+    if (!ghostEl || !cell) {
+      hideGhost();
+      return;
+    }
+
+    var mode = state.mode;
+    if (dragState) {
+      if (dragState.kind === 'move' || dragState.kind === 'tile') mode = 'tile';
+      else if (dragState.kind === 'movepiece' || dragState.kind === 'piece') mode = 'piece';
+    }
+
+    if (mode === 'erase') {
       hideGhost();
       return;
     }
@@ -108,7 +121,7 @@
     var boardRect = boardEl.getBoundingClientRect();
     var gx, gy, gw, gh;
 
-    if (state.mode === 'tile') {
+    if (mode === 'tile') {
       gx = rect.left - boardRect.left;
       gy = rect.top - boardRect.top;
       gw = rect.width;
@@ -120,12 +133,24 @@
         hideGhost();
         return;
       }
-      var f = foot(state.pieceType);
+
+      var f;
+      if (dragState && dragState.kind === 'movepiece') {
+        var src = state.board[dragState.index];
+        var moving = src && src.pieces[dragState.piece];
+        if (!moving) {
+          hideGhost();
+          return;
+        }
+        f = foot(moving.type);
+      } else {
+        f = foot(state.pieceType);
+      }
+
       var spot = subCell(cell, event, rec.rot);
-      var sx = Math.min(spot[0], SW.GRID - f.w);
-      var sy = Math.min(spot[1], SW.GRID - f.h);
-      var a = toVisual(sx, sy, rec.rot);
-      var b = toVisual(sx + f.w - 1, sy + f.h - 1, rec.rot);
+      var at = anchorTo(spot, f);
+      var a = toVisual(at[0], at[1], rec.rot);
+      var b = toVisual(at[0] + f.w - 1, at[1] + f.h - 1, rec.rot);
       var ux = rect.width / SW.GRID;
       var uy = rect.height / SW.GRID;
       gx = rect.left - boardRect.left + Math.min(a[0], b[0]) * ux;
@@ -231,16 +256,18 @@
 
   function buildBoard() {
     boardEl.innerHTML = '';
+    cellEls = [];
     for (var i = 0; i < BOARD * BOARD; i++) {
       var cell = document.createElement('div');
       cell.className = 'cell is-empty';
       cell.dataset.index = String(i);
       boardEl.appendChild(cell);
+      cellEls.push(cell);
     }
   }
 
   function renderBoard() {
-    Array.prototype.forEach.call(boardEl.children, function (el, i) {
+    cellEls.forEach(function (el, i) {
       var rec = state.board[i];
 
       if (!rec) {
@@ -328,20 +355,33 @@
     return SW.PIECES[type] || { w: 1, h: 1 };
   }
 
+  /* Centre a footprint on the cell under the cursor, clamped to the plate. */
+  function anchorTo(spot, f) {
+    var x = spot[0] - Math.floor((f.w - 1) / 2);
+    var y = spot[1] - Math.floor((f.h - 1) / 2);
+    return [
+      Math.max(0, Math.min(SW.GRID - f.w, x)),
+      Math.max(0, Math.min(SW.GRID - f.h, y))
+    ];
+  }
+
   function coversCell(piece, x, y) {
     var f = foot(piece.type);
     return x >= piece.x && x < piece.x + f.w && y >= piece.y && y < piece.y + f.h;
   }
 
+  function pieceAt(rec, x, y) {
+    for (var i = rec.pieces.length - 1; i >= 0; i--) {
+      if (coversCell(rec.pieces[i], x, y)) return i;
+    }
+    return -1;
+  }
+
   function pushPiece(rec, type, el, event) {
     var f = foot(type);
     var spot = subCell(el, event, rec.rot);
-    rec.pieces.push({
-      type: type,
-      x: Math.min(spot[0], SW.GRID - f.w),
-      y: Math.min(spot[1], SW.GRID - f.h),
-      rot: 0
-    });
+    var at = anchorTo(spot, f);
+    rec.pieces.push({ type: type, x: at[0], y: at[1], rot: 0 });
   }
 
   function handleCtrl(index, action) {
@@ -376,10 +416,23 @@
   /* ---------------------------------------------------------- drag & drop -- */
 
   function clearDrop() {
-    Array.prototype.forEach.call(boardEl.children, function (c) {
+    cellEls.forEach(function (c) {
       c.classList.remove('is-drop');
     });
   }
+
+  boardEl.addEventListener('mousedown', function (event) {
+    lastDown = null;
+    if (event.button !== 0) return;
+    var cell = event.target.closest('.cell');
+    if (!cell || event.target.closest('[data-act]')) return;
+    var index = Number(cell.dataset.index);
+    var rec = state.board[index];
+    if (!rec || !rec.pieces.length) return;
+    var hit = subCell(cell, event, rec.rot);
+    var at = pieceAt(rec, hit[0], hit[1]);
+    if (at >= 0) lastDown = { index: index, piece: at };
+  });
 
   boardEl.addEventListener('dragstart', function (event) {
     var cell = event.target.closest('.cell');
@@ -388,11 +441,16 @@
       return;
     }
     var index = Number(cell.dataset.index);
-    if (!state.board[index]) {
+    var rec = state.board[index];
+    if (!rec) {
       event.preventDefault();
       return;
     }
-    dragState = { kind: 'move', index: index };
+    if (lastDown && lastDown.index === index && rec.pieces[lastDown.piece]) {
+      dragState = { kind: 'movepiece', index: index, piece: lastDown.piece };
+    } else {
+      dragState = { kind: 'move', index: index };
+    }
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', 'move');
   });
@@ -402,7 +460,8 @@
     var cell = event.target.closest('.cell');
     if (!cell) return;
     event.preventDefault();
-    event.dataTransfer.dropEffect = dragState.kind === 'move' ? 'move' : 'copy';
+    event.dataTransfer.dropEffect =
+      (dragState.kind === 'tile' || dragState.kind === 'piece') ? 'copy' : 'move';
     if (!cell.classList.contains('is-drop')) {
       clearDrop();
       cell.classList.add('is-drop');
@@ -424,6 +483,7 @@
     clearDrop();
     hideGhost();
     dragState = null;
+    lastDown = null;
   });
 
   boardEl.addEventListener('mousemove', function (event) {
@@ -452,6 +512,21 @@
       if (!moved) return;
       state.board[dragState.index] = null;
       state.board[index] = moved;
+      renderBoard();
+      return;
+    }
+
+    if (dragState.kind === 'movepiece') {
+      var from = state.board[dragState.index];
+      var piece = from && from.pieces[dragState.piece];
+      if (!piece) return;
+      var dest = state.board[index];
+      if (!dest) {
+        toast('Drop a piece on a tile.');
+        return;
+      }
+      from.pieces.splice(dragState.piece, 1);
+      pushPiece(dest, piece.type, el, event);
       renderBoard();
       return;
     }

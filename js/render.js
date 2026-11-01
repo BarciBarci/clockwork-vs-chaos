@@ -208,13 +208,16 @@
     w = w || 1;
     h = h || 1;
 
-    if (type === 'school' || type === 'lava') return renderPanel(type, cellX, cellY);
+    if (type === 'school' || type === 'lava') {
+      return '<g class="piece">' + renderPanel(type, cellX, cellY) + '</g>';
+    }
 
     var cx = (cellX + w / 2) * CELL;
     var cy = (cellY + h / 2) * CELL;
     var s = Math.min(w, h);
 
-    return '<g transform="translate(' + cx + ' ' + cy + ') scale(' + s + ')">' + glyph(type) + '</g>';
+    return '<g class="piece" transform="translate(' + cx + ' ' + cy + ') scale(' + s + ')">' +
+      glyph(type) + '</g>';
   }
 
   /* --------------------------------------------------------------- cells -- */

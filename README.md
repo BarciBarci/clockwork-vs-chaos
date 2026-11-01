@@ -46,7 +46,8 @@ Vektorgeometrie, kein Bitmap, keine Textur, keine Schrift.
 | Aktion | So geht's |
 | --- | --- |
 | Tile legen | Tile aus dem `Tiles`-Panel ins Raster **ziehen**, oder anklicken und Zelle anklicken |
-| Tile verschieben | gelegtes Tile auf eine andere Zelle ziehen |
+| Tile verschieben | gelegtes Tile an einer freien Stelle anfassen und auf eine andere Zelle ziehen |
+| Piece verschieben | Piece selbst anfassen und an eine andere Stelle ziehen — im selben Tile oder auf ein anderes |
 | Seite wählen | `Front` / `Back` oben oder `F` |
 | Drehen | `R` oder 0°/90°/180°/270° |
 | Gelegtes Tile drehen | ⟳ beim Überfahren der Zelle |

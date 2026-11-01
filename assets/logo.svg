@@ -2,10 +2,18 @@
   <title>Clockwork vs Chaos</title>
   <rect x="3" y="3" width="58" height="58" rx="13" fill="#101820"/>
   <rect x="3" y="3" width="58" height="58" rx="13" fill="none" stroke="#2b3a47" stroke-width="1.5"/>
-  <path d="M11 47h9l9-15h9" fill="none" stroke="#ffb020" stroke-width="5"
-        stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="38" cy="32" r="2.6" fill="#ffb020"/>
-  <path d="M43 12c4.6 6.6 7.4 10.6 7.4 14.2a7.4 7.4 0 0 1-14.8 0C35.6 22.6 38.4 18.6 43 12z"
-        fill="#eef1f4"/>
-  <circle cx="43" cy="26.5" r="2.7" fill="#101820"/>
+  <g fill="#eef1f4">
+    <rect x="28.5" y="8.5" width="7" height="8" rx="1.4" transform="rotate(0 32 32)"/>
+    <rect x="28.5" y="8.5" width="7" height="8" rx="1.4" transform="rotate(45 32 32)"/>
+    <rect x="28.5" y="8.5" width="7" height="8" rx="1.4" transform="rotate(90 32 32)"/>
+    <rect x="28.5" y="8.5" width="7" height="8" rx="1.4" transform="rotate(135 32 32)"/>
+    <rect x="28.5" y="8.5" width="7" height="8" rx="1.4" transform="rotate(180 32 32)"/>
+    <rect x="28.5" y="8.5" width="7" height="8" rx="1.4" transform="rotate(225 32 32)"/>
+    <rect x="28.5" y="8.5" width="7" height="8" rx="1.4" transform="rotate(270 32 32)"/>
+    <rect x="28.5" y="8.5" width="7" height="8" rx="1.4" transform="rotate(315 32 32)"/>
+    <circle cx="32" cy="32" r="16.5"/>
+  </g>
+  <circle cx="32" cy="32" r="15" fill="none" stroke="#101820" stroke-width="2"/>
+  <circle cx="32" cy="32" r="8" fill="#101820"/>
+  <circle cx="32" cy="32" r="4" fill="#ffb020"/>
 </svg>
