@@ -183,6 +183,7 @@ body {
 }
 
 .tile-btn {
+  position: relative;
   padding: 0;
   aspect-ratio: 1;
   border: 2px solid transparent;
@@ -201,6 +202,32 @@ body {
 .tile-btn.is-active {
   border-color: var(--amber);
   box-shadow: 0 0 0 3px rgba(255, 176, 32, .32);
+}
+
+.tile-btn.is-used {
+  border-color: transparent;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.tile-btn.is-used svg { opacity: .28; }
+
+.tile-btn.is-used::after {
+  content: "✓";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #1d7a3a;
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .35);
 }
 
 .piece-grid {

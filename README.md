@@ -46,6 +46,7 @@ Vektorgeometrie, kein Bitmap, keine Textur, keine Schrift.
 | Aktion | So geht's |
 | --- | --- |
 | Tile legen | Tile aus dem `Tiles`-Panel ins Raster **ziehen**, oder anklicken und Zelle anklicken |
+| Tile nur einmal | Es gibt insgesamt fünf Tiles. Liegt ein Tile auf dem Raster, ist sein Platz in der Palette gesperrt (abgedunkelt, grüner Haken) — erst `✕` am Tile gibt es wieder frei |
 | Tile verschieben | gelegtes Tile an einer freien Stelle anfassen und auf eine andere Zelle ziehen |
 | Piece verschieben | Piece selbst anfassen und an eine andere Stelle ziehen — im selben Tile oder auf ein anderes |
 | Seite wählen | `Front` / `Back` oben oder `F` |

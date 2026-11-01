@@ -122,6 +122,13 @@
     var gx, gy, gw, gh;
 
     if (mode === 'tile') {
+      if (!dragState || dragState.kind === 'tile') {
+        var wanted = dragState ? dragState.tileId : state.tileId;
+        if (tileIndexOnBoard(wanted) >= 0) {
+          hideGhost();
+          return;
+        }
+      }
       gx = rect.left - boardRect.left;
       gy = rect.top - boardRect.top;
       gw = rect.width;
@@ -180,6 +187,10 @@
       btn.title = tile.id;
       btn.draggable = true;
       btn.addEventListener('dragstart', function (event) {
+        if (tileIndexOnBoard(tile.id) >= 0) {
+          event.preventDefault();
+          return;
+        }
         dragState = { kind: 'tile', tileId: tile.id, face: state.face, rot: state.rot };
         event.dataTransfer.effectAllowed = 'copy';
         event.dataTransfer.setData('text/plain', tile.id);
@@ -237,9 +248,14 @@
 
   function syncPalette() {
     Array.prototype.forEach.call(paletteEl.children, function (btn) {
-      var active = state.mode === 'tile' && btn.dataset.tile === state.tileId;
-      btn.classList.toggle('is-active', active);
-      btn.innerHTML = SW.renderTile(SW.tileById(btn.dataset.tile), {
+      var id = btn.dataset.tile;
+      var active = state.mode === 'tile' && id === state.tileId;
+      var used = tileIndexOnBoard(id) >= 0;
+      btn.classList.toggle('is-active', active && !used);
+      btn.classList.toggle('is-used', used);
+      btn.draggable = !used;
+      btn.title = used ? id + ' — already on the board' : id;
+      btn.innerHTML = SW.renderTile(SW.tileById(id), {
         face: state.face,
         rot: active ? state.rot : 0
       });
@@ -293,6 +309,7 @@
     });
 
     hintEl.textContent = summary();
+    syncPalette();
   }
 
   function summary() {
@@ -314,12 +331,19 @@
 
   function place(index, el, event) {
     if (state.mode === 'tile') {
-      var previous = state.board[index];
+      if (tileIndexOnBoard(state.tileId) >= 0) {
+        toast(state.tileId + ' is already on the board.');
+        return;
+      }
+      if (state.board[index]) {
+        toast('That field already holds a tile.');
+        return;
+      }
       state.board[index] = {
         tileId: state.tileId,
         rot: state.rot,
         face: state.face,
-        pieces: previous ? previous.pieces : []
+        pieces: []
       };
       renderBoard();
       return;
@@ -353,6 +377,14 @@
 
   function foot(type) {
     return SW.PIECES[type] || { w: 1, h: 1 };
+  }
+
+  /* Each of the five tiles is a single physical piece. */
+  function tileIndexOnBoard(id) {
+    for (var i = 0; i < state.board.length; i++) {
+      if (state.board[i] && state.board[i].tileId === id) return i;
+    }
+    return -1;
   }
 
   /* Centre a footprint on the cell under the cursor, clamped to the plate. */
@@ -495,12 +527,19 @@
 
   function dropOn(index, el, event) {
     if (dragState.kind === 'tile') {
-      var previous = state.board[index];
+      if (tileIndexOnBoard(dragState.tileId) >= 0) {
+        toast(dragState.tileId + ' is already on the board.');
+        return;
+      }
+      if (state.board[index]) {
+        toast('That field already holds a tile.');
+        return;
+      }
       state.board[index] = {
         tileId: dragState.tileId,
         rot: dragState.rot,
         face: dragState.face,
-        pieces: previous ? previous.pieces : []
+        pieces: []
       };
       renderBoard();
       return;
@@ -508,9 +547,11 @@
 
     if (dragState.kind === 'move') {
       if (dragState.index === index) return;
-      var moved = state.board[dragState.index];
+      var from = dragState.index;
+      var moved = state.board[from];
       if (!moved) return;
-      state.board[dragState.index] = null;
+      /* Swap rather than overwrite, so neither tile loses its pieces. */
+      state.board[from] = state.board[index];
       state.board[index] = moved;
       renderBoard();
       return;
@@ -788,9 +829,12 @@
       throw new Error('Grid mismatch (expected ' + BOARD * BOARD + ' fields).');
     }
 
+    var seenTiles = {};
     state.board = data.board.map(function (rec) {
       if (!rec) return null;
       if (!SW.tileById(rec.tileId)) throw new Error('Unknown tile: ' + rec.tileId);
+      if (seenTiles[rec.tileId]) return null;
+      seenTiles[rec.tileId] = true;
       return {
         tileId: rec.tileId,
         rot: ((rec.rot | 0) % 4 + 4) % 4,
