@@ -27,6 +27,7 @@
   var toastEl = document.getElementById('toast');
   var fileInput = document.getElementById('file-input');
   var compassEl = document.getElementById('compass');
+  var ghostEl = null;
 
   var toastTimer = null;
   var dragState = null;
@@ -55,6 +56,74 @@
       y = ny;
     }
     return [x, y];
+  }
+
+  /* Plate-local cell -> visual cell (the plate rotated clockwise by rot). */
+  function toVisual(x, y, rot) {
+    for (var i = 0; i < rot; i++) {
+      var nx = SW.GRID - 1 - y;
+      var ny = x;
+      x = nx;
+      y = ny;
+    }
+    return [x, y];
+  }
+
+  /* ------------------------------------------------------------- preview -- */
+
+  function createGhost() {
+    ghostEl = document.createElement('div');
+    ghostEl.className = 'ghost';
+    ghostEl.hidden = true;
+    boardEl.appendChild(ghostEl);
+  }
+
+  function hideGhost() {
+    if (ghostEl) ghostEl.hidden = true;
+  }
+
+  function updateGhost(cell, event) {
+    if (!ghostEl || !cell || state.mode === 'erase') {
+      hideGhost();
+      return;
+    }
+
+    var rect = cell.getBoundingClientRect();
+    var boardRect = boardEl.getBoundingClientRect();
+    var gx, gy, gw, gh;
+
+    if (state.mode === 'tile') {
+      gx = rect.left - boardRect.left;
+      gy = rect.top - boardRect.top;
+      gw = rect.width;
+      gh = rect.height;
+      ghostEl.className = 'ghost is-tile';
+    } else {
+      var rec = state.board[Number(cell.dataset.index)];
+      if (!rec) {
+        hideGhost();
+        return;
+      }
+      var f = foot(state.pieceType);
+      var spot = subCell(cell, event, rec.rot);
+      var sx = Math.min(spot[0], SW.GRID - f.w);
+      var sy = Math.min(spot[1], SW.GRID - f.h);
+      var a = toVisual(sx, sy, rec.rot);
+      var b = toVisual(sx + f.w - 1, sy + f.h - 1, rec.rot);
+      var ux = rect.width / SW.GRID;
+      var uy = rect.height / SW.GRID;
+      gx = rect.left - boardRect.left + Math.min(a[0], b[0]) * ux;
+      gy = rect.top - boardRect.top + Math.min(a[1], b[1]) * uy;
+      gw = (Math.abs(b[0] - a[0]) + 1) * ux;
+      gh = (Math.abs(b[1] - a[1]) + 1) * uy;
+      ghostEl.className = 'ghost is-piece';
+    }
+
+    ghostEl.hidden = false;
+    ghostEl.style.left = gx + 'px';
+    ghostEl.style.top = gy + 'px';
+    ghostEl.style.width = gw + 'px';
+    ghostEl.style.height = gh + 'px';
   }
 
   /* ------------------------------------------------------------- palette -- */
@@ -322,6 +391,7 @@
       clearDrop();
       cell.classList.add('is-drop');
     }
+    updateGhost(cell, event);
   });
 
   boardEl.addEventListener('dragleave', function (event) {
@@ -336,8 +406,16 @@
     event.preventDefault();
     dropOn(Number(cell.dataset.index), cell, event);
     clearDrop();
+    hideGhost();
     dragState = null;
   });
+
+  boardEl.addEventListener('mousemove', function (event) {
+    if (dragState) return;
+    updateGhost(event.target.closest('.cell'), event);
+  });
+
+  boardEl.addEventListener('mouseleave', hideGhost);
 
   function dropOn(index, el, event) {
     if (dragState.kind === 'tile') {
@@ -589,6 +667,7 @@
 
   buildPalette();
   buildBoard();
+  createGhost();
   syncSegments();
   syncPalette();
   renderCompass();
