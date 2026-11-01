@@ -53,6 +53,7 @@ Vektorgeometrie, kein Bitmap, keine Textur, keine Schrift.
 | Gelegtes Tile wenden | ⇅ beim Überfahren der Zelle |
 | Tile entfernen | ✕ beim Überfahren der Zelle |
 | Piece setzen | Piece aus dem `Pieces`-Panel ins Raster ziehen oder auf ein **gelegtes** Tile klicken |
+| Zielzelle sehen | Beim Überfahren zeigt eine gestrichelte Markierung die Zelle, in der Tile bzw. Piece landen |
 | Piece löschen | `Delete piece` wählen, auf das Piece klicken |
 | Kompass drehen | auf den Kompass unter dem Raster klicken (90°-Schritte) |
 | Szenario sichern | `Save JSON` |
