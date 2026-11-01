@@ -16,7 +16,8 @@
   --green: #2fae4a;
   --blue: #2f6fd0;
   --crystal: #46c8f0;
-  --lava: #e2571e;
+  --lava: #ff5a0a;
+  --rock: #4b5560;
   --oil: #000000;
 
   --radius: 10px;
@@ -413,6 +414,7 @@ body {
 
 .sw-oil { background: var(--oil); }
 .sw-lava { background: var(--lava); }
+.sw-rock { background: var(--rock); }
 .sw-ochre { background: var(--ochre); }
 .sw-red { background: var(--red); }
 .sw-green { background: var(--green); }
@@ -442,7 +444,27 @@ body {
 }
 
 @media (max-width: 1080px) {
-  body { overflow: auto; }
-  .workspace { grid-template-columns: 1fr; }
-  .board { width: min(100%, 78vh); }
+  body {
+    display: block;
+    overflow: auto;
+  }
+
+  .workspace {
+    display: block;
+    padding: 12px;
+  }
+
+  .panel {
+    margin-bottom: 14px;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .board-wrap {
+    margin-bottom: 14px;
+  }
+
+  .board {
+    width: min(100%, 70vh);
+  }
 }

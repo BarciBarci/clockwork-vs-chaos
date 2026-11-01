@@ -20,14 +20,15 @@ Jede Platte ist **6 × 6 Zellen** groß und doppelseitig:
 | Seite | Grund | Merkmal |
 | --- | --- | --- |
 | **Front** | helles Papier | schwarze Ölfelder, farbige Felder |
-| **Back** | dunkles Gestein | orangefarbene Lava-Felder, farbige Felder |
+| **Back** | hellrote Ebene | dunkelgraue Gebirgsfelder, kräftige Lava, farbige Felder |
 
 Zelltypen:
 
 | Code | Bedeutung | Darstellung |
 | --- | --- | --- |
 | `oil` | Ölfeld | **vollflächig schwarzes Quadrat** |
-| `lava` | Lava (nur Lava-Seite) | oranges Quadrat mit gelbem Kern |
+| `lava` | Lava (nur Back) | oranges Quadrat mit gelbem Kern |
+| `rock` | Gebirgsfeld (nur Back) | dunkelgraues Quadrat |
 | `orange` `red` `green` `blue` | farbiges Feld | Farbquadrat mit **Richtungspfeil** |
 | `crystal` | Kristall | Cyan-Quadrat mit Raute |
 | *(leer)* | – | Grund der Seite |
@@ -136,7 +137,10 @@ Nicht geschätzt, sondern gemessen:
    bei 0.00–0.16, echte Ölfelder bei 0.55–0.97.
 5. **Lava.** Anteil leuchtender Pixel (Farbton 5–35°, S > 0.85, V > 0.80);
    Schwelle 0.30.
-6. **Runen-Richtung.** Pro Farbe dient eine Rune als Referenz. Für jedes Feld
+6. **Gebirgsfelder.** Anteil blaustichiger Pixel (B ≥ R) pro Zelle; Schwelle
+   0.15. Die rote Ebene ist rotstichig (B < R), die Felsformationen sind
+   blaugrau — der Anteil trennt sauber (Ebene 0.00–0.11, Fels 0.15–0.60).
+7. **Runen-Richtung.** Pro Farbe dient eine Rune als Referenz. Für jedes Feld
    wird die Farbmaske gegen die Referenz in allen vier Drehlagen verglichen
    (IoU nach Schwerpunkt-Ausrichtung). Der beste Treffer lag bei allen 76 Runen
    zwischen 0.34 und 1.00, jede falsche Drehlage bei höchstens 0.20 — die

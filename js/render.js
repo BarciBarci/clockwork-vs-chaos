@@ -17,7 +17,7 @@
   var STEEL = '#b9c6d2';
   var DARK = '#1c2733';
 
-  var FACE_BASE = { front: '#f4f1ea', back: '#6e3327' };
+  var FACE_BASE = { front: '#f4f1ea', back: '#d18d7a' };
   var FACE_EDGE = {
     front: 'rgba(16,24,32,0.55)',
     back: 'rgba(255,236,224,0.55)'
@@ -238,9 +238,17 @@
     }
 
     if (cell === 'lava') {
-      return cellRect(x, y, '#ff7a2e') +
-        '<rect x="' + (cx - 3.5) + '" y="' + (cy - 3.5) + '" width="7" height="7"' +
-        ' rx="1.4" fill="#ffd166"/>';
+      return cellRect(x, y, '#ff5a0a') +
+        '<rect x="' + (cx - 4.5) + '" y="' + (cy - 4.5) + '" width="9" height="9"' +
+        ' rx="2.2" fill="#ffd44d"/>';
+    }
+
+    if (cell === 'rock') {
+      return cellRect(x, y, '#4b5560') +
+        '<path d="M' + (x * CELL + 3) + ' ' + (y * CELL + CELL - 4) +
+        'L' + (x * CELL + CELL / 2) + ' ' + (y * CELL + 4) +
+        'L' + (x * CELL + CELL - 3) + ' ' + (y * CELL + CELL - 4) + 'Z"' +
+        ' fill="#5c6875"/>';
     }
 
     if (cell === 'oil') return cellRect(x, y, '#000000');

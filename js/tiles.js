@@ -27,8 +27,9 @@
     return g;
   }
 
-  function buildFace(fields, oil, lava) {
+  function buildFace(fields, oil, lava, rock) {
     var g = blank();
+    (rock || []).forEach(function (c) { g[c[1]][c[0]] = 'rock'; });
     fields.forEach(function (f) {
       g[f[1]][f[0]] = f[2] === 'crystal' ? 'crystal' : { colour: f[2], dir: f[3] || 0 };
     });
@@ -51,7 +52,8 @@
          [1, 3, 'crystal', 0], [3, 4, 'blue', 2], [4, 4, 'green', 0], [3, 5, 'blue', 0],
          [4, 5, 'green', 3]],
         [],
-        [[2, 4], [2, 5]]
+        [[2, 4], [2, 5]],
+        [[2, 0], [3, 0], [3, 1], [2, 2], [3, 2], [2, 3], [3, 3]]
       )
     },
     {
@@ -68,7 +70,8 @@
          [2, 3, 'green', 0], [3, 3, 'orange', 1], [5, 3, 'crystal', 0], [0, 5, 'red', 1],
          [5, 5, 'orange', 3]],
         [],
-        []
+        [],
+        [[2, 0], [3, 0], [3, 1], [2, 4], [3, 4], [2, 5]]
       )
     },
     {
@@ -84,7 +87,8 @@
          [1, 3, 'crystal', 0], [0, 4, 'orange', 3], [5, 4, 'blue', 0], [0, 5, 'red', 0],
          [5, 5, 'orange', 0]],
         [],
-        [[2, 0], [3, 0]]
+        [[2, 0], [3, 0]],
+        [[2, 1], [3, 1], [3, 3]]
       )
     },
     {
@@ -100,7 +104,8 @@
          [3, 2, 'green', 2], [3, 3, 'blue', 2], [2, 4, 'orange', 0], [3, 4, 'red', 2],
          [1, 5, 'blue', 3]],
         [],
-        [[2, 2], [2, 3]]
+        [[2, 2], [2, 3]],
+        [[0, 0], [1, 0], [0, 1], [1, 1], [0, 2], [1, 2], [5, 3], [5, 4]]
       )
     },
     {
@@ -117,7 +122,8 @@
          [4, 1, 'blue', 1], [1, 4, 'green', 3], [4, 4, 'orange', 2], [0, 5, 'red', 1],
          [5, 5, 'blue', 0]],
         [],
-        [[2, 2], [3, 2], [2, 3], [3, 3]]
+        [[2, 2], [3, 2], [2, 3], [3, 3]],
+        [[1, 2], [4, 2], [4, 3], [1, 3]]
       )
     }
   ];
@@ -127,7 +133,8 @@
 
   var CELLS = {
     oil: { label: 'Oil', colour: '#000000' },
-    lava: { label: 'Lava', colour: '#ff7a2e' },
+    lava: { label: 'Lava', colour: '#ff5a0a' },
+    rock: { label: 'Rock', colour: '#4b5560' },
     orange: { label: 'Orange', colour: '#e8961e' },
     red: { label: 'Red', colour: '#cf2b2b' },
     green: { label: 'Green', colour: '#2fae4a' },
