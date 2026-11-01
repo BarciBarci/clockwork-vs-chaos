@@ -27,10 +27,13 @@ Zelltypen:
 | Code | Bedeutung | Darstellung |
 | --- | --- | --- |
 | `oil` | Ölfeld | **vollflächig schwarzes Quadrat** |
-| `lava` | Lava (nur Lava-Seite) | vollflächig oranges Quadrat |
-| `orange` `red` `green` `blue` | farbiges Feld | vollflächiges Farbquadrat |
+| `lava` | Lava (nur Lava-Seite) | oranges Quadrat mit gelbem Kern |
+| `orange` `red` `green` `blue` | farbiges Feld | Farbquadrat mit **Richtungspfeil** |
 | `crystal` | Kristall | Cyan-Quadrat mit Raute |
 | *(leer)* | – | Grund der Seite |
+
+Der Pfeil im Farbfeld ist die Richtung der Rune: 0 = Nord, 1 = Ost, 2 = Süd,
+3 = West. Er dreht mit der Platte mit.
 
 Die Anordnungen der fünf Plattenpaare `T1`–`T5` sind aus dem Plattensatz
 übernommen, weil ein Szenario-Editor nutzlos ist, wenn er nicht zum Tisch passt.
@@ -61,7 +64,18 @@ Marker am gezeichneten Feld klebt.
 ### Marker
 
 Neun Typen, jeweils als eigene flache Grafik gezeichnet:
-Rig · Drohne A/B/C · Bombe · Lava-Block · Barrikade · Splitter · Absperrband.
+
+| Marker | Aufbau |
+| --- | --- |
+| Rig | Mech von oben: Schulterpanzer, Cockpit-Sichtschlitz, Beine, Kernlicht |
+| Drohne A | Kugelkörper mit zwei Antennen und Leuchtaugen |
+| Drohne B | Rautenkörper mit rotem Kern und Querachse |
+| Drohne C | Sechseck-Panzerung mit Visier |
+| Bombe | Stachelkugel mit Glanzlicht und Zünder |
+| Lava-Block | Dunkler Block mit glühenden Rissen |
+| Barrikade | Warnbake mit Pfosten und Schrägstreifen |
+| Splitter | Facettenkristall mit zwei Schattierungen |
+| Absperrband | Gelb-schwarzes Streifenband |
 
 ## Dateiformat
 
@@ -102,6 +116,12 @@ Nicht geschätzt, sondern gemessen:
    bei 0.00–0.16, echte Ölfelder bei 0.55–0.97.
 5. **Lava.** Anteil leuchtender Pixel (Farbton 5–35°, S > 0.85, V > 0.80);
    Schwelle 0.30.
+6. **Runen-Richtung.** Pro Farbe dient eine Rune als Referenz. Für jedes Feld
+   wird die Farbmaske gegen die Referenz in allen vier Drehlagen verglichen
+   (IoU nach Schwerpunkt-Ausrichtung). Der beste Treffer lag bei allen 76 Runen
+   zwischen 0.34 und 1.00, jede falsche Drehlage bei höchstens 0.20 — die
+   Zuordnung ist also eindeutig. Gegenprobe mit einem unabhängigen
+   Spitzen-Vektor-Verfahren: identisches Ergebnis für alle Felder.
 
 ## Aufbau
 

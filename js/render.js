@@ -7,15 +7,16 @@
 
   var SW = global.Slickworks;
   var GRID = SW.GRID;
-  var BOARD = 120;              // viewBox is 120 x 120
+  var BOARD = 120;
   var CELL = BOARD / GRID;      // 20
   var uid = 0;
 
-  var FACE_BASE = {
-    front: '#f4f1ea',
-    back: '#6e3327'
-  };
+  var INK = '#101820';
+  var PALE = '#eef2f6';
+  var STEEL = '#b9c6d2';
+  var DARK = '#1c2733';
 
+  var FACE_BASE = { front: '#f4f1ea', back: '#6e3327' };
   var FACE_EDGE = {
     front: 'rgba(16,24,32,0.55)',
     back: 'rgba(255,236,224,0.55)'
@@ -26,116 +27,102 @@
   function renderPiece(type, cellX, cellY, rot) {
     var x = (cellX + 0.5) * CELL;
     var y = (cellY + 0.5) * CELL;
-    var t = 'translate(' + x + ' ' + y + ') rotate(' + (rot || 0) * 90 + ')';
-    var ink = '#101820';
-    var pale = '#ffffff';
+    var open = '<g transform="translate(' + x + ' ' + y + ') rotate(' + (rot || 0) * 90 + ')">';
+    var body;
 
     if (type === 'rig') {
-      return '<g transform="' + t + '">' +
-        '<rect x="-5.5" y="-5.5" width="11" height="11" rx="2.5" fill="' + pale + '"' +
-        ' stroke="' + ink + '" stroke-width="1.4"/>' +
-        '<path d="M-3 -1.6H3M-3 1.6H3" stroke="' + ink + '" stroke-width="1.3"' +
-        ' stroke-linecap="round"/>' +
-        '</g>';
-    }
-
-    if (type === 'minion-a') {
-      return '<g transform="' + t + '">' +
-        '<circle r="4.6" fill="' + pale + '" stroke="' + ink + '" stroke-width="1.4"/>' +
-        '<circle r="1.5" fill="' + ink + '"/>' +
-        '</g>';
-    }
-
-    if (type === 'minion-b') {
-      return '<g transform="' + t + '">' +
-        '<rect x="-4.2" y="-4.2" width="8.4" height="8.4" transform="rotate(45)"' +
-        ' fill="' + pale + '" stroke="' + ink + '" stroke-width="1.4"/>' +
-        '</g>';
-    }
-
-    if (type === 'minion-c') {
-      return '<g transform="' + t + '">' +
-        '<rect x="-4.5" y="-4.5" width="9" height="9" rx="1.6" fill="' + pale + '"' +
-        ' stroke="' + ink + '" stroke-width="1.4"/>' +
-        '<path d="M-3 1.2L0 -2.6L3 1.2" fill="none" stroke="' + ink + '"' +
-        ' stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>' +
-        '</g>';
-    }
-
-    if (type === 'bomb') {
+      body =
+        '<rect x="-7.6" y="-3.9" width="3" height="5" rx="1.3" fill="' + STEEL + '" stroke="' + INK + '" stroke-width="1.1"/>' +
+        '<rect x="4.6" y="-3.9" width="3" height="5" rx="1.3" fill="' + STEEL + '" stroke="' + INK + '" stroke-width="1.1"/>' +
+        '<rect x="-3.9" y="2.0" width="3.3" height="4.6" rx="1.2" fill="' + STEEL + '" stroke="' + INK + '" stroke-width="1.1"/>' +
+        '<rect x="0.6" y="2.0" width="3.3" height="4.6" rx="1.2" fill="' + STEEL + '" stroke="' + INK + '" stroke-width="1.1"/>' +
+        '<rect x="-4.7" y="-4.8" width="9.4" height="7.6" rx="2.3" fill="' + PALE + '" stroke="' + INK + '" stroke-width="1.25"/>' +
+        '<rect x="-2.3" y="-3" width="4.6" height="2.4" rx="1.2" fill="' + INK + '"/>' +
+        '<circle cx="0" cy="1.5" r="1.25" fill="#ffb020" stroke="' + INK + '" stroke-width="0.6"/>';
+    } else if (type === 'minion-a') {
+      body =
+        '<path d="M-2.5 -3.3L-4 -6" stroke="' + INK + '" stroke-width="1.2" stroke-linecap="round"/>' +
+        '<path d="M2.5 -3.3L4 -6" stroke="' + INK + '" stroke-width="1.2" stroke-linecap="round"/>' +
+        '<circle cx="-4" cy="-6.3" r="1" fill="#ffb020" stroke="' + INK + '" stroke-width="0.6"/>' +
+        '<circle cx="4" cy="-6.3" r="1" fill="#ffb020" stroke="' + INK + '" stroke-width="0.6"/>' +
+        '<circle r="4.5" fill="' + PALE + '" stroke="' + INK + '" stroke-width="1.3"/>' +
+        '<circle cx="0" cy="-0.4" r="1.9" fill="' + INK + '"/>' +
+        '<circle cx="-0.6" cy="-1" r="0.6" fill="' + PALE + '"/>' +
+        '<path d="M-2.3 3.8V5.6M2.3 3.8V5.6" stroke="' + INK + '" stroke-width="1.3" stroke-linecap="round"/>';
+    } else if (type === 'minion-b') {
+      body =
+        '<rect x="-4.4" y="-4.4" width="8.8" height="8.8" transform="rotate(45)"' +
+        ' fill="' + PALE + '" stroke="' + INK + '" stroke-width="1.3"/>' +
+        '<rect x="-1.7" y="-1.7" width="3.4" height="3.4" transform="rotate(45)" fill="#cf2b2b" stroke="' + INK + '" stroke-width="0.7"/>' +
+        '<path d="M-5.6 0H5.6" stroke="' + INK + '" stroke-width="1" stroke-linecap="round"/>';
+    } else if (type === 'minion-c') {
+      body =
+        '<polygon points="0,-5.6 4.9,-2.8 4.9,2.8 0,5.6 -4.9,2.8 -4.9,-2.8"' +
+        ' fill="' + PALE + '" stroke="' + INK + '" stroke-width="1.3" stroke-linejoin="round"/>' +
+        '<rect x="-3" y="-1.1" width="6" height="2.2" rx="1.1" fill="' + INK + '"/>' +
+        '<path d="M0 -5.6V-3.4" stroke="' + INK + '" stroke-width="1.1" stroke-linecap="round"/>';
+    } else if (type === 'bomb') {
       var spikes = '';
       for (var i = 0; i < 8; i++) {
         var a = i * Math.PI / 4;
-        var x1 = Math.cos(a) * 3.6;
-        var y1 = Math.sin(a) * 3.6;
-        var x2 = Math.cos(a) * 6;
-        var y2 = Math.sin(a) * 6;
-        spikes += '<path d="M' + x1.toFixed(2) + ' ' + y1.toFixed(2) + 'L' +
-          x2.toFixed(2) + ' ' + y2.toFixed(2) + '" stroke="' + ink +
-          '" stroke-width="1.6" stroke-linecap="round"/>';
+        spikes += '<path d="M' + (Math.cos(a) * 3.9).toFixed(2) + ' ' + (Math.sin(a) * 3.9).toFixed(2) +
+          'L' + (Math.cos(a) * 6).toFixed(2) + ' ' + (Math.sin(a) * 6).toFixed(2) +
+          '" stroke="' + INK + '" stroke-width="1.7" stroke-linecap="round"/>';
       }
-      return '<g transform="' + t + '">' + spikes +
-        '<circle r="4" fill="' + ink + '"/>' +
-        '<circle r="1.5" fill="' + pale + '"/>' +
-        '</g>';
+      body = spikes +
+        '<circle r="4.1" fill="' + DARK + '" stroke="' + INK + '" stroke-width="1.1"/>' +
+        '<circle cx="-1.3" cy="-1.3" r="1.1" fill="#7c8f9e"/>' +
+        '<circle cx="1.2" cy="1.2" r="0.9" fill="#ffb020"/>';
+    } else if (type === 'lava') {
+      body =
+        '<rect x="-6.2" y="-6.2" width="12.4" height="12.4" rx="2.3" fill="#4a2318"' +
+        ' stroke="' + INK + '" stroke-width="1.3"/>' +
+        '<path d="M-4.3 -2.6L-1.5 0.1L-2.8 2.7L1.3 4.6" fill="none" stroke="#ff7a2e"' +
+        ' stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path d="M2.4 -4.6L3.6 -2.4" fill="none" stroke="#ff7a2e" stroke-width="1.7" stroke-linecap="round"/>' +
+        '<circle cx="-1.5" cy="0.1" r="1.3" fill="#ffd166"/>';
+    } else if (type === 'barricade') {
+      body =
+        '<rect x="-7.8" y="-4.6" width="2" height="9.2" rx="0.7" fill="#8a97a3" stroke="' + INK + '" stroke-width="1.1"/>' +
+        '<rect x="5.8" y="-4.6" width="2" height="9.2" rx="0.7" fill="#8a97a3" stroke="' + INK + '" stroke-width="1.1"/>' +
+        '<rect x="-7" y="-2.5" width="14" height="5" rx="1" fill="#f2c230" stroke="' + INK + '" stroke-width="1.2"/>' +
+        '<path d="M-5 -2.3L-2.6 2.3M-2 -2.3L0.4 2.3M1 -2.3L3.4 2.3M4 -2.3L6.4 2.3"' +
+        ' stroke="' + INK + '" stroke-width="1.2"/>';
+    } else if (type === 'shard') {
+      body =
+        '<path d="M0 -6.4L4.5 -2.8L3.3 5.1L-3.3 5.1L-4.5 -2.8Z" fill="#8a4fc0"' +
+        ' stroke="' + INK + '" stroke-width="1.3" stroke-linejoin="round"/>' +
+        '<path d="M0 -6.4L0 5.1L-3.3 5.1L-4.5 -2.8Z" fill="#6b34a0"/>' +
+        '<path d="M0 -6.4L3.3 -1.2L0 2.2Z" fill="#c9a6ee" fill-opacity="0.9"/>' +
+        '<path d="M-1.9 1.2L0 5.1" stroke="#b98ae4" stroke-width="0.9" fill="none"/>';
+    } else if (type === 'tape') {
+      body =
+        '<rect x="-7.2" y="-2.3" width="14.4" height="4.6" rx="0.9" fill="#f2c230"' +
+        ' stroke="' + INK + '" stroke-width="1.2"/>' +
+        '<path d="M-5.2 -2.1L-2.8 2.1M-2.2 -2.1L0.2 2.1M0.8 -2.1L3.2 2.1M3.8 -2.1L6.2 2.1"' +
+        ' stroke="' + INK + '" stroke-width="1.2"/>';
+    } else {
+      body =
+        '<rect x="-4.4" y="-4.4" width="8.8" height="8.8" transform="rotate(45)"' +
+        ' fill="' + PALE + '" stroke="' + INK + '" stroke-width="1.4"/>';
     }
 
-    if (type === 'lava') {
-      return '<g transform="' + t + '">' +
-        '<rect x="-5.5" y="-5.5" width="11" height="11" rx="1.6" fill="#ff7a2e"' +
-        ' stroke="' + ink + '" stroke-width="1.4"/>' +
-        '<rect x="-2.6" y="-2.6" width="5.2" height="5.2" rx="1" fill="#ffd166"/>' +
-        '</g>';
-    }
-
-    if (type === 'barricade') {
-      return '<g transform="' + t + '">' +
-        '<rect x="-3" y="-5.5" width="6" height="11" rx="1" fill="' + pale + '"' +
-        ' stroke="' + ink + '" stroke-width="1.3"/>' +
-        '<path d="M-2.2 -3.4L2.2 -5M-2.2 -0.4L2.2 -2M-2.2 2.6L2.2 1M-2.2 5.2L2.2 3.6"' +
-        ' stroke="' + ink + '" stroke-width="1.3"/>' +
-        '</g>';
-    }
-
-    if (type === 'shard') {
-      return '<g transform="' + t + '">' +
-        '<path d="M0 -5.6L4.6 -2.8L4.6 2.8L0 5.6L-4.6 2.8L-4.6 -2.8Z"' +
-        ' fill="#7b3fa0" stroke="' + pale + '" stroke-width="1.2"/>' +
-        '<path d="M0 -3L2.2 0L0 3L-2.2 0Z" fill="' + pale + '" fill-opacity="0.55"/>' +
-        '</g>';
-    }
-
-    if (type === 'tape') {
-      return '<g transform="' + t + '">' +
-        '<rect x="-6.5" y="-2.6" width="13" height="5.2" fill="#f2c230"' +
-        ' stroke="' + ink + '" stroke-width="1.2"/>' +
-        '<path d="M-4.6 -2.4L-2.4 2.4M-1.6 -2.4L0.6 2.4M1.4 -2.4L3.6 2.4M4.4 -2.4L6.4 2.4"' +
-        ' stroke="' + ink + '" stroke-width="1.2"/>' +
-        '</g>';
-    }
-
-    return '<g transform="' + t + '">' +
-      '<rect x="-4.2" y="-4.2" width="8.4" height="8.4" transform="rotate(45)"' +
-      ' fill="' + pale + '" stroke="' + ink + '" stroke-width="1.4"/>' +
-      '</g>';
+    return open + body + '</g>';
   }
 
   /* --------------------------------------------------------------- cells -- */
 
-  function cellRect(x, y, fill, extra) {
-    var px = x * CELL + 1;
-    var py = y * CELL + 1;
-    var size = CELL - 2;
-    return '<rect x="' + px + '" y="' + py + '" width="' + size + '" height="' + size +
-      '" rx="1.6" fill="' + fill + '"' + (extra || '') + '/>';
+  function cellRect(x, y, fill) {
+    return '<rect x="' + (x * CELL + 1) + '" y="' + (y * CELL + 1) + '" width="' + (CELL - 2) +
+      '" height="' + (CELL - 2) + '" rx="1.6" fill="' + fill + '"/>';
   }
 
-  function drawCell(code, x, y) {
-    if (!code) return '';
+  function drawCell(cell, x, y) {
+    if (!cell) return '';
+    var cx = (x + 0.5) * CELL;
+    var cy = (y + 0.5) * CELL;
 
-    if (code === 'crystal') {
-      var cx = (x + 0.5) * CELL;
-      var cy = (y + 0.5) * CELL;
+    if (cell === 'crystal') {
       return cellRect(x, y, '#46c8f0') +
         '<rect x="' + (cx - 4) + '" y="' + (cy - 4) + '" width="8" height="8"' +
         ' transform="rotate(45 ' + cx + ' ' + cy + ')" fill="#ffffff" fill-opacity="0.75"/>' +
@@ -143,17 +130,24 @@
         ' transform="rotate(45 ' + cx + ' ' + cy + ')" fill="#0f6c8a"/>';
     }
 
-    if (code === 'lava') {
-      var lx = (x + 0.5) * CELL;
-      var ly = (y + 0.5) * CELL;
+    if (cell === 'lava') {
       return cellRect(x, y, '#ff7a2e') +
-        '<rect x="' + (lx - 3.5) + '" y="' + (ly - 3.5) + '" width="7" height="7"' +
+        '<rect x="' + (cx - 3.5) + '" y="' + (cy - 3.5) + '" width="7" height="7"' +
         ' rx="1.4" fill="#ffd166"/>';
     }
 
-    var info = SW.CELLS[code];
+    if (cell === 'oil') {
+      return cellRect(x, y, '#000000');
+    }
+
+    var info = SW.CELLS[cell.colour];
     if (!info || !info.colour) return '';
-    return cellRect(x, y, info.colour);
+
+    return cellRect(x, y, info.colour) +
+      '<g transform="translate(' + cx + ' ' + cy + ') rotate(' + (cell.dir || 0) * 90 + ')">' +
+        '<path d="M0 -4.2L3.2 1.2L0 -0.1L-3.2 1.2Z" fill="#ffffff"' +
+        ' stroke="rgba(16,24,32,0.5)" stroke-width="0.7" stroke-linejoin="round"/>' +
+      '</g>';
   }
 
   /* --------------------------------------------------------------- plate -- */
@@ -181,8 +175,7 @@
       '<clipPath id="' + id + '">' +
         '<rect x="0.8" y="0.8" width="118.4" height="118.4" rx="5"/>' +
       '</clipPath>' +
-      '<rect x="0.8" y="0.8" width="118.4" height="118.4" rx="5"' +
-        ' fill="' + FACE_BASE[face] + '"/>' +
+      '<rect x="0.8" y="0.8" width="118.4" height="118.4" rx="5" fill="' + FACE_BASE[face] + '"/>' +
       '<g clip-path="url(#' + id + ')">' +
         '<g transform="rotate(' + rot * 90 + ' 60 60)">' + body.join('') + '</g>' +
       '</g>' +
@@ -193,4 +186,5 @@
 
   SW.renderTile = renderTile;
   SW.renderPiece = renderPiece;
+  SW.renderCell = drawCell;
 })(window);
