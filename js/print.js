@@ -9,6 +9,9 @@
   var BOARD = 5;
   var root = document.getElementById('pages');
 
+  var COLUMNS = ['A', 'B', 'C', 'D', 'E'];
+  var ROWS = ['1', '2', '3', '4', '5'];
+
   function esc(text) {
     return String(text == null ? '' : text).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
@@ -25,6 +28,8 @@
       })
       .join('');
   }
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
 
   function empty(message) {
     root.innerHTML = '<div class="notice">' + esc(message) + '</div>';
@@ -68,6 +73,14 @@
       '</div>';
   }).join('');
 
+  var colHead = '<div class="fig-cols">' + COLUMNS.map(function (c) {
+    return '<span>' + c + '</span>';
+  }).join('') + '</div>';
+
+  var rowHead = '<div class="fig-rows">' + ROWS.map(function (r) {
+    return '<span>' + r + '</span>';
+  }).join('') + '</div>';
+
   /* ------------------------------------------------------------- legend -- */
 
   var seen = {};
@@ -82,12 +95,12 @@
 
   var legendHtml = legend.map(function (rec) {
     var tile = SW.tileById(rec.tileId);
-    return '<li>' +
-      '<div class="legend-art">' +
+    return '<li class="tile-card">' +
+      '<div class="art">' +
       SW.renderTile(tile, { face: rec.face, rot: 0 }) +
       '</div>' +
-      '<div class="legend-meta">' +
-      '<strong>' + esc(rec.tileId) + '</strong>' +
+      '<div class="tile-meta">' +
+      '<strong>' + esc(tile.id) + '</strong>' +
       '<span>' + (rec.face === 'back' ? 'Back' : 'Front') + '</span>' +
       '</div>' +
       '</li>';
@@ -97,77 +110,126 @@
   var markerCount = scenario.board.reduce(function (sum, rec) {
     return sum + (rec ? rec.pieces.length : 0);
   }, 0);
+  var compassDeg = (((scenario.compass | 0) % 4 + 4) % 4) * 90;
 
-  var specialPage = '';
-  if (scenario.special && scenario.special.on) {
-    var topics = (scenario.special.topics || []).map(function (t) {
-      return '<li>' + esc(t) + '</li>';
-    }).join('');
-    var specialText = paragraphs(scenario.special.text);
-    if (topics || specialText) {
-      specialPage = '<section class="page">' +
-        '<h2>Special Rules</h2>' +
-        (topics ? '<ul class="topic-list">' + topics + '</ul>' : '') +
-        '<div class="prose">' + specialText + '</div>' +
-        '</section>';
-    }
-  }
+  /* --------------------------------------------------------------- pages -- */
 
-  var otherPage = '';
-  if (scenario.other && scenario.other.on && (scenario.other.text || '').trim()) {
-    otherPage = '<section class="page">' +
-      '<h2>Other Rules / Escalations</h2>' +
-      '<div class="prose">' + paragraphs(scenario.other.text) + '</div>' +
-      '</section>';
-  }
+  var title = (scenario.title || 'Untitled').trim();
+  var sections = [];
 
-  var picturePage = '';
-  if (typeof scenario.image === 'string' && scenario.image.indexOf('data:image/') === 0) {
-    picturePage = '<section class="page">' +
-      '<h2>Board Setup</h2>' +
-      '<img class="setup" src="' + scenario.image + '" alt="Board setup">' +
-      '</section>';
-  }
-
-  root.innerHTML =
-    '<section class="page cover">' +
-      '<div class="cover-mark"><img src="assets/logo.svg" alt="" width="72" height="72"></div>' +
+  sections.push({
+    kind: 'cover',
+    body:
+      '<div class="cover-logo"><img src="assets/logo.svg" alt="" width="98" height="98"></div>' +
       '<p class="kicker">Clockwork vs Chaos · Plate Foundry</p>' +
-      '<h1>' + esc(scenario.title || 'Untitled') + '</h1>' +
-      '<p class="byline">' + (scenario.author ? 'by ' + esc(scenario.author) : 'no author') + '</p>' +
+      '<h1 class="cover-title">' + esc(title) + '</h1>' +
+      '<p class="byline">' +
+        (scenario.author ? 'by ' + esc(scenario.author) : 'no author given') +
+      '</p>' +
       '<dl class="facts">' +
         '<div><dt>Tiles</dt><dd>' + plateCount + '</dd></div>' +
         '<div><dt>Pieces</dt><dd>' + markerCount + '</dd></div>' +
         '<div><dt>Board</dt><dd>' + BOARD + ' × ' + BOARD + '</dd></div>' +
         '<div><dt>Cells</dt><dd>' + SW.GRID + ' × ' + SW.GRID + '</dd></div>' +
-        '<div><dt>Compass</dt><dd>' + (((scenario.compass | 0) % 4) * 90) + '°</dd></div>' +
+        '<div><dt>Compass</dt><dd>' + compassDeg + '°</dd></div>' +
       '</dl>' +
-      '<p class="cover-foot">6 × 6 plate set · scenario dossier</p>' +
-    '</section>' +
+      '<p class="cover-foot">6 × 6 plate set · scenario dossier</p>'
+  });
 
-    '<section class="page">' +
+  sections.push({
+    kind: 'map',
+    body:
       '<h2>Map</h2>' +
-      '<div class="map">' + boardHtml + '</div>' +
+      '<figure class="figure">' +
+        '<div class="board-figure">' +
+          colHead +
+          rowHead +
+          '<div class="map">' + boardHtml + '</div>' +
+        '</div>' +
+        '<figcaption class="fig-cap">' +
+          '<span>Fig. 1 — plate layout, ' + BOARD + ' × ' + BOARD + '</span>' +
+          '<span>Compass ' + compassDeg + '°</span>' +
+        '</figcaption>' +
+      '</figure>' +
       '<h3>Objective</h3>' +
-      '<div class="prose">' + (paragraphs(scenario.objective) || '<p class="muted">—</p>') + '</div>' +
-    '</section>' +
+      '<div class="prose">' +
+        (paragraphs(scenario.objective) || '<p class="muted">—</p>') +
+      '</div>'
+  });
 
-    '<section class="page">' +
-      '<h2>Rules</h2>' +
-      '<div class="prose">' + (paragraphs(scenario.rules) || '<p class="muted">—</p>') + '</div>' +
-    '</section>' +
+  var specialTopics = '';
+  var specialText = '';
+  if (scenario.special && scenario.special.on) {
+    specialTopics = (scenario.special.topics || []).map(function (t) {
+      return '<li>' + esc(t) + '</li>';
+    }).join('');
+    specialText = paragraphs(scenario.special.text);
+  }
 
-    specialPage +
-    otherPage +
+  var otherText = (scenario.other && scenario.other.on)
+    ? paragraphs(scenario.other.text)
+    : '';
 
-    (legend.length
-      ? '<section class="page">' +
-          '<h2>Tiles used</h2>' +
-          '<ul class="legend-list">' + legendHtml + '</ul>' +
-        '</section>'
-      : '') +
+  /* The three text blocks share one sheet, so a short scenario does not end up
+     as three nearly blank pages. Long text simply flows onto the next sheet. */
+  var rulesBody =
+    '<h2>Rules</h2>' +
+    '<div class="prose">' +
+      (paragraphs(scenario.rules) || '<p class="muted">—</p>') +
+    '</div>';
 
-    picturePage;
+  if (specialTopics || specialText) {
+    rulesBody +=
+      '<h3>Special Rules</h3>' +
+      '<div class="callout">' +
+        (specialTopics ? '<ul class="topic-list">' + specialTopics + '</ul>' : '') +
+        (specialText ? '<div class="prose">' + specialText + '</div>' : '') +
+      '</div>';
+  }
+
+  if (otherText) {
+    rulesBody +=
+      '<h3>Other Rules / Escalations</h3>' +
+      '<div class="prose">' + otherText + '</div>';
+  }
+
+  sections.push({ kind: 'rules', body: rulesBody });
+
+  if (legend.length) {
+    sections.push({
+      kind: 'tiles',
+      body:
+        '<h2>Tiles used</h2>' +
+        '<ul class="tile-grid">' + legendHtml + '</ul>'
+    });
+  }
+
+  if (typeof scenario.image === 'string' && scenario.image.indexOf('data:image/') === 0) {
+    sections.push({
+      kind: 'setup',
+      body:
+        '<h2>Board Setup</h2>' +
+        '<div class="figure-wrap">' +
+          '<div class="setup-frame">' +
+            '<img src="' + scenario.image + '" alt="Board setup">' +
+          '</div>' +
+          '<p class="fig-cap"><span>Fig. 2 — table layout</span><span>Reference photo</span></p>' +
+        '</div>'
+    });
+  }
+
+  var total = sections.length;
+
+  root.innerHTML = sections.map(function (section, i) {
+    return '<section class="page page--' + section.kind + '">' +
+      (section.decor || '') +
+      '<div class="page-body">' + section.body + '</div>' +
+      '<footer class="page-foot">' +
+        '<span>' + esc(title) + '</span>' +
+        '<span class="foot-num">' + pad(i + 1) + ' / ' + pad(total) + '</span>' +
+      '</footer>' +
+      '</section>';
+  }).join('');
 
   document.getElementById('btn-print').addEventListener('click', function () {
     window.print();

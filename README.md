@@ -101,11 +101,16 @@ Piece am gezeichneten Feld klebt.
 Der Kompass übernimmt die Farben des Originals: Nadel nach Norden rot, Osten
 grün, Süden orange, Westen blau — dieselben vier Farben wie die Runen.
 
-Das Dossier hat diese Seiten: Titel, Karte mit Ziel, Regeln, **Special Rules**
-(nur wenn angehakt, mit den Themen Bomb / Boss / Flame Wall-School / Shards-
-Tokens / Hazards), **Other Rules / Escalations** (nur wenn angehakt), verwendete
-Tiles und — falls ein Bild hinterlegt ist — eine abschließende Seite
-**Board Setup**.
+Das Dossier hat diese Seiten: Titel, Karte mit Ziel, Regeln (mit **Special
+Rules** und **Other Rules / Escalations**, sofern angehakt), verwendete Tiles
+und — falls ein Bild hinterlegt ist — eine abschließende Seite **Board Setup**.
+
+Jede Seite trägt ein dunkles Kopfband, eine Fußzeile mit Szenario-Titel und
+Seitenzahl. Die Karte ist mit Koordinaten (A–E, 1–5) versehen, damit sich
+Felder in den Regeln eindeutig ansprechen lassen. Gedruckt wird auf warmem
+Papier mit `print-color-adjust: exact`, damit Bänder, Tabellen und
+Regel-Kästen auch als PDF farbig bleiben — im Druckdialog muss dafür
+„Hintergrundgrafiken“ aktiv sein.
 
 Die **Oberfläche ist englisch** (wie das Original-Werkzeug); diese
 Dokumentation bleibt deutsch.
