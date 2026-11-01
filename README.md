@@ -44,22 +44,25 @@ Vektorgeometrie, kein Bitmap, keine Textur, keine Schrift.
 
 | Aktion | So geht's |
 | --- | --- |
-| Tile legen | Tile mit der Maus ins Raster **ziehen**, oder anklicken und Zelle anklicken |
+| Tile legen | Tile aus dem `Tiles`-Panel ins Raster **ziehen**, oder anklicken und Zelle anklicken |
 | Tile verschieben | gelegtes Tile auf eine andere Zelle ziehen |
 | Seite wählen | `Front` / `Back` oben oder `F` |
 | Drehen | `R` oder 0°/90°/180°/270° |
 | Gelegtes Tile drehen | ⟳ beim Überfahren der Zelle |
 | Gelegtes Tile wenden | ⇅ beim Überfahren der Zelle |
 | Tile entfernen | ✕ beim Überfahren der Zelle |
-| Piece setzen | Piece ins Raster ziehen oder auf ein **gelegtes** Tile klicken |
-| Piece löschen | „Piece löschen“ wählen, auf das Piece klicken |
+| Piece setzen | Piece aus dem `Pieces`-Panel ins Raster ziehen oder auf ein **gelegtes** Tile klicken |
+| Piece löschen | `Delete piece` wählen, auf das Piece klicken |
 | Kompass drehen | auf den Kompass unter dem Raster klicken (90°-Schritte) |
-| Szenario sichern | „JSON speichern“ |
-| Dossier | „Dossier drucken“ → Druckdialog → Als PDF speichern |
+| Szenario sichern | `Save JSON` |
+| Dossier | `Print dossier` → Druckdialog → Als PDF speichern |
 
 Pieces werden in der Zelle platziert, auf die der Zeiger zeigt. Bei gedrehtem
 Tile rechnet der Editor die Klickposition in den Plattenraum zurück, damit das
 Piece am gezeichneten Feld klebt.
+
+Die **Oberfläche ist englisch** (wie das Original-Werkzeug); diese
+Dokumentation bleibt deutsch.
 
 ### Pieces
 
@@ -68,8 +71,8 @@ Bezeichnungen und Grundflächen stammen unverändert aus dem Original-Werkzeug
 
 | Piece | Fläche | Original-Schlüssel |
 | --- | --- | --- |
-| School | 3 × 6 | `school` |
-| Lava Wall | 3 × 6 | `lava` |
+| School | 3 × 6, 12 von 18 Zellen | `school` |
+| Lava Wall | 3 × 6, 12 von 18 Zellen | `lava` |
 | Gear Ring | 1 × 1 | `gear` |
 | Boss Mech | 2 × 2 | `minion-1` |
 | Minion | 1 × 1 | `minion-2` |
@@ -77,6 +80,22 @@ Bezeichnungen und Grundflächen stammen unverändert aus dem Original-Werkzeug
 | The Bomb | 1 × 1 | `bomb` |
 | Goal Zone | 1 × 1 | `tape` |
 | Crystal Shard | 1 × 1 | `shard` |
+
+Die Wandfelder sind **keine vollen Rechtecke**: Belegungsmatrix und Grundfläche
+stammen aus dem Original, inklusive der Aussparungen. Die Maske (3 × 6) lautet
+
+```
+X . .
+X X .
+X X X
+X X X
+X X .
+X . .
+```
+
+und wird beim Zeichnen als Silhouette ausgeschritten; die Platte scheint durch
+die Lücken. Beim Platzieren wird die Fläche am Plattenrand eingepasst, beim
+Löschen genügt ein Klick auf irgendeine belegte Zelle.
 
 ## Dateiformat
 

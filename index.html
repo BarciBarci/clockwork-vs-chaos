@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Slickworks — Plate Foundry</title>
-<meta name="description" content="Szenario-Editor für doppelseitige Öllinien-Platten im 6×6-Raster.">
+<meta name="description" content="Scenario editor for double-sided oil-line plates on a 6×6 grid.">
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/styles.css">
 </head>
@@ -20,10 +20,10 @@
   </a>
 
   <div class="topbar-actions">
-    <button id="btn-new" class="btn" type="button">Neu</button>
-    <button id="btn-load" class="btn" type="button">Laden</button>
-    <button id="btn-save" class="btn" type="button">JSON speichern</button>
-    <button id="btn-print" class="btn btn-primary" type="button">Dossier drucken</button>
+    <button id="btn-new" class="btn" type="button">New</button>
+    <button id="btn-load" class="btn" type="button">Load</button>
+    <button id="btn-save" class="btn" type="button">Save JSON</button>
+    <button id="btn-print" class="btn btn-primary" type="button">Print dossier</button>
     <input id="file-input" type="file" accept="application/json,.json" hidden>
   </div>
 </header>
@@ -51,9 +51,9 @@
     <div class="piece-grid" id="palette-pieces"></div>
 
     <p class="hint">
-      Tile oder Piece mit der Maus ins Raster ziehen — oder anklicken und dann
-      eine Zelle anklicken. Gelegte Tiles lassen sich verschieben. <kbd>R</kbd>
-      dreht, <kbd>F</kbd> wechselt die Seite.
+      Drag a tile or piece onto the grid — or click it, then click a cell.
+      Placed tiles can be dragged to another cell. <kbd>R</kbd> rotates,
+      <kbd>F</kbd> flips the side.
     </p>
   </aside>
 
@@ -66,34 +66,34 @@
   </section>
 
   <aside class="panel side">
-    <h2>Szenario</h2>
+    <h2>Scenario</h2>
 
-    <label>Titel
-      <input id="f-title" type="text" maxlength="80" placeholder="z. B. Ember Line 04">
+    <label>Title
+      <input id="f-title" type="text" maxlength="80" placeholder="e.g. Ember Line 04">
     </label>
-    <label>Autor
-      <input id="f-author" type="text" maxlength="80" placeholder="dein Name">
+    <label>Author
+      <input id="f-author" type="text" maxlength="80" placeholder="your name">
     </label>
-    <label>Ziel
-      <textarea id="f-objective" rows="3" placeholder="Was müssen die Mechs schaffen?"></textarea>
+    <label>Objective
+      <textarea id="f-objective" rows="3" placeholder="What must the mechs achieve?"></textarea>
     </label>
-    <label>Regeln
-      <textarea id="f-rules" rows="7" placeholder="Öl, Marken, Lava-Seite, Sonderregeln …"></textarea>
+    <label>Rules
+      <textarea id="f-rules" rows="7" placeholder="Oil, pieces, Back side, special rules …"></textarea>
     </label>
 
     <div class="legend">
-      <h3>Legende</h3>
+      <h3>Legend</h3>
       <ul>
-        <li><span class="sw sw-oil"></span>Ölfeld (schwarz)</li>
-        <li><span class="sw sw-lava"></span>Lava (Back)</li>
-        <li><span class="sw sw-ochre"></span>Ocker</li>
-        <li><span class="sw sw-red"></span>Rot</li>
-        <li><span class="sw sw-green"></span>Grün</li>
-        <li><span class="sw sw-blue"></span>Blau</li>
-        <li><span class="sw sw-crystal"></span>Kristall</li>
+        <li><span class="sw sw-oil"></span>Oil field (black)</li>
+        <li><span class="sw sw-lava"></span>Lava (Back side)</li>
+        <li><span class="sw sw-ochre"></span>Orange</li>
+        <li><span class="sw sw-red"></span>Red</li>
+        <li><span class="sw sw-green"></span>Green</li>
+        <li><span class="sw sw-blue"></span>Blue</li>
+        <li><span class="sw sw-crystal"></span>Crystal</li>
       </ul>
-      <p class="hint">Der weiße Pfeil im Farbfeld zeigt die Richtung der
-      Rune (N/O/S/W), gemessen aus dem Plattenbild.</p>
+      <p class="hint">The white arrow inside a colour field is the rune
+      direction (N/E/S/W), measured from the plate art.</p>
     </div>
   </aside>
 

@@ -107,41 +107,74 @@
       ' stroke="' + INK + '" stroke-width="1.2"/>';
   }
 
-  /* Wall panels span their whole footprint */
-  function panelSchool(x, y, w, h) {
-    var px = x * CELL + 2;
-    var py = y * CELL + 2;
-    var pw = w * CELL - 4;
-    var ph = h * CELL - 4;
-    var bands = '';
-    var step = 15;
-    for (var by = py + 7; by < py + ph - 6; by += step) {
-      bands += '<rect x="' + (px + 2) + '" y="' + by + '" width="' + (pw - 4) + '" height="7.5"' +
-        ' fill="#f2c230" stroke="' + INK + '" stroke-width="0.7"/>';
-      for (var bx = px + 4; bx < px + pw - 4; bx += 9) {
-        bands += '<path d="M' + bx + ' ' + (by + 7) + 'L' + (bx + 5) + ' ' + by +
-          '" stroke="' + INK + '" stroke-width="1"/>';
+  /* Wall panels follow the occupancy mask of the original asset matrix:
+     only the cells set to 1 are solid, the rest is a notch. */
+  function renderPanel(type, cellX, cellY) {
+    var def = SW.PIECES[type];
+    var mask = def && def.mask;
+    if (!mask) return '';
+
+    var rows = mask.length;
+    var cols = mask[0].length;
+    var ox = cellX * CELL;
+    var oy = cellY * CELL;
+    var fills = [];
+    var edges = [];
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        if (!mask[r][c]) continue;
+        var X = ox + c * CELL;
+        var Y = oy + r * CELL;
+        fills.push('<rect x="' + X + '" y="' + Y + '" width="' + CELL + '" height="' + CELL + '"/>');
+        if (X < minX) minX = X;
+        if (Y < minY) minY = Y;
+        if (X + CELL > maxX) maxX = X + CELL;
+        if (Y + CELL > maxY) maxY = Y + CELL;
+
+        if (r === 0 || !mask[r - 1][c]) edges.push('M' + X + ' ' + Y + 'h' + CELL);
+        if (r === rows - 1 || !mask[r + 1][c]) edges.push('M' + X + ' ' + (Y + CELL) + 'h' + CELL);
+        if (c === 0 || !mask[r][c - 1]) edges.push('M' + X + ' ' + Y + 'v' + CELL);
+        if (c === cols - 1 || !mask[r][c + 1]) edges.push('M' + (X + CELL) + ' ' + Y + 'v' + CELL);
       }
     }
-    return '<rect x="' + px + '" y="' + py + '" width="' + pw + '" height="' + ph + '" rx="3"' +
-      ' fill="#cdd6de" stroke="' + INK + '" stroke-width="1.7"/>' + bands +
-      '<circle cx="' + (px + 7) + '" cy="' + (py + 7) + '" r="1.7" fill="' + INK + '"/>' +
-      '<circle cx="' + (px + pw - 7) + '" cy="' + (py + ph - 7) + '" r="1.7" fill="' + INK + '"/>';
-  }
 
-  function panelLava(x, y, w, h) {
-    var px = x * CELL + 2;
-    var py = y * CELL + 2;
-    var pw = w * CELL - 4;
-    var ph = h * CELL - 4;
-    return '<rect x="' + px + '" y="' + py + '" width="' + pw + '" height="' + ph + '" rx="3"' +
-      ' fill="#3a1a12" stroke="' + INK + '" stroke-width="1.7"/>' +
-      '<path d="M' + (px + pw * 0.28) + ' ' + (py + 6) + 'L' + (px + pw * 0.55) + ' ' + (py + ph * 0.22) +
-      'L' + (px + pw * 0.34) + ' ' + (py + ph * 0.45) + 'L' + (px + pw * 0.62) + ' ' + (py + ph * 0.62) +
-      'L' + (px + pw * 0.4) + ' ' + (py + ph * 0.86) + 'L' + (px + pw * 0.5) + ' ' + (py + ph - 6) +
-      '" fill="none" stroke="#ff7a2e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
-      '<path d="M' + (px + pw * 0.72) + ' ' + (py + 10) + 'L' + (px + pw * 0.6) + ' ' + (py + ph * 0.36) +
-      '" fill="none" stroke="#ffd166" stroke-width="1.6" stroke-linecap="round"/>';
+    var bw = maxX - minX;
+    var bh = maxY - minY;
+    var deco = '';
+
+    if (type === 'school') {
+      deco += '<rect x="' + minX + '" y="' + minY + '" width="' + bw + '" height="' + bh +
+        '" fill="#cdd6de"/>';
+      for (var by = minY + 7; by < maxY - 6; by += 15) {
+        deco += '<rect x="' + (minX - 1) + '" y="' + by + '" width="' + (bw + 2) +
+          '" height="7.5" fill="#f2c230"/>';
+        for (var bx = minX + 2; bx < maxX - 2; bx += 9) {
+          deco += '<path d="M' + bx + ' ' + (by + 7.5) + 'L' + (bx + 5) + ' ' + by +
+            '" stroke="' + INK + '" stroke-width="1"/>';
+        }
+      }
+    } else {
+      deco += '<rect x="' + minX + '" y="' + minY + '" width="' + bw + '" height="' + bh +
+        '" fill="#3a1a12"/>';
+      deco += '<path d="M' + (minX + bw * 0.3) + ' ' + (minY + 6) +
+        'L' + (minX + bw * 0.62) + ' ' + (minY + bh * 0.24) +
+        'L' + (minX + bw * 0.4) + ' ' + (minY + bh * 0.48) +
+        'L' + (minX + bw * 0.68) + ' ' + (minY + bh * 0.66) +
+        'L' + (minX + bw * 0.46) + ' ' + (minY + bh * 0.88) +
+        'L' + (minX + bw * 0.56) + ' ' + (minY + bh - 6) + '"' +
+        ' fill="none" stroke="#ff7a2e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>';
+      deco += '<path d="M' + (minX + bw * 0.8) + ' ' + (minY + 9) +
+        'L' + (minX + bw * 0.62) + ' ' + (minY + bh * 0.4) + '"' +
+        ' fill="none" stroke="#ffd166" stroke-width="1.6" stroke-linecap="round"/>';
+    }
+
+    var id = 'pn' + (++uid);
+    return '<clipPath id="' + id + '">' + fills.join('') + '</clipPath>' +
+      '<g clip-path="url(#' + id + ')">' + deco + '</g>' +
+      '<path d="' + edges.join('') + '" fill="none" stroke="' + INK + '"' +
+      ' stroke-width="1.7" stroke-linejoin="round"/>';
   }
 
   function glyph(type) {
@@ -175,8 +208,7 @@
     w = w || 1;
     h = h || 1;
 
-    if (type === 'school') return panelSchool(cellX, cellY, w, h);
-    if (type === 'lava') return panelLava(cellX, cellY, w, h);
+    if (type === 'school' || type === 'lava') return renderPanel(type, cellX, cellY);
 
     var cx = (cellX + w / 2) * CELL;
     var cy = (cellY + h / 2) * CELL;

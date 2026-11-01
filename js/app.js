@@ -117,7 +117,7 @@
     erase.type = 'button';
     erase.className = 'piece-btn';
     erase.dataset.erase = '1';
-    erase.innerHTML = '<span aria-hidden="true">✕</span> Piece löschen';
+    erase.innerHTML = '<span aria-hidden="true">✕</span> Delete piece';
     erase.addEventListener('click', function () {
       state.mode = 'erase';
       syncPalette();
@@ -174,9 +174,9 @@
           pieces: rec.pieces
         }) +
         '<div class="ctrls">' +
-        '<button type="button" data-act="rot" title="Drehen">⟳</button>' +
-        '<button type="button" data-act="flip" title="Seite wechseln">⇅</button>' +
-        '<button type="button" data-act="del" title="Platte entfernen">✕</button>' +
+        '<button type="button" data-act="rot" title="Rotate">⟳</button>' +
+        '<button type="button" data-act="flip" title="Flip side">⇅</button>' +
+        '<button type="button" data-act="del" title="Remove tile">✕</button>' +
         '</div>';
     });
 
@@ -195,7 +195,7 @@
       if (rec.face === 'back') lava += 1;
     });
 
-    return plates + ' Tiles · ' + markers + ' Pieces · ' + lava + ' auf Back';
+    return plates + ' Tiles · ' + markers + ' Pieces · ' + lava + ' on Back';
   }
 
   /* ------------------------------------------------------- interactions -- */
@@ -217,7 +217,7 @@
 
     if (state.mode === 'piece') {
       if (!rec) {
-        toast('Erst ein Tile legen.');
+        toast('Place a tile first.');
         return;
       }
       pushPiece(rec, state.pieceType, el, event);
@@ -235,7 +235,7 @@
           return;
         }
       }
-      toast('Dort liegt kein Piece.');
+      toast('No piece there.');
     }
   }
 
@@ -364,7 +364,7 @@
 
     var target = state.board[index];
     if (!target) {
-      toast('Erst ein Tile legen.');
+      toast('Place a tile first.');
       return;
     }
     pushPiece(target, dragState.type, el, event);
@@ -396,7 +396,7 @@
 
   function renderCompass() {
     compassEl.innerHTML = compassSVG(state.compass);
-    compassEl.title = 'Kompass ' + state.compass * 90 + '° — klicken zum Drehen';
+    compassEl.title = 'Compass ' + state.compass * 90 + '° — click to rotate';
   }
 
   compassEl.addEventListener('click', function () {
@@ -484,15 +484,15 @@
 
   function importScenario(data) {
     if (!data || data.format !== 'slickworks-scenario' || !Array.isArray(data.board)) {
-      throw new Error('Unbekanntes Format.');
+      throw new Error('Unknown format.');
     }
     if (data.board.length !== BOARD * BOARD) {
-      throw new Error('Das Raster passt nicht (erwartet ' + BOARD * BOARD + ' Felder).');
+      throw new Error('Grid mismatch (expected ' + BOARD * BOARD + ' fields).');
     }
 
     state.board = data.board.map(function (rec) {
       if (!rec) return null;
-      if (!SW.tileById(rec.tileId)) throw new Error('Unbekannte Platte: ' + rec.tileId);
+      if (!SW.tileById(rec.tileId)) throw new Error('Unknown tile: ' + rec.tileId);
       return {
         tileId: rec.tileId,
         rot: ((rec.rot | 0) % 4 + 4) % 4,
@@ -528,7 +528,7 @@
   /* --------------------------------------------------------------- buttons -- */
 
   document.getElementById('btn-new').addEventListener('click', function () {
-    if (!confirm('Aktuelles Szenario verwerfen?')) return;
+    if (!confirm('Discard the current scenario?')) return;
     state.board = new Array(BOARD * BOARD).fill(null);
     state.meta = { title: '', author: '', objective: '', rules: '' };
     Object.keys(fields).forEach(function (name) {
@@ -543,7 +543,7 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = (state.meta.title || 'slickworks-szenario')
+    a.download = (state.meta.title || 'slickworks-scenario')
       .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.json';
     document.body.appendChild(a);
     a.click();
@@ -563,9 +563,9 @@
     reader.onload = function () {
       try {
         importScenario(JSON.parse(String(reader.result)));
-        toast('Szenario geladen.');
+        toast('Scenario loaded.');
       } catch (error) {
-        toast('Laden fehlgeschlagen: ' + error.message);
+        toast('Load failed: ' + error.message);
       }
       fileInput.value = '';
     };
@@ -575,14 +575,14 @@
   document.getElementById('btn-print').addEventListener('click', function () {
     var scenario = exportScenario();
 
-    if (!scenario.title) { toast('Bitte einen Titel eintragen.'); return; }
-    if (!scenario.board.some(Boolean)) { toast('Bitte mindestens eine Platte legen.'); return; }
-    if (!scenario.objective) { toast('Bitte das Ziel beschreiben.'); return; }
-    if (!scenario.rules) { toast('Bitte die Regeln ergänzen.'); return; }
+    if (!scenario.title) { toast('Please enter a title.'); return; }
+    if (!scenario.board.some(Boolean)) { toast('Place at least one tile.'); return; }
+    if (!scenario.objective) { toast('Please describe the objective.'); return; }
+    if (!scenario.rules) { toast('Please add the rules.'); return; }
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(scenario));
     var win = window.open('dossier.html', '_blank');
-    if (!win) toast('Pop-up blockiert — bitte für diese Seite erlauben.');
+    if (!win) toast('Pop-up blocked — please allow it for this page.');
   });
 
   /* ----------------------------------------------------------------- init -- */

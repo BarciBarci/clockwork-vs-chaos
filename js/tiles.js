@@ -126,31 +126,42 @@
   TILES.forEach(function (t) { index[t.id] = t; });
 
   var CELLS = {
-    oil: { label: 'Ölfeld', colour: '#000000' },
+    oil: { label: 'Oil', colour: '#000000' },
     lava: { label: 'Lava', colour: '#ff7a2e' },
-    orange: { label: 'Ocker', colour: '#e8961e' },
-    red: { label: 'Rot', colour: '#cf2b2b' },
-    green: { label: 'Grün', colour: '#2fae4a' },
-    blue: { label: 'Blau', colour: '#2f6fd0' },
-    crystal: { label: 'Kristall', colour: '#46c8f0' }
+    orange: { label: 'Orange', colour: '#e8961e' },
+    red: { label: 'Red', colour: '#cf2b2b' },
+    green: { label: 'Green', colour: '#2fae4a' },
+    blue: { label: 'Blue', colour: '#2f6fd0' },
+    crystal: { label: 'Crystal', colour: '#46c8f0' }
   };
 
   var DIRS = ['N', 'O', 'S', 'W'];
 
   /*
-   * Labels and footprints match the original S.C.R.A.P. asset set
-   * (slugs, names and cell matrices taken from the shipped tool).
+   * Labels, footprints and occupancy masks match the original S.C.R.A.P.
+   * asset set (slugs, names and cell matrices taken from the shipped tool).
+   * The 3 x 6 wall mask is view 0 of the original matrix:
+   *   [1,0,0, 1,1,0, 1,1,1, 1,1,1, 1,1,0, 1,0,0]
    */
+  var WALL_MASK = [
+    [1, 0, 0],
+    [1, 1, 0],
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 0],
+    [1, 0, 0]
+  ];
+
   var PIECES = {
-    school: { label: 'School', note: 'Wandfeld, 3 × 6', w: 3, h: 6 },
-    lava: { label: 'Lava Wall', note: 'Lavawand, 3 × 6', w: 3, h: 6 },
-    gear: { label: 'Gear Ring', note: 'Zahnkranz', w: 1, h: 1 },
-    'minion-1': { label: 'Boss Mech', note: 'Bossgegner, 2 × 2', w: 2, h: 2 },
-    'minion-2': { label: 'Minion', note: 'Gegner', w: 1, h: 1 },
-    'minion-3': { label: 'Player Mech', note: 'Spielerfigur', w: 1, h: 1 },
-    bomb: { label: 'The Bomb', note: 'Sprengsatz', w: 1, h: 1 },
-    tape: { label: 'Goal Zone', note: 'Zielzone', w: 1, h: 1 },
-    shard: { label: 'Crystal Shard', note: 'Splitter', w: 1, h: 1 }
+    school: { label: 'School', note: 'Wall panel, 3 × 6', w: 3, h: 6, mask: WALL_MASK },
+    lava: { label: 'Lava Wall', note: 'Lava wall, 3 × 6', w: 3, h: 6, mask: WALL_MASK },
+    gear: { label: 'Gear Ring', note: 'Gear ring', w: 1, h: 1 },
+    'minion-1': { label: 'Boss Mech', note: 'Boss, 2 × 2', w: 2, h: 2 },
+    'minion-2': { label: 'Minion', note: 'Enemy', w: 1, h: 1 },
+    'minion-3': { label: 'Player Mech', note: 'Player figure', w: 1, h: 1 },
+    bomb: { label: 'The Bomb', note: 'Explosive', w: 1, h: 1 },
+    tape: { label: 'Goal Zone', note: 'Objective zone', w: 1, h: 1 },
+    shard: { label: 'Crystal Shard', note: 'Shard', w: 1, h: 1 }
   };
 
   global.Slickworks = {

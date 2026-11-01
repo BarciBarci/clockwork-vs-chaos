@@ -34,12 +34,12 @@
   try {
     raw = localStorage.getItem('slickworks:scenario');
   } catch (error) {
-    empty('Dieser Browser erlaubt keinen Zugriff auf localStorage.');
+    empty('This browser does not allow access to localStorage.');
     return;
   }
 
   if (!raw) {
-    empty('Kein Szenario gefunden. Exportiere zuerst im Editor über „Dossier drucken“.');
+    empty('No scenario found. Export one from the editor via "Print dossier" first.');
     return;
   }
 
@@ -47,12 +47,12 @@
   try {
     scenario = JSON.parse(raw);
   } catch (error) {
-    empty('Der gespeicherte Datensatz ist beschädigt.');
+    empty('The stored record is corrupted.');
     return;
   }
 
   if (scenario.format !== 'slickworks-scenario') {
-    empty('Der gespeicherte Datensatz gehört nicht zu Slickworks.');
+    empty('The stored record does not belong to Slickworks.');
     return;
   }
 
@@ -101,33 +101,33 @@
     '<section class="page cover">' +
       '<div class="cover-mark"><img src="assets/logo.svg" alt="" width="72" height="72"></div>' +
       '<p class="kicker">Slickworks · Plate Foundry</p>' +
-      '<h1>' + esc(scenario.title || 'Ohne Titel') + '</h1>' +
-      '<p class="byline">' + (scenario.author ? 'von ' + esc(scenario.author) : 'ohne Autor') + '</p>' +
+      '<h1>' + esc(scenario.title || 'Untitled') + '</h1>' +
+      '<p class="byline">' + (scenario.author ? 'by ' + esc(scenario.author) : 'no author') + '</p>' +
       '<dl class="facts">' +
         '<div><dt>Tiles</dt><dd>' + plateCount + '</dd></div>' +
         '<div><dt>Pieces</dt><dd>' + markerCount + '</dd></div>' +
         '<div><dt>Board</dt><dd>' + BOARD + ' × ' + BOARD + '</dd></div>' +
         '<div><dt>Cells</dt><dd>' + SW.GRID + ' × ' + SW.GRID + '</dd></div>' +
-        '<div><dt>Kompass</dt><dd>' + (((scenario.compass | 0) % 4) * 90) + '°</dd></div>' +
+        '<div><dt>Compass</dt><dd>' + (((scenario.compass | 0) % 4) * 90) + '°</dd></div>' +
       '</dl>' +
-      '<p class="cover-foot">Plattensatz im 6 × 6-Raster · Szenario-Dossier</p>' +
+      '<p class="cover-foot">6 × 6 plate set · scenario dossier</p>' +
     '</section>' +
 
     '<section class="page">' +
-      '<h2>Karte</h2>' +
+      '<h2>Map</h2>' +
       '<div class="map">' + boardHtml + '</div>' +
-      '<h3>Ziel</h3>' +
+      '<h3>Objective</h3>' +
       '<div class="prose">' + (paragraphs(scenario.objective) || '<p class="muted">—</p>') + '</div>' +
     '</section>' +
 
     '<section class="page">' +
-      '<h2>Regeln</h2>' +
+      '<h2>Rules</h2>' +
       '<div class="prose">' + (paragraphs(scenario.rules) || '<p class="muted">—</p>') + '</div>' +
     '</section>' +
 
     (legend.length
       ? '<section class="page">' +
-          '<h2>Verwendete Platten</h2>' +
+          '<h2>Tiles used</h2>' +
           '<ul class="legend-list">' + legendHtml + '</ul>' +
         '</section>'
       : '');
