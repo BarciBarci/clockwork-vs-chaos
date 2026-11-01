@@ -72,7 +72,7 @@ Ein Doppelklick auf eine gelegte Platte öffnet sie bildschirmfüllend über ein
 | Werkzeug | Wirkung |
 | --- | --- |
 | `Move` | Gelegtes Piece anfassen und schieben. Standardwerkzeug beim Öffnen |
-| Ein Piece (z. B. `The Bomb`) | Klick setzt das Piece auf die getroffene Zelle; es bleibt am Zeiger und lässt sich im selben Zug noch verschieben. Ein zweiter Klick setzt ein weiteres — auch über einem bereits liegenden Piece |
+| Ein Piece (z. B. `The Bomb`) | Klick setzt das Piece auf die getroffene Zelle; es bleibt am Zeiger und lässt sich im selben Zug noch verschieben. Danach springt das Werkzeug automatisch auf `Move` zurück, damit der nächste Klick nichts doppelt setzt. Ein weiteres Piece setzt du, indem du es erneut in der Leiste wählst |
 | `Remove piece` | Entfernt das oberste Piece unter dem Zeiger |
 | ⟳ / ⇅ | Dreht bzw. wendet die offene Platte; Pieces behalten dabei ihre Lage auf der Platte |
 

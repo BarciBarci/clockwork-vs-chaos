@@ -861,6 +861,14 @@
       rec.pieces.push(fresh);
       /* Keep hold of it, so one gesture can place and position. */
       zoom.grab = { piece: fresh, dx: hit[0] - fresh.x, dy: hit[1] - fresh.y };
+
+      /* The stamp is spent: hand the tool back to Move, so the next click
+         repositions pieces instead of stamping a second copy. */
+      zoom.tool = null;
+      zoom.erase = false;
+      syncZoomPieces();
+      hideZoomGhost();
+
       commitZoom();
       return;
     }
