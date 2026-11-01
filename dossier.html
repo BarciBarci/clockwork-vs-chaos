@@ -82,8 +82,41 @@
 
   .page-body {
     flex: 1;
-    padding: 16mm 18mm 8mm;
+    padding: 6mm 18mm 8mm;
   }
+
+  .page-body > h3:first-child,
+  .page-body > h2:first-child { margin-top: 0; }
+
+  .page-head {
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+    margin: 0 18mm;
+    padding: 10mm 0 2.5mm;
+    border-bottom: 1px solid var(--line-soft);
+    font-family: var(--mono);
+    font-size: 7.5pt;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .page-head img {
+    display: block;
+    width: 5.5mm;
+    height: 5.5mm;
+    border-radius: 1.2mm;
+  }
+
+  .page-head .head-brand { color: var(--ink); }
+
+  .page-head .head-section {
+    margin-left: auto;
+    color: var(--ink);
+  }
+
+  .page--cover .page-body { padding: 16mm 18mm 8mm; }
 
   .page-foot {
     display: flex;
@@ -298,14 +331,14 @@
 
   /* ---------------------------------------------------------------- prose -- */
 
-  .prose {
+  .para {
+    margin: 0 0 3.5mm;
     font-family: var(--serif);
     font-size: 11pt;
     line-height: 1.68;
   }
 
-  .prose p { margin: 0 0 3.5mm; }
-  .prose p:last-child { margin-bottom: 0; }
+  .callout .para:last-child { margin-bottom: 0; }
 
   .topic-list {
     margin: 0 0 6mm;
@@ -331,18 +364,11 @@
   .tile-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 6mm;
+    gap: 5mm;
     margin: 0;
     padding: 0;
     list-style: none;
   }
-
-  .page--tiles .page-body {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .page--tiles .tile-grid { margin: auto 0; }
 
   .tile-card {
     display: flex;
@@ -355,9 +381,7 @@
     break-inside: avoid;
   }
 
-  .tile-card .art { width: 32mm; flex: none; }
-  .tile-card .art svg { display: block; width: 100%; height: auto; }
-  .tile-card .art { aspect-ratio: 1; }
+  .tile-card .art { width: 26mm; flex: none; aspect-ratio: 1; }
 
   .tile-meta { display: flex; flex-direction: column; gap: 1.5mm; }
   .tile-meta strong { font-size: 12pt; letter-spacing: .1em; }
@@ -387,11 +411,10 @@
   }
 
   .page--setup .page-body {
-    display: flex;
-    flex-direction: column;
+    padding-top: 6mm;
   }
 
-  .figure-wrap { margin: auto 0; }
+  .figure-wrap { margin: 0; }
 
   /* --------------------------------------------------------------- notice -- */
 
@@ -431,14 +454,11 @@
     }
   }
 
-  @media screen and (max-width: 780px) {
-    .page { width: 100%; padding: 0; min-height: 0; }
-    .page-body { padding: 22px 18px 8px; }
-    .page-foot { margin: 0 18px 16px; }
-    .cover-title { font-size: 26pt; }
-    .facts { flex-wrap: wrap; gap: 6mm; }
-    .tile-grid { grid-template-columns: 1fr; }
-    .board-figure { grid-template-columns: 5mm minmax(0, 1fr); }
+  /* The sheet always stays A4 — also in a narrow browser window — so the
+     preview and the printed page measure the same and pagination holds. */
+  @media screen and (max-width: 900px) {
+    body { padding: 12px 6px 40px; }
+    .toolbar { padding-bottom: 12px; }
   }
 </style>
 </head>

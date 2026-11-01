@@ -19,16 +19,20 @@ Jede Platte ist **6 × 6 Zellen** groß und doppelseitig:
 
 | Seite | Grund | Merkmal |
 | --- | --- | --- |
-| **Front** | helles Papier | schwarze Ölfelder, farbige Felder |
-| **Back** | hellrote Ebene | dunkelgraue Gebirgsfelder, kräftige Lava, farbige Felder |
+| **Front** | **grünes Gras** mit Erdflecken, Grashalmen und Steinchen | schwarze Ölfelder, farbige Felder |
+| **Back** | **hellrote Felsfläche** mit Rissen | dunkelgraue Gebirgsfelder, kräftige Lava, farbige Felder |
+
+Beide Gründe sind als eigene Vektorgrafik gezeichnet (`js/render.js`, Funktion
+`groundTexture`): ein Farbverlauf plus deterministisch gestreute Elemente, damit
+eine Platte bei jedem Zeichnen gleich aussieht.
 
 Zelltypen:
 
 | Code | Bedeutung | Darstellung |
 | --- | --- | --- |
 | `oil` | Ölfeld | **vollflächig schwarzes Quadrat** |
-| `lava` | Lava (nur Back) | oranges Quadrat mit gelbem Kern |
-| `rock` | Gebirgsfeld (nur Back) | dunkelgraues Quadrat |
+| `lava` | Lava (nur Back) | oranges Feld mit glühendem Kern |
+| `rock` | Gebirgsfeld (nur Back) | dunkelgrauer Fels mit Facetten |
 | `orange` `red` `green` `blue` | farbiges Feld | Farbquadrat mit **Richtungspfeil** |
 | `crystal` | Kristall | Cyan-Quadrat mit Raute |
 | *(leer)* | – | Grund der Seite |
@@ -101,13 +105,17 @@ Piece am gezeichneten Feld klebt.
 Der Kompass übernimmt die Farben des Originals: Nadel nach Norden rot, Osten
 grün, Süden orange, Westen blau — dieselben vier Farben wie die Runen.
 
-Das Dossier hat diese Seiten: Titel, Karte mit Ziel, Regeln (mit **Special
-Rules** und **Other Rules / Escalations**, sofern angehakt), verwendete Tiles
-und — falls ein Bild hinterlegt ist — eine abschließende Seite **Board Setup**.
+Das Dossier hat diese Abschnitte: Titel, Karte mit Ziel, Regeln (mit
+**Special Rules** und **Other Rules / Escalations**, sofern angehakt),
+verwendete Tiles und — falls ein Bild hinterlegt ist — **Board Setup**.
 
-Jede Seite trägt ein dunkles Kopfband, eine Fußzeile mit Szenario-Titel und
-Seitenzahl. Die Karte ist mit Koordinaten (A–E, 1–5) versehen, damit sich
-Felder in den Regeln eindeutig ansprechen lassen. Gedruckt wird auf warmem
+Die Seitenumbrüche werden nicht fest vergeben: `js/print.js` legt jeden
+Absatz als eigenen Block an, misst ihn in einer A4-Kopie und verteilt die
+Blöcke so, dass keine Seite überläuft. Eine Überschrift bleibt dabei nie
+allein am Seitenfuß stehen. Dadurch trägt **jede** Seite ihre eigene Kopfzeile
+(Logo, „Clockwork vs Chaos", Szenariotitel) und Fußzeile („Scenario dossier",
+Seitenzahl `03 / 05`). Die Karte ist mit Koordinaten (A–E, 1–5) versehen, damit
+sich Felder in den Regeln eindeutig ansprechen lassen. Gedruckt wird auf warmem
 Papier mit `print-color-adjust: exact`, damit Bänder, Tabellen und
 Regel-Kästen auch als PDF farbig bleiben — im Druckdialog muss dafür
 „Hintergrundgrafiken“ aktiv sein.

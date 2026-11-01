@@ -1,6 +1,10 @@
 /*
  * Clockwork vs Chaos — dossier renderer.
- * Reads the scenario handed over by the editor and builds printable pages.
+ *
+ * Builds the pages from the scenario handed over by the editor, then packs the
+ * blocks into as many sheets as they need. Every sheet gets its own running
+ * head and footer, so page numbers stay correct without relying on CSS page
+ * counters, which Chrome does not implement outside @page margin boxes.
  */
 (function () {
   'use strict';
@@ -18,15 +22,19 @@
     });
   }
 
-  function paragraphs(text) {
+  function splitParagraphs(text) {
     return String(text || '')
       .split(/\n{2,}/)
       .map(function (block) { return block.trim(); })
-      .filter(Boolean)
-      .map(function (block) {
-        return '<p>' + esc(block).replace(/\n/g, '<br>') + '</p>';
-      })
-      .join('');
+      .filter(Boolean);
+  }
+
+  function paraHtml(block) {
+    return '<p class="para">' + esc(block).replace(/\n/g, '<br>') + '</p>';
+  }
+
+  function paragraphs(text) {
+    return splitParagraphs(text).map(paraHtml).join('');
   }
 
   function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -112,50 +120,55 @@
   }, 0);
   var compassDeg = (((scenario.compass | 0) % 4 + 4) % 4) * 90;
 
-  /* --------------------------------------------------------------- pages -- */
-
   var title = (scenario.title || 'Untitled').trim();
-  var sections = [];
 
-  sections.push({
-    kind: 'cover',
-    body:
-      '<div class="cover-logo"><img src="assets/logo.svg" alt="" width="98" height="98"></div>' +
-      '<p class="kicker">Clockwork vs Chaos · Plate Foundry</p>' +
-      '<h1 class="cover-title">' + esc(title) + '</h1>' +
-      '<p class="byline">' +
-        (scenario.author ? 'by ' + esc(scenario.author) : 'no author given') +
-      '</p>' +
-      '<dl class="facts">' +
-        '<div><dt>Tiles</dt><dd>' + plateCount + '</dd></div>' +
-        '<div><dt>Pieces</dt><dd>' + markerCount + '</dd></div>' +
-        '<div><dt>Board</dt><dd>' + BOARD + ' × ' + BOARD + '</dd></div>' +
-        '<div><dt>Cells</dt><dd>' + SW.GRID + ' × ' + SW.GRID + '</dd></div>' +
-        '<div><dt>Compass</dt><dd>' + compassDeg + '°</dd></div>' +
-      '</dl>' +
-      '<p class="cover-foot">6 × 6 plate set · scenario dossier</p>'
-  });
+  /* -------------------------------------------------------------- blocks -- */
 
-  sections.push({
-    kind: 'map',
-    body:
-      '<h2>Map</h2>' +
-      '<figure class="figure">' +
-        '<div class="board-figure">' +
-          colHead +
-          rowHead +
-          '<div class="map">' + boardHtml + '</div>' +
-        '</div>' +
-        '<figcaption class="fig-cap">' +
-          '<span>Fig. 1 — plate layout, ' + BOARD + ' × ' + BOARD + '</span>' +
-          '<span>Compass ' + compassDeg + '°</span>' +
-        '</figcaption>' +
-      '</figure>' +
-      '<h3>Objective</h3>' +
-      '<div class="prose">' +
-        (paragraphs(scenario.objective) || '<p class="muted">—</p>') +
-      '</div>'
-  });
+  var blocks = [];
+
+  function pushHeading(text, tag) {
+    tag = tag || 'h2';
+    blocks.push({
+      html: '<' + tag + '>' + esc(text) + '</' + tag + '>',
+      kind: 'heading'
+    });
+  }
+
+  function pushBlock(html, kind) {
+    blocks.push({ html: html, kind: kind || 'body' });
+  }
+
+  /* One block per paragraph, so a long text can break between sheets. */
+  function pushParagraphs(text) {
+    var parts = splitParagraphs(text);
+    if (!parts.length) {
+      pushBlock('<p class="para muted">—</p>');
+      return;
+    }
+    parts.forEach(function (part) { pushBlock(paraHtml(part)); });
+  }
+
+  pushHeading('Map');
+  pushBlock(
+    '<figure class="figure">' +
+      '<div class="board-figure">' +
+        colHead +
+        rowHead +
+        '<div class="map">' + boardHtml + '</div>' +
+      '</div>' +
+      '<figcaption class="fig-cap">' +
+        '<span>Fig. 1 — plate layout, ' + BOARD + ' × ' + BOARD + '</span>' +
+        '<span>Compass ' + compassDeg + '°</span>' +
+      '</figcaption>' +
+    '</figure>',
+    'figure'
+  );
+
+  pushHeading('Objective', 'h3');
+  pushParagraphs(scenario.objective);
+
+  pushHeading('Rules');
+  pushParagraphs(scenario.rules);
 
   var specialTopics = '';
   var specialText = '';
@@ -166,78 +179,192 @@
     specialText = paragraphs(scenario.special.text);
   }
 
+  if (specialTopics || specialText) {
+    pushHeading('Special Rules', 'h3');
+    pushBlock('<div class="callout">' +
+      (specialTopics ? '<ul class="topic-list">' + specialTopics + '</ul>' : '') +
+      specialText +
+      '</div>');
+  }
+
   var otherText = (scenario.other && scenario.other.on)
     ? paragraphs(scenario.other.text)
     : '';
 
-  /* The three text blocks share one sheet, so a short scenario does not end up
-     as three nearly blank pages. Long text simply flows onto the next sheet. */
-  var rulesBody =
-    '<h2>Rules</h2>' +
-    '<div class="prose">' +
-      (paragraphs(scenario.rules) || '<p class="muted">—</p>') +
-    '</div>';
-
-  if (specialTopics || specialText) {
-    rulesBody +=
-      '<h3>Special Rules</h3>' +
-      '<div class="callout">' +
-        (specialTopics ? '<ul class="topic-list">' + specialTopics + '</ul>' : '') +
-        (specialText ? '<div class="prose">' + specialText + '</div>' : '') +
-      '</div>';
-  }
-
   if (otherText) {
-    rulesBody +=
-      '<h3>Other Rules / Escalations</h3>' +
-      '<div class="prose">' + otherText + '</div>';
+    pushHeading('Other Rules / Escalations', 'h3');
+    pushParagraphs(scenario.other.text);
   }
-
-  sections.push({ kind: 'rules', body: rulesBody });
 
   if (legend.length) {
-    sections.push({
-      kind: 'tiles',
-      body:
-        '<h2>Tiles used</h2>' +
-        '<ul class="tile-grid">' + legendHtml + '</ul>'
-    });
+    pushHeading('Tiles used');
+    pushBlock('<ul class="tile-grid">' + legendHtml + '</ul>', 'grid');
   }
 
-  if (typeof scenario.image === 'string' && scenario.image.indexOf('data:image/') === 0) {
-    sections.push({
-      kind: 'setup',
-      body:
-        '<h2>Board Setup</h2>' +
-        '<div class="figure-wrap">' +
-          '<div class="setup-frame">' +
-            '<img src="' + scenario.image + '" alt="Board setup">' +
-          '</div>' +
-          '<p class="fig-cap"><span>Fig. 2 — table layout</span><span>Reference photo</span></p>' +
-        '</div>'
-    });
+  var hasImage = typeof scenario.image === 'string' && scenario.image.indexOf('data:image/') === 0;
+
+  if (hasImage) {
+    pushHeading('Board Setup');
+    pushBlock('<div class="figure-wrap">' +
+      '<div class="setup-frame"><img src="' + scenario.image + '" alt="Board setup"></div>' +
+      '<p class="fig-cap"><span>Fig. 2 — table layout</span><span>Reference photo</span></p>' +
+      '</div>', 'figure');
   }
 
-  var total = sections.length;
+  /* --------------------------------------------------------------- cover -- */
 
-  root.innerHTML = sections.map(function (section, i) {
-    return '<section class="page page--' + section.kind + '">' +
-      (section.decor || '') +
-      '<div class="page-body">' + section.body + '</div>' +
+  var coverHtml =
+    '<section class="page page--cover">' +
+      '<div class="page-body">' +
+        '<div class="cover-logo"><img src="assets/logo.svg" alt="" width="98" height="98"></div>' +
+        '<p class="kicker">Clockwork vs Chaos · Plate Foundry</p>' +
+        '<h1 class="cover-title">' + esc(title) + '</h1>' +
+        '<p class="byline">' +
+          (scenario.author ? 'by ' + esc(scenario.author) : 'no author given') +
+        '</p>' +
+        '<dl class="facts">' +
+          '<div><dt>Tiles</dt><dd>' + plateCount + '</dd></div>' +
+          '<div><dt>Pieces</dt><dd>' + markerCount + '</dd></div>' +
+          '<div><dt>Board</dt><dd>' + BOARD + ' × ' + BOARD + '</dd></div>' +
+          '<div><dt>Cells</dt><dd>' + SW.GRID + ' × ' + SW.GRID + '</dd></div>' +
+          '<div><dt>Compass</dt><dd>' + compassDeg + '°</dd></div>' +
+        '</dl>' +
+        '<p class="cover-foot">6 × 6 plate set · scenario dossier</p>' +
+      '</div>' +
       '<footer class="page-foot">' +
-        '<span>' + esc(title) + '</span>' +
-        '<span class="foot-num">' + pad(i + 1) + ' / ' + pad(total) + '</span>' +
+        '<span>Scenario dossier</span>' +
+        '<span class="foot-num">01 / __</span>' +
       '</footer>' +
+    '</section>';
+
+  /* ----------------------------------------------------------- paginator -- */
+
+  function headHtml() {
+    return '<header class="page-head">' +
+      '<img src="assets/logo.svg" alt="">' +
+      '<span class="head-brand">Clockwork vs Chaos</span>' +
+      '<span class="head-section">' + esc(title) + '</span>' +
+    '</header>';
+  }
+
+  function footHtml(page, total) {
+    return '<footer class="page-foot">' +
+      '<span>Scenario dossier</span>' +
+      '<span class="foot-num">' + pad(page) + ' / ' + pad(total) + '</span>' +
+    '</footer>';
+  }
+
+  /* Lay the blocks out once at the exact content width and remember how much
+     room every block takes, including the gap to the next one. */
+  function measureBlocks() {
+    var probe = document.createElement('section');
+    probe.className = 'page page--content';
+    probe.style.cssText = 'position:absolute;left:-6000px;top:0;visibility:hidden;';
+    probe.innerHTML = headHtml() +
+      '<div class="page-body"><div class="measure"></div></div>' +
+      footHtml(1, 1);
+    root.appendChild(probe);
+
+    var body = probe.querySelector('.page-body');
+    var box = probe.querySelector('.measure');
+    var cs = getComputedStyle(body);
+    var usable = body.clientHeight -
+      parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+
+    blocks.forEach(function (block) {
+      var tmp = document.createElement('div');
+      tmp.innerHTML = block.html;
+      block.el = tmp.firstElementChild;
+      box.appendChild(block.el);
+    });
+
+    var sentinel = document.createElement('div');
+    sentinel.style.cssText = 'height:0;margin:0;padding:0;';
+    box.appendChild(sentinel);
+
+    var tops = blocks.map(function (block) {
+      return block.el.getBoundingClientRect().top;
+    });
+    var end = sentinel.getBoundingClientRect().top;
+
+    blocks.forEach(function (block, i) {
+      block.height = (i + 1 < blocks.length ? tops[i + 1] : end) - tops[i];
+    });
+
+    probe.remove();
+    return usable;
+  }
+
+  function paginate(usable) {
+    var limit = usable - 2;      // sub-pixel slack
+    var pages = [];
+    var page = [];
+    var used = 0;
+
+    blocks.forEach(function (block) {
+      if (page.length && used + block.height > limit) {
+        pages.push(page);
+        page = [];
+        used = 0;
+      }
+      page.push(block);
+      used += block.height;
+    });
+
+    if (page.length) pages.push(page);
+
+    /* Never leave a heading alone at the foot of a sheet. */
+    for (var i = 0; i < pages.length - 1; i++) {
+      while (pages[i].length > 1 && pages[i][pages[i].length - 1].kind === 'heading') {
+        pages[i + 1].unshift(pages[i].pop());
+      }
+    }
+
+    return pages;
+  }
+
+  function render() {
+    var usable = measureBlocks();
+    var pages = paginate(usable);
+    var total = pages.length + 1;
+
+    var contentHtml = pages.map(function (pageBlocks, i) {
+      return '<section class="page page--content">' +
+        headHtml() +
+        '<div class="page-body">' +
+          pageBlocks.map(function (block) { return block.html; }).join('') +
+        '</div>' +
+        footHtml(i + 2, total) +
       '</section>';
-  }).join('');
+    }).join('');
 
-  document.getElementById('btn-print').addEventListener('click', function () {
-    window.print();
-  });
+    root.innerHTML = coverHtml.replace('01 / __', '01 / ' + pad(total)) + contentHtml;
+  }
 
-  if (new URLSearchParams(location.search).get('noprint') !== '1') {
-    window.addEventListener('load', function () {
-      setTimeout(function () { window.print(); }, 350);
+  /* ------------------------------------------------------------- start -- */
+
+  function preload(src) {
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.onload = img.onerror = function () { resolve(); };
+      img.src = src;
     });
   }
+
+  var fonts = (document.fonts && document.fonts.ready)
+    ? document.fonts.ready
+    : Promise.resolve();
+
+  Promise.all([fonts, hasImage ? preload(scenario.image) : Promise.resolve()])
+    .then(function () {
+      render();
+
+      document.getElementById('btn-print').addEventListener('click', function () {
+        window.print();
+      });
+
+      if (new URLSearchParams(location.search).get('noprint') !== '1') {
+        setTimeout(function () { window.print(); }, 250);
+      }
+    });
 })();

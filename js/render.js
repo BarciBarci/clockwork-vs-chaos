@@ -1,6 +1,6 @@
 /*
  * Clockwork vs Chaos — flat SVG rendering of plates and pieces.
- * Pure geometry: no textures, no bitmaps, no scanned art.
+ * Original vector art: no textures from the game, no bitmaps, no scans.
  *
  * Piece labels and footprints follow the original S.C.R.A.P. asset set.
  */
@@ -17,10 +17,26 @@
   var STEEL = '#b9c6d2';
   var DARK = '#1c2733';
 
-  var FACE_BASE = { front: '#f4f1ea', back: '#d18d7a' };
-  var FACE_EDGE = {
-    front: 'rgba(16,24,32,0.55)',
-    back: 'rgba(255,236,224,0.55)'
+  /* Front is meadow grass, back is dusty red rock — the two faces of the plate. */
+  var FACE = {
+    front: {
+      top: '#83a85d',
+      bottom: '#6a8c47',
+      edge: 'rgba(24, 46, 20, .55)',
+      tuft: '#4e7033',
+      tuftLight: '#a9c67c',
+      soil: '#8f6b3f',
+      stone: '#8c9591'
+    },
+    back: {
+      top: '#d99b87',
+      bottom: '#c67f6d',
+      edge: 'rgba(255, 236, 224, .55)',
+      tuft: '#a8624f',
+      tuftLight: '#e8b6a2',
+      soil: '#8d4a3c',
+      stone: '#7c5a50'
+    }
   };
 
   /* ------------------------------------------------------- piece glyphs -- */
@@ -105,6 +121,99 @@
       ' stroke="' + INK + '" stroke-width="1.2"/>' +
       '<path d="M-4.8 -2.2L-2.6 2.2M-1.8 -2.2L0.4 2.2M1 -2.2L3.2 2.2M3.8 -2.2L6 2.2"' +
       ' stroke="' + INK + '" stroke-width="1.2"/>';
+  }
+
+  /* ------------------------------------------------------------- ground -- */
+
+  /* Deterministic pseudo random: a plate looks the same on every render. */
+  function seeded(seed) {
+    var s = (seed | 0) || 1;
+    return function () {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      return s / 4294967296;
+    };
+  }
+
+  function hash(text) {
+    var h = 2166136261;
+    for (var i = 0; i < text.length; i++) {
+      h ^= text.charCodeAt(i);
+      h = (h * 16777619) >>> 0;
+    }
+    return h >>> 0;
+  }
+
+  function blob(cx, cy, radius, rnd, fill, opacity) {
+    var pts = [];
+    var steps = 9;
+    for (var i = 0; i < steps; i++) {
+      var a = (i / steps) * Math.PI * 2;
+      var rr = radius * (0.7 + rnd() * 0.45);
+      pts.push((cx + Math.cos(a) * rr).toFixed(1) + ' ' + (cy + Math.sin(a) * rr).toFixed(1));
+    }
+    return '<polygon points="' + pts.join(' ') + '" fill="' + fill +
+      '" fill-opacity="' + opacity + '"/>';
+  }
+
+  function pebble(cx, cy, size, fill) {
+    return '<path d="M' + (cx - size) + ' ' + (cy + size * 0.55) +
+      'L' + (cx - size * 0.15) + ' ' + (cy - size) +
+      'L' + (cx + size) + ' ' + (cy + size * 0.45) +
+      'Z" fill="' + fill + '" fill-opacity="0.55"/>' +
+      '<path d="M' + (cx - size * 0.15) + ' ' + (cy - size) +
+      'L' + (cx + size) + ' ' + (cy + size * 0.45) +
+      '" stroke="#ffffff" stroke-opacity="0.28" stroke-width="0.8"/>';
+  }
+
+  /* Terrain of one face, painted under the fields. */
+  function groundTexture(face, seed) {
+    var pal = FACE[face];
+    var rnd = seeded(seed);
+    var out = [];
+    var i;
+
+    if (face === 'front') {
+      for (i = 0; i < 3; i++) {
+        out.push(blob(8 + rnd() * 104, 8 + rnd() * 104, 7 + rnd() * 9, rnd, pal.soil, 0.15));
+      }
+
+      for (i = 0; i < 30; i++) {
+        var x = rnd() * 120;
+        var y = 4 + rnd() * 112;
+        var len = 2.4 + rnd() * 2.2;
+        var lean = (rnd() - 0.5) * 1.4;
+        out.push('<path d="M' + x.toFixed(1) + ' ' + y.toFixed(1) +
+          'l' + lean.toFixed(1) + ' ' + (-len).toFixed(1) +
+          'M' + x.toFixed(1) + ' ' + y.toFixed(1) +
+          'l' + (lean + 1.6).toFixed(1) + ' ' + (-len * 0.65).toFixed(1) + '"' +
+          ' fill="none" stroke="' + (i % 3 ? pal.tuft : pal.tuftLight) +
+          '" stroke-width="0.85" stroke-linecap="round" stroke-opacity="0.5"/>');
+      }
+
+      for (i = 0; i < 3; i++) {
+        out.push(pebble(10 + rnd() * 100, 10 + rnd() * 100, 1.6 + rnd() * 1.5, pal.stone));
+      }
+    } else {
+      for (i = 0; i < 3; i++) {
+        out.push(blob(8 + rnd() * 104, 8 + rnd() * 104, 9 + rnd() * 10, rnd, pal.soil, 0.12));
+      }
+
+      for (i = 0; i < 6; i++) {
+        var cx = rnd() * 120;
+        var cy = rnd() * 120;
+        out.push('<path d="M' + cx.toFixed(1) + ' ' + cy.toFixed(1) +
+          'l' + (4 + rnd() * 8).toFixed(1) + ' ' + (rnd() * 6 - 3).toFixed(1) +
+          'l' + (4 + rnd() * 6).toFixed(1) + ' ' + (rnd() * 8 - 4).toFixed(1) + '"' +
+          ' fill="none" stroke="' + pal.soil +
+          '" stroke-width="0.9" stroke-opacity="0.28" stroke-linecap="round"/>');
+      }
+
+      for (i = 0; i < 3; i++) {
+        out.push(pebble(10 + rnd() * 100, 10 + rnd() * 100, 1.4 + rnd() * 1.2, pal.stone));
+      }
+    }
+
+    return out.join('');
   }
 
   /* Wall panels follow the occupancy mask of the original asset matrix:
@@ -241,17 +350,33 @@
     }
 
     if (cell === 'lava') {
-      return cellRect(x, y, '#ff5a0a') +
-        '<rect x="' + (cx - 4.5) + '" y="' + (cy - 4.5) + '" width="9" height="9"' +
-        ' rx="2.2" fill="#ffd44d"/>';
+      var lx = x * CELL;
+      var ly = y * CELL;
+      return cellRect(x, y, '#e8480a') +
+        '<rect x="' + (lx + 3) + '" y="' + (ly + 3) + '" width="' + (CELL - 6) + '"' +
+        ' height="' + (CELL - 6) + '" rx="3.4" fill="#ff6a12"/>' +
+        '<rect x="' + (cx - 4.2) + '" y="' + (cy - 4.2) + '" width="8.4" height="8.4"' +
+        ' rx="2.2" fill="#ffc03a"/>' +
+        '<rect x="' + (cx - 2.2) + '" y="' + (cy - 2.2) + '" width="4.4" height="4.4"' +
+        ' rx="1.2" fill="#ffe89a"/>' +
+        '<circle cx="' + (lx + 5.5) + '" cy="' + (ly + 5.5) + '" r="1.1" fill="#7c2405" fill-opacity="0.55"/>' +
+        '<circle cx="' + (lx + CELL - 5) + '" cy="' + (ly + CELL - 6) + '" r="0.9" fill="#7c2405" fill-opacity="0.5"/>';
     }
 
     if (cell === 'rock') {
-      return cellRect(x, y, '#4b5560') +
-        '<path d="M' + (x * CELL + 3) + ' ' + (y * CELL + CELL - 4) +
-        'L' + (x * CELL + CELL / 2) + ' ' + (y * CELL + 4) +
-        'L' + (x * CELL + CELL - 3) + ' ' + (y * CELL + CELL - 4) + 'Z"' +
-        ' fill="#5c6875"/>';
+      var rx = x * CELL;
+      var ry = y * CELL;
+      var base = ry + CELL - 4;
+      return cellRect(x, y, '#454f59') +
+        '<path d="M' + (rx + 3.5) + ' ' + base +
+          'L' + (rx + CELL * 0.42) + ' ' + (ry + 4.5) +
+          'L' + (rx + CELL - 3) + ' ' + base + 'Z" fill="#5b6874"/>' +
+        '<path d="M' + (rx + CELL * 0.42) + ' ' + (ry + 4.5) +
+          'L' + (rx + CELL * 0.62) + ' ' + (ry + 9) +
+          'L' + (rx + CELL * 0.30) + ' ' + (ry + 10) + 'Z" fill="#7e8c99"/>' +
+        '<path d="M' + (rx + 4) + ' ' + (ry + CELL - 6.5) +
+          'L' + (rx + CELL * 0.3) + ' ' + (ry + CELL * 0.55) + '"' +
+          ' stroke="#2f373f" stroke-width="1.1" stroke-opacity="0.7" fill="none"/>';
     }
 
     if (cell === 'oil') return cellRect(x, y, '#000000');
@@ -274,7 +399,10 @@
     var rot = ((options.rot | 0) % 4 + 4) % 4;
     var grid = tile[face];
     var id = 'sw' + ++uid;
+    var pal = FACE[face];
     var body = [];
+
+    body.push(groundTexture(face, hash(tile.id + face)));
 
     for (var y = 0; y < GRID; y++) {
       for (var x = 0; x < GRID; x++) {
@@ -289,15 +417,21 @@
 
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img"' +
       ' aria-label="Tile ' + tile.id + ' (' + face + ')">' +
-      '<clipPath id="' + id + '">' +
-        '<rect x="0.8" y="0.8" width="118.4" height="118.4" rx="5"/>' +
-      '</clipPath>' +
-      '<rect x="0.8" y="0.8" width="118.4" height="118.4" rx="5" fill="' + FACE_BASE[face] + '"/>' +
+      '<defs>' +
+        '<linearGradient id="' + id + 'g" x1="0" y1="0" x2="0.35" y2="1">' +
+          '<stop offset="0" stop-color="' + pal.top + '"/>' +
+          '<stop offset="1" stop-color="' + pal.bottom + '"/>' +
+        '</linearGradient>' +
+        '<clipPath id="' + id + '">' +
+          '<rect x="0.8" y="0.8" width="118.4" height="118.4" rx="5"/>' +
+        '</clipPath>' +
+      '</defs>' +
+      '<rect x="0.8" y="0.8" width="118.4" height="118.4" rx="5" fill="url(#' + id + 'g)"/>' +
       '<g clip-path="url(#' + id + ')">' +
         '<g transform="rotate(' + rot * 90 + ' 60 60)">' + body.join('') + '</g>' +
       '</g>' +
       '<rect x="0.8" y="0.8" width="118.4" height="118.4" rx="5" fill="none"' +
-        ' stroke="' + FACE_EDGE[face] + '" stroke-width="1.6"/>' +
+        ' stroke="' + pal.edge + '" stroke-width="1.6"/>' +
       '</svg>';
   }
 
