@@ -74,12 +74,35 @@
     <label>Author
       <input id="f-author" type="text" maxlength="80" placeholder="your name">
     </label>
-    <label>Objective
+    <label>Mission Objective
       <textarea id="f-objective" rows="3" placeholder="What must the mechs achieve?"></textarea>
     </label>
-    <label>Rules
-      <textarea id="f-rules" rows="7" placeholder="Oil, pieces, Back side, special rules …"></textarea>
+    <label>Mission Rules
+      <textarea id="f-rules" rows="5" placeholder="Movement, spawn, oil, pieces …"></textarea>
     </label>
+
+    <label class="check">
+      <input id="f-special-on" type="checkbox"> Special Rules
+    </label>
+    <div class="sub" id="special-box" hidden>
+      <textarea id="f-special" rows="4" placeholder="Special rules …"></textarea>
+      <div class="chips" id="special-topics"></div>
+    </div>
+
+    <label class="check">
+      <input id="f-other-on" type="checkbox"> Other Rules / Escalations
+    </label>
+    <div class="sub" id="other-box" hidden>
+      <textarea id="f-other" rows="4" placeholder="Other rules …"></textarea>
+    </div>
+
+    <h3>Picture</h3>
+    <div class="picture">
+      <input id="f-image" type="file" accept="image/*" hidden>
+      <button id="btn-image" class="btn-inline" type="button">Choose image</button>
+      <button id="btn-image-clear" class="btn-inline" type="button" hidden>Remove</button>
+      <img id="image-preview" alt="" hidden>
+    </div>
 
     <div class="legend">
       <h3>Legend</h3>

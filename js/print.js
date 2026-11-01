@@ -97,6 +97,37 @@
     return sum + (rec ? rec.pieces.length : 0);
   }, 0);
 
+  var specialPage = '';
+  if (scenario.special && scenario.special.on) {
+    var topics = (scenario.special.topics || []).map(function (t) {
+      return '<li>' + esc(t) + '</li>';
+    }).join('');
+    var specialText = paragraphs(scenario.special.text);
+    if (topics || specialText) {
+      specialPage = '<section class="page">' +
+        '<h2>Special Rules</h2>' +
+        (topics ? '<ul class="topic-list">' + topics + '</ul>' : '') +
+        '<div class="prose">' + specialText + '</div>' +
+        '</section>';
+    }
+  }
+
+  var otherPage = '';
+  if (scenario.other && scenario.other.on && (scenario.other.text || '').trim()) {
+    otherPage = '<section class="page">' +
+      '<h2>Other Rules / Escalations</h2>' +
+      '<div class="prose">' + paragraphs(scenario.other.text) + '</div>' +
+      '</section>';
+  }
+
+  var picturePage = '';
+  if (typeof scenario.image === 'string' && scenario.image.indexOf('data:image/') === 0) {
+    picturePage = '<section class="page">' +
+      '<h2>Board Setup</h2>' +
+      '<img class="setup" src="' + scenario.image + '" alt="Board setup">' +
+      '</section>';
+  }
+
   root.innerHTML =
     '<section class="page cover">' +
       '<div class="cover-mark"><img src="assets/logo.svg" alt="" width="72" height="72"></div>' +
@@ -125,12 +156,17 @@
       '<div class="prose">' + (paragraphs(scenario.rules) || '<p class="muted">—</p>') + '</div>' +
     '</section>' +
 
+    specialPage +
+    otherPage +
+
     (legend.length
       ? '<section class="page">' +
           '<h2>Tiles used</h2>' +
           '<ul class="legend-list">' + legendHtml + '</ul>' +
         '</section>'
-      : '');
+      : '') +
+
+    picturePage;
 
   document.getElementById('btn-print').addEventListener('click', function () {
     window.print();

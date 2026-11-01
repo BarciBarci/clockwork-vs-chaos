@@ -56,12 +56,24 @@ Vektorgeometrie, kein Bitmap, keine Textur, keine Schrift.
 | Zielzelle sehen | Beim Überfahren zeigt eine gestrichelte Markierung die Zelle, in der Tile bzw. Piece landen |
 | Piece löschen | `Delete piece` wählen, auf das Piece klicken |
 | Kompass drehen | auf den Kompass unter dem Raster klicken (90°-Schritte) |
+| Special Rules | Kästchen `Special Rules` anhaken, Text schreiben, optional Themenchips anklicken |
+| Other Rules | Kästchen `Other Rules / Escalations` anhaken und Text schreiben |
+| Bild einfügen | `Choose image` — wird auf 1600 px verkleinert, als JPEG im Szenario gespeichert |
 | Szenario sichern | `Save JSON` |
 | Dossier | `Print dossier` → Druckdialog → Als PDF speichern |
 
 Pieces werden in der Zelle platziert, auf die der Zeiger zeigt. Bei gedrehtem
 Tile rechnet der Editor die Klickposition in den Plattenraum zurück, damit das
 Piece am gezeichneten Feld klebt.
+
+Der Kompass übernimmt die Farben des Originals: Nadel nach Norden rot, Osten
+grün, Süden orange, Westen blau — dieselben vier Farben wie die Runen.
+
+Das Dossier hat diese Seiten: Titel, Karte mit Ziel, Regeln, **Special Rules**
+(nur wenn angehakt, mit den Themen Bomb / Boss / Flame Wall-School / Shards-
+Tokens / Hazards), **Other Rules / Escalations** (nur wenn angehakt), verwendete
+Tiles und — falls ein Bild hinterlegt ist — eine abschließende Seite
+**Board Setup**.
 
 Die **Oberfläche ist englisch** (wie das Original-Werkzeug); diese
 Dokumentation bleibt deutsch.
@@ -109,6 +121,9 @@ Löschen genügt ein Klick auf irgendeine belegte Zelle.
   "author": "…",
   "objective": "…",
   "rules": "…",
+  "special": { "on": true, "text": "…", "topics": ["Bomb", "Boss"] },
+  "other": { "on": false, "text": "" },
+  "image": "data:image/jpeg;base64,…",
   "compass": 1,
   "board": [
     { "tileId": "T3", "rot": 1, "face": "back",

@@ -9,15 +9,31 @@
   var BOARD = 5;
   var STORAGE_KEY = 'slickworks:scenario';
 
+  var SPECIAL_TOPICS = [
+    'Bomb',
+    'Boss',
+    'Flame Wall/School',
+    'Shards/Tokens',
+    'Hazards (Spike Walls, Lava Tiles, Rune Gates)'
+  ];
+
   var state = {
     board: new Array(BOARD * BOARD).fill(null),
     mode: 'tile',          // 'tile' | 'piece' | 'erase'
     tileId: SW.TILES[0].id,
-    pieceType: 'rig',
+    pieceType: 'minion-3',
     face: 'front',
     rot: 0,
     compass: 0,
-    meta: { title: '', author: '', objective: '', rules: '' }
+    meta: {
+      title: '',
+      author: '',
+      objective: '',
+      rules: '',
+      special: { on: false, text: '', topics: [] },
+      other: { on: false, text: '' },
+      image: ''
+    }
   };
 
   var boardEl = document.getElementById('board');
@@ -451,24 +467,21 @@
 
   /* -------------------------------------------------------------- compass -- */
 
+  /* Stone rose with four coloured needles, as in the original tool:
+     north red, east green, south orange, west blue. */
   function compassSVG(step) {
     var deg = (step % 4) * 90;
     return '<svg viewBox="0 0 80 80" aria-hidden="true">' +
-      '<circle cx="40" cy="40" r="35" fill="#ffffff"' +
-      ' stroke="rgba(16,24,32,0.4)" stroke-width="1.6"/>' +
-      '<text x="40" y="16" text-anchor="middle" font-size="10" font-weight="700"' +
-      ' fill="#101820" font-family="system-ui,sans-serif">N</text>' +
-      '<text x="40" y="71" text-anchor="middle" font-size="10"' +
-      ' fill="#8a9aa8" font-family="system-ui,sans-serif">S</text>' +
-      '<text x="11" y="43.5" text-anchor="middle" font-size="10"' +
-      ' fill="#8a9aa8" font-family="system-ui,sans-serif">W</text>' +
-      '<text x="69" y="43.5" text-anchor="middle" font-size="10"' +
-      ' fill="#8a9aa8" font-family="system-ui,sans-serif">E</text>' +
-      '<g transform="rotate(' + deg + ' 40 40)">' +
-        '<polygon points="40,14 46.5,41 40,37 33.5,41" fill="#c0392b"/>' +
-        '<polygon points="40,66 46.5,41 40,45 33.5,41" fill="#b8c4cf"/>' +
+      '<circle cx="40" cy="40" r="34" fill="#828990" stroke="#242830" stroke-width="2"/>' +
+      '<circle cx="40" cy="40" r="25" fill="#9ba2aa" stroke="#4d535b" stroke-width="1.2"/>' +
+      '<g transform="rotate(' + deg + ' 40 40)" stroke="#242830" stroke-width="0.9"' +
+      ' stroke-linejoin="round">' +
+        '<polygon points="40,8 46,35 40,31.5 34,35" fill="#cf2b2b"/>' +
+        '<polygon points="72,40 45,46 48.5,40 45,34" fill="#2fae4a"/>' +
+        '<polygon points="40,72 46,45 40,48.5 34,45" fill="#e8961e"/>' +
+        '<polygon points="8,40 35,46 31.5,40 35,34" fill="#2f6fd0"/>' +
       '</g>' +
-      '<circle cx="40" cy="40" r="3" fill="#101820"/>' +
+      '<circle cx="40" cy="40" r="4.2" fill="#2b2f36" stroke="#dfe4ea" stroke-width="1"/>' +
       '</svg>';
   }
 
@@ -536,15 +549,144 @@
     });
   });
 
+  /* -------------------------------------------------- special / other -- */
+
+  var specialOn = document.getElementById('f-special-on');
+  var specialBox = document.getElementById('special-box');
+  var specialText = document.getElementById('f-special');
+  var otherOn = document.getElementById('f-other-on');
+  var otherBox = document.getElementById('other-box');
+  var otherText = document.getElementById('f-other');
+  var topicsEl = document.getElementById('special-topics');
+
+  SPECIAL_TOPICS.forEach(function (topic) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip';
+    chip.dataset.topic = topic;
+    chip.textContent = topic.split(' (')[0];
+    chip.title = topic;
+    chip.addEventListener('click', function () {
+      var list = state.meta.special.topics;
+      var at = list.indexOf(topic);
+      if (at >= 0) list.splice(at, 1);
+      else list.push(topic);
+      syncTopics();
+    });
+    topicsEl.appendChild(chip);
+  });
+
+  function syncTopics() {
+    Array.prototype.forEach.call(topicsEl.children, function (chip) {
+      chip.classList.toggle('is-on', state.meta.special.topics.indexOf(chip.dataset.topic) >= 0);
+    });
+  }
+
+  specialOn.addEventListener('change', function () {
+    state.meta.special.on = specialOn.checked;
+    specialBox.hidden = !specialOn.checked;
+  });
+
+  specialText.addEventListener('input', function () {
+    state.meta.special.text = specialText.value;
+  });
+
+  otherOn.addEventListener('change', function () {
+    state.meta.other.on = otherOn.checked;
+    otherBox.hidden = !otherOn.checked;
+  });
+
+  otherText.addEventListener('input', function () {
+    state.meta.other.text = otherText.value;
+  });
+
+  /* ------------------------------------------------------------ picture -- */
+
+  var imageInput = document.getElementById('f-image');
+  var imageBtn = document.getElementById('btn-image');
+  var imageClear = document.getElementById('btn-image-clear');
+  var imagePreview = document.getElementById('image-preview');
+
+  imageBtn.addEventListener('click', function () { imageInput.click(); });
+
+  imageInput.addEventListener('change', function () {
+    var file = imageInput.files && imageInput.files[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var scale = Math.min(1, 1600 / Math.max(img.width, img.height));
+        var w = Math.max(1, Math.round(img.width * scale));
+        var h = Math.max(1, Math.round(img.height * scale));
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        state.meta.image = canvas.toDataURL('image/jpeg', 0.82);
+        syncImage();
+        toast('Picture added.');
+      };
+      img.onerror = function () { toast('That file is not an image.'); };
+      img.src = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+    imageInput.value = '';
+  });
+
+  imageClear.addEventListener('click', function () {
+    state.meta.image = '';
+    syncImage();
+  });
+
+  function syncImage() {
+    if (state.meta.image) {
+      imagePreview.src = state.meta.image;
+      imagePreview.hidden = false;
+      imageClear.hidden = false;
+      imageBtn.textContent = 'Change image';
+    } else {
+      imagePreview.removeAttribute('src');
+      imagePreview.hidden = true;
+      imageClear.hidden = true;
+      imageBtn.textContent = 'Choose image';
+    }
+  }
+
+  function syncMetaUI() {
+    Object.keys(fields).forEach(function (name) {
+      fields[name].value = state.meta[name];
+    });
+    specialOn.checked = state.meta.special.on;
+    specialBox.hidden = !state.meta.special.on;
+    specialText.value = state.meta.special.text;
+    otherOn.checked = state.meta.other.on;
+    otherBox.hidden = !state.meta.other.on;
+    otherText.value = state.meta.other.text;
+    syncTopics();
+    syncImage();
+  }
+
   function exportScenario() {
     return {
       format: 'slickworks-scenario',
-      version: 2,
+      version: 3,
       generator: 'slickworks/plate-foundry',
       title: state.meta.title.trim(),
       author: state.meta.author.trim(),
       objective: state.meta.objective.trim(),
       rules: state.meta.rules.trim(),
+      special: {
+        on: state.meta.special.on,
+        text: state.meta.special.text.trim(),
+        topics: state.meta.special.topics.slice()
+      },
+      other: {
+        on: state.meta.other.on,
+        text: state.meta.other.text.trim()
+      },
+      image: state.meta.image || '',
       compass: state.compass,
       board: state.board.map(function (rec) {
         if (!rec) return null;
@@ -593,12 +735,25 @@
     state.meta.author = data.author || '';
     state.meta.objective = data.objective || '';
     state.meta.rules = data.rules || '';
+
+    var special = data.special || {};
+    state.meta.special = {
+      on: !!special.on,
+      text: special.text || '',
+      topics: Array.isArray(special.topics) ? special.topics.filter(function (t) {
+        return SPECIAL_TOPICS.indexOf(t) >= 0;
+      }) : []
+    };
+
+    var other = data.other || {};
+    state.meta.other = { on: !!other.on, text: other.text || '' };
+
+    state.meta.image = (typeof data.image === 'string' && data.image.indexOf('data:image/') === 0)
+      ? data.image : '';
+
     state.compass = ((data.compass | 0) % 4 + 4) % 4;
     renderCompass();
-
-    Object.keys(fields).forEach(function (name) {
-      fields[name].value = state.meta[name];
-    });
+    syncMetaUI();
 
     renderBoard();
   }
@@ -608,10 +763,16 @@
   document.getElementById('btn-new').addEventListener('click', function () {
     if (!confirm('Discard the current scenario?')) return;
     state.board = new Array(BOARD * BOARD).fill(null);
-    state.meta = { title: '', author: '', objective: '', rules: '' };
-    Object.keys(fields).forEach(function (name) {
-      fields[name].value = '';
-    });
+    state.meta = {
+      title: '',
+      author: '',
+      objective: '',
+      rules: '',
+      special: { on: false, text: '', topics: [] },
+      other: { on: false, text: '' },
+      image: ''
+    };
+    syncMetaUI();
     renderBoard();
   });
 
@@ -670,6 +831,7 @@
   createGhost();
   syncSegments();
   syncPalette();
+  syncMetaUI();
   renderCompass();
   renderBoard();
 })();
