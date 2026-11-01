@@ -13,7 +13,7 @@
 
   var FACE_BASE = {
     front: '#f4f1ea',
-    back: '#3a2724'
+    back: '#6e3327'
   };
 
   var FACE_EDGE = {
@@ -39,10 +39,78 @@
         '</g>';
     }
 
-    if (type === 'drone') {
+    if (type === 'minion-a') {
       return '<g transform="' + t + '">' +
         '<circle r="4.6" fill="' + pale + '" stroke="' + ink + '" stroke-width="1.4"/>' +
         '<circle r="1.5" fill="' + ink + '"/>' +
+        '</g>';
+    }
+
+    if (type === 'minion-b') {
+      return '<g transform="' + t + '">' +
+        '<rect x="-4.2" y="-4.2" width="8.4" height="8.4" transform="rotate(45)"' +
+        ' fill="' + pale + '" stroke="' + ink + '" stroke-width="1.4"/>' +
+        '</g>';
+    }
+
+    if (type === 'minion-c') {
+      return '<g transform="' + t + '">' +
+        '<rect x="-4.5" y="-4.5" width="9" height="9" rx="1.6" fill="' + pale + '"' +
+        ' stroke="' + ink + '" stroke-width="1.4"/>' +
+        '<path d="M-3 1.2L0 -2.6L3 1.2" fill="none" stroke="' + ink + '"' +
+        ' stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</g>';
+    }
+
+    if (type === 'bomb') {
+      var spikes = '';
+      for (var i = 0; i < 8; i++) {
+        var a = i * Math.PI / 4;
+        var x1 = Math.cos(a) * 3.6;
+        var y1 = Math.sin(a) * 3.6;
+        var x2 = Math.cos(a) * 6;
+        var y2 = Math.sin(a) * 6;
+        spikes += '<path d="M' + x1.toFixed(2) + ' ' + y1.toFixed(2) + 'L' +
+          x2.toFixed(2) + ' ' + y2.toFixed(2) + '" stroke="' + ink +
+          '" stroke-width="1.6" stroke-linecap="round"/>';
+      }
+      return '<g transform="' + t + '">' + spikes +
+        '<circle r="4" fill="' + ink + '"/>' +
+        '<circle r="1.5" fill="' + pale + '"/>' +
+        '</g>';
+    }
+
+    if (type === 'lava') {
+      return '<g transform="' + t + '">' +
+        '<rect x="-5.5" y="-5.5" width="11" height="11" rx="1.6" fill="#ff7a2e"' +
+        ' stroke="' + ink + '" stroke-width="1.4"/>' +
+        '<rect x="-2.6" y="-2.6" width="5.2" height="5.2" rx="1" fill="#ffd166"/>' +
+        '</g>';
+    }
+
+    if (type === 'barricade') {
+      return '<g transform="' + t + '">' +
+        '<rect x="-3" y="-5.5" width="6" height="11" rx="1" fill="' + pale + '"' +
+        ' stroke="' + ink + '" stroke-width="1.3"/>' +
+        '<path d="M-2.2 -3.4L2.2 -5M-2.2 -0.4L2.2 -2M-2.2 2.6L2.2 1M-2.2 5.2L2.2 3.6"' +
+        ' stroke="' + ink + '" stroke-width="1.3"/>' +
+        '</g>';
+    }
+
+    if (type === 'shard') {
+      return '<g transform="' + t + '">' +
+        '<path d="M0 -5.6L4.6 -2.8L4.6 2.8L0 5.6L-4.6 2.8L-4.6 -2.8Z"' +
+        ' fill="#7b3fa0" stroke="' + pale + '" stroke-width="1.2"/>' +
+        '<path d="M0 -3L2.2 0L0 3L-2.2 0Z" fill="' + pale + '" fill-opacity="0.55"/>' +
+        '</g>';
+    }
+
+    if (type === 'tape') {
+      return '<g transform="' + t + '">' +
+        '<rect x="-6.5" y="-2.6" width="13" height="5.2" fill="#f2c230"' +
+        ' stroke="' + ink + '" stroke-width="1.2"/>' +
+        '<path d="M-4.6 -2.4L-2.4 2.4M-1.6 -2.4L0.6 2.4M1.4 -2.4L3.6 2.4M4.4 -2.4L6.4 2.4"' +
+        ' stroke="' + ink + '" stroke-width="1.2"/>' +
         '</g>';
     }
 
@@ -73,6 +141,14 @@
         ' transform="rotate(45 ' + cx + ' ' + cy + ')" fill="#ffffff" fill-opacity="0.75"/>' +
         '<rect x="' + (cx - 2) + '" y="' + (cy - 2) + '" width="4" height="4"' +
         ' transform="rotate(45 ' + cx + ' ' + cy + ')" fill="#0f6c8a"/>';
+    }
+
+    if (code === 'lava') {
+      var lx = (x + 0.5) * CELL;
+      var ly = (y + 0.5) * CELL;
+      return cellRect(x, y, '#ff7a2e') +
+        '<rect x="' + (lx - 3.5) + '" y="' + (ly - 3.5) + '" width="7" height="7"' +
+        ' rx="1.4" fill="#ffd166"/>';
     }
 
     var info = SW.CELLS[code];

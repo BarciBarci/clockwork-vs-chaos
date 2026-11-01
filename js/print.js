@@ -108,6 +108,7 @@
         '<div><dt>Marker</dt><dd>' + markerCount + '</dd></div>' +
         '<div><dt>Plattenraster</dt><dd>' + BOARD + ' × ' + BOARD + '</dd></div>' +
         '<div><dt>Zellen</dt><dd>' + SW.GRID + ' × ' + SW.GRID + '</dd></div>' +
+        '<div><dt>Kompass</dt><dd>' + (((scenario.compass | 0) % 4) * 90) + '°</dd></div>' +
       '</dl>' +
       '<p class="cover-foot">Plattensatz im 6 × 6-Raster · Szenario-Dossier</p>' +
     '</section>' +

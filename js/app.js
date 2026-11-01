@@ -16,6 +16,7 @@
     pieceType: 'rig',
     face: 'front',
     rot: 0,
+    compass: 0,
     meta: { title: '', author: '', objective: '', rules: '' }
   };
 
@@ -25,8 +26,10 @@
   var hintEl = document.getElementById('board-hint');
   var toastEl = document.getElementById('toast');
   var fileInput = document.getElementById('file-input');
+  var compassEl = document.getElementById('compass');
 
   var toastTimer = null;
+  var dragState = null;
 
   function toast(message) {
     toastEl.textContent = message;
@@ -65,6 +68,16 @@
       btn.className = 'tile-btn';
       btn.dataset.tile = tile.id;
       btn.title = tile.id;
+      btn.draggable = true;
+      btn.addEventListener('dragstart', function (event) {
+        dragState = { kind: 'tile', tileId: tile.id, face: state.face, rot: state.rot };
+        event.dataTransfer.effectAllowed = 'copy';
+        event.dataTransfer.setData('text/plain', tile.id);
+      });
+      btn.addEventListener('dragend', function () {
+        clearDrop();
+        dragState = null;
+      });
       btn.addEventListener('click', function () {
         state.mode = 'tile';
         state.tileId = tile.id;
@@ -82,6 +95,16 @@
         '<svg viewBox="0 0 20 20" aria-hidden="true">' + SW.renderPiece(type, 0, 0, 0) + '</svg>' +
         SW.PIECES[type].label;
       btn.title = SW.PIECES[type].note;
+      btn.draggable = true;
+      btn.addEventListener('dragstart', function (event) {
+        dragState = { kind: 'piece', type: type };
+        event.dataTransfer.effectAllowed = 'copy';
+        event.dataTransfer.setData('text/plain', type);
+      });
+      btn.addEventListener('dragend', function () {
+        clearDrop();
+        dragState = null;
+      });
       btn.addEventListener('click', function () {
         state.mode = 'piece';
         state.pieceType = type;
@@ -137,11 +160,13 @@
 
       if (!rec) {
         el.className = 'cell is-empty';
+        el.draggable = false;
         el.innerHTML = '';
         return;
       }
 
       el.className = 'cell';
+      el.draggable = true;
       el.innerHTML =
         SW.renderTile(SW.tileById(rec.tileId), {
           face: rec.face,
@@ -245,6 +270,123 @@
     place(Number(cell.dataset.index), cell, event);
   });
 
+  /* ---------------------------------------------------------- drag & drop -- */
+
+  function clearDrop() {
+    Array.prototype.forEach.call(boardEl.children, function (c) {
+      c.classList.remove('is-drop');
+    });
+  }
+
+  boardEl.addEventListener('dragstart', function (event) {
+    var cell = event.target.closest('.cell');
+    if (!cell || event.target.closest('[data-act]')) {
+      event.preventDefault();
+      return;
+    }
+    var index = Number(cell.dataset.index);
+    if (!state.board[index]) {
+      event.preventDefault();
+      return;
+    }
+    dragState = { kind: 'move', index: index };
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', 'move');
+  });
+
+  boardEl.addEventListener('dragover', function (event) {
+    if (!dragState) return;
+    var cell = event.target.closest('.cell');
+    if (!cell) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = dragState.kind === 'move' ? 'move' : 'copy';
+    if (!cell.classList.contains('is-drop')) {
+      clearDrop();
+      cell.classList.add('is-drop');
+    }
+  });
+
+  boardEl.addEventListener('dragleave', function (event) {
+    var cell = event.target.closest('.cell');
+    if (cell) cell.classList.remove('is-drop');
+  });
+
+  boardEl.addEventListener('drop', function (event) {
+    if (!dragState) return;
+    var cell = event.target.closest('.cell');
+    if (!cell) return;
+    event.preventDefault();
+    dropOn(Number(cell.dataset.index), cell, event);
+    clearDrop();
+    dragState = null;
+  });
+
+  function dropOn(index, el, event) {
+    if (dragState.kind === 'tile') {
+      var previous = state.board[index];
+      state.board[index] = {
+        tileId: dragState.tileId,
+        rot: dragState.rot,
+        face: dragState.face,
+        pieces: previous ? previous.pieces : []
+      };
+      renderBoard();
+      return;
+    }
+
+    if (dragState.kind === 'move') {
+      if (dragState.index === index) return;
+      var moved = state.board[dragState.index];
+      if (!moved) return;
+      state.board[dragState.index] = null;
+      state.board[index] = moved;
+      renderBoard();
+      return;
+    }
+
+    var target = state.board[index];
+    if (!target) {
+      toast('Erst eine Platte legen.');
+      return;
+    }
+    var spot = subCell(el, event, target.rot);
+    target.pieces.push({ type: dragState.type, x: spot[0], y: spot[1], rot: 0 });
+    renderBoard();
+  }
+
+  /* -------------------------------------------------------------- compass -- */
+
+  function compassSVG(step) {
+    var deg = (step % 4) * 90;
+    return '<svg viewBox="0 0 80 80" aria-hidden="true">' +
+      '<circle cx="40" cy="40" r="35" fill="#ffffff"' +
+      ' stroke="rgba(16,24,32,0.4)" stroke-width="1.6"/>' +
+      '<text x="40" y="16" text-anchor="middle" font-size="10" font-weight="700"' +
+      ' fill="#101820" font-family="system-ui,sans-serif">N</text>' +
+      '<text x="40" y="71" text-anchor="middle" font-size="10"' +
+      ' fill="#8a9aa8" font-family="system-ui,sans-serif">S</text>' +
+      '<text x="11" y="43.5" text-anchor="middle" font-size="10"' +
+      ' fill="#8a9aa8" font-family="system-ui,sans-serif">W</text>' +
+      '<text x="69" y="43.5" text-anchor="middle" font-size="10"' +
+      ' fill="#8a9aa8" font-family="system-ui,sans-serif">E</text>' +
+      '<g transform="rotate(' + deg + ' 40 40)">' +
+        '<polygon points="40,14 46.5,41 40,37 33.5,41" fill="#c0392b"/>' +
+        '<polygon points="40,66 46.5,41 40,45 33.5,41" fill="#b8c4cf"/>' +
+      '</g>' +
+      '<circle cx="40" cy="40" r="3" fill="#101820"/>' +
+      '</svg>';
+  }
+
+  function renderCompass() {
+    compassEl.innerHTML = compassSVG(state.compass);
+    compassEl.title = 'Kompass ' + state.compass * 90 + '° — klicken zum Drehen';
+  }
+
+  compassEl.addEventListener('click', function () {
+    state.compass = (state.compass + 1) % 4;
+    renderCompass();
+  });
+
   document.addEventListener('keydown', function (event) {
     if (event.target.matches('input, textarea')) return;
 
@@ -308,6 +450,7 @@
       author: state.meta.author.trim(),
       objective: state.meta.objective.trim(),
       rules: state.meta.rules.trim(),
+      compass: state.compass,
       board: state.board.map(function (rec) {
         if (!rec) return null;
         return {
@@ -354,6 +497,8 @@
     state.meta.author = data.author || '';
     state.meta.objective = data.objective || '';
     state.meta.rules = data.rules || '';
+    state.compass = ((data.compass | 0) % 4 + 4) % 4;
+    renderCompass();
 
     Object.keys(fields).forEach(function (name) {
       fields[name].value = state.meta[name];
@@ -428,5 +573,6 @@
   buildBoard();
   syncSegments();
   syncPalette();
+  renderCompass();
   renderBoard();
 })();

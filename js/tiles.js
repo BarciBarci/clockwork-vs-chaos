@@ -135,8 +135,14 @@
 
   var PIECES = {
     rig: { label: 'Rig', note: 'Spielerfigur' },
-    drone: { label: 'Drohne', note: 'läuft die Öllinie ab' },
-    core: { label: 'Kern', note: 'Zielobjekt' }
+    'minion-a': { label: 'Drohne A', note: 'Minion-Typ A' },
+    'minion-b': { label: 'Drohne B', note: 'Minion-Typ B' },
+    'minion-c': { label: 'Drohne C', note: 'Minion-Typ C' },
+    bomb: { label: 'Bombe', note: 'Sprengsatz' },
+    lava: { label: 'Lava-Block', note: 'Lava-Feld' },
+    barricade: { label: 'Barrikade', note: 'Absperrung' },
+    shard: { label: 'Splitter', note: 'Bruchstück' },
+    tape: { label: 'Absperrband', note: 'Markierung' }
   };
 
   global.Slickworks = {

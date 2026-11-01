@@ -48,18 +48,21 @@
     <div class="tile-grid" id="palette-tiles"></div>
 
     <h2 style="margin-top:16px">Marker</h2>
-    <div class="piece-row" id="palette-pieces"></div>
+    <div class="piece-grid" id="palette-pieces"></div>
 
     <p class="hint">
-      Platte wählen, dann ins Raster klicken. Marker werden in der Zelle
-      platziert, auf die der Zeiger zeigt. <kbd>R</kbd> dreht, <kbd>F</kbd>
-      wechselt die Seite.
+      Platte oder Marker mit der Maus ins Raster ziehen — oder anklicken und
+      dann eine Zelle anklicken. Gelegte Platten lassen sich ebenfalls
+      verschieben. <kbd>R</kbd> dreht, <kbd>F</kbd> wechselt die Seite.
     </p>
   </aside>
 
   <section class="board-wrap">
     <div class="board" id="board"></div>
-    <p class="board-hint" id="board-hint"></p>
+    <div class="board-foot">
+      <p class="board-hint" id="board-hint"></p>
+      <button class="compass" id="compass" type="button"></button>
+    </div>
   </section>
 
   <aside class="panel side">

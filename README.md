@@ -41,20 +41,27 @@ Vektorgeometrie, kein Bitmap, keine Textur, keine Schrift.
 
 | Aktion | So geht's |
 | --- | --- |
-| Platte legen | Platte links wählen, ins Raster klicken |
+| Platte legen | Platte mit der Maus ins Raster **ziehen**, oder anklicken und Zelle anklicken |
+| Platte verschieben | gelegte Platte auf eine andere Zelle ziehen |
 | Seite wählen | `Gras` / `Lava` oben oder `F` |
 | Drehen | `R` oder 0°/90°/180°/270° |
 | Gelegte Platte drehen | ⟳ beim Überfahren der Zelle |
 | Gelegte Platte wenden | ⇅ beim Überfahren der Zelle |
 | Platte entfernen | ✕ beim Überfahren der Zelle |
-| Marker setzen | Marker wählen, auf eine **gelegte** Platte klicken |
+| Marker setzen | Marker ins Raster ziehen oder auf eine **gelegte** Platte klicken |
 | Marker löschen | „Marker löschen“ wählen, auf den Marker klicken |
+| Kompass drehen | auf den Kompass unter dem Raster klicken (90°-Schritte) |
 | Szenario sichern | „JSON speichern“ |
 | Dossier | „Dossier drucken“ → Druckdialog → Als PDF speichern |
 
 Marker werden in der Zelle platziert, auf die der Zeiger zeigt. Bei gedrehter
 Platte rechnet der Editor die Klickposition in den Plattenraum zurück, damit der
 Marker am gezeichneten Feld klebt.
+
+### Marker
+
+Neun Typen, jeweils als eigene flache Grafik gezeichnet:
+Rig · Drohne A/B/C · Bombe · Lava-Block · Barrikade · Splitter · Absperrband.
 
 ## Dateiformat
 
@@ -66,6 +73,7 @@ Marker am gezeichneten Feld klebt.
   "author": "…",
   "objective": "…",
   "rules": "…",
+  "compass": 1,
   "board": [
     { "tileId": "T3", "rot": 1, "face": "back",
       "pieces": [{ "type": "rig", "x": 2, "y": 1, "rot": 0 }] },
@@ -75,8 +83,8 @@ Marker am gezeichneten Feld klebt.
 ```
 
 `board` hat immer 25 Einträge (5 × 5 Platten, zeilenweise). `null` = leer.
-`rot` ist 0–3 (90°-Schritte im Uhrzeigersinn), `x`/`y` sind Zellen im
-6 × 6-Innenraster der Platte.
+`rot` ist 0–3 (90°-Schritte im Uhrzeigersinn), `compass` ebenfalls 0–3,
+`x`/`y` sind Zellen im 6 × 6-Innenraster der Platte.
 
 ## Wie die Anordnungen ermittelt wurden
 
