@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slickworks — Plate Foundry</title>
+<meta name="description" content="Slickworks: originärer Szenario-Editor für doppelseitige Öllinien-Platten.">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="./">
+    <img src="assets/logo.svg" alt="" width="34" height="34">
+    <span>
+      <strong>Slickworks</strong>
+      <em>Plate Foundry</em>
+    </span>
+  </a>
+
+  <div class="topbar-actions">
+    <button id="btn-new" class="btn" type="button">Neu</button>
+    <button id="btn-load" class="btn" type="button">Laden</button>
+    <button id="btn-save" class="btn" type="button">JSON speichern</button>
+    <button id="btn-print" class="btn btn-primary" type="button">Dossier drucken</button>
+    <input id="file-input" type="file" accept="application/json,.json" hidden>
+  </div>
+</header>
+
+<main class="workspace">
+
+  <aside class="panel palette">
+    <h2>Platten</h2>
+
+    <div class="seg" id="face-toggle">
+      <button type="button" data-face="foundry" class="is-active">Foundry</button>
+      <button type="button" data-face="ember">Ember</button>
+    </div>
+
+    <div class="seg" id="rot-toggle">
+      <button type="button" data-rot="0" class="is-active">0°</button>
+      <button type="button" data-rot="1">90°</button>
+      <button type="button" data-rot="2">180°</button>
+      <button type="button" data-rot="3">270°</button>
+    </div>
+
+    <div class="tile-grid" id="palette-tiles"></div>
+
+    <h2 style="margin-top:16px">Marker</h2>
+    <div class="piece-row" id="palette-pieces"></div>
+
+    <p class="hint">
+      Platte wählen, dann ins Raster klicken. Marker werden in der Zelle
+      platziert, auf die der Zeiger zeigt. <kbd>R</kbd> dreht, <kbd>F</kbd>
+      wechselt die Seite.
+    </p>
+  </aside>
+
+  <section class="board-wrap">
+    <div class="board" id="board"></div>
+    <p class="board-hint" id="board-hint"></p>
+  </section>
+
+  <aside class="panel side">
+    <h2>Szenario</h2>
+
+    <label>Titel
+      <input id="f-title" type="text" maxlength="80" placeholder="z. B. Ember Line 04">
+    </label>
+    <label>Autor
+      <input id="f-author" type="text" maxlength="80" placeholder="dein Name">
+    </label>
+    <label>Ziel
+      <textarea id="f-objective" rows="3" placeholder="Was müssen die Rigs schaffen?"></textarea>
+    </label>
+    <label>Regeln
+      <textarea id="f-rules" rows="8" placeholder="Öllinien, Marker, Ember-Zellen, Sonderregeln …"></textarea>
+    </label>
+
+    <div class="legend">
+      <h3>Legende</h3>
+      <ul>
+        <li><span class="sw sw-oil"></span>Öllinie</li>
+        <li><span class="sw sw-ochre"></span>Ocker-Feld</li>
+        <li><span class="sw sw-verdigris"></span>Grünspan-Feld</li>
+        <li><span class="sw sw-madder"></span>Krapp-Feld</li>
+        <li><span class="sw sw-ember"></span>Ember-Zelle (Lava-Seite)</li>
+        <li><span class="sw sw-vent"></span>Lüftung</li>
+      </ul>
+    </div>
+  </aside>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/tiles.js"></script>
+<script src="js/render.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
