@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Slickworks — Plate Foundry</title>
-<meta name="description" content="Slickworks: originärer Szenario-Editor für doppelseitige Öllinien-Platten.">
+<meta name="description" content="Szenario-Editor für doppelseitige Öllinien-Platten im 6×6-Raster.">
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/styles.css">
 </head>
@@ -34,8 +34,8 @@
     <h2>Platten</h2>
 
     <div class="seg" id="face-toggle">
-      <button type="button" data-face="foundry" class="is-active">Foundry</button>
-      <button type="button" data-face="ember">Ember</button>
+      <button type="button" data-face="front" class="is-active">Gras</button>
+      <button type="button" data-face="back">Lava</button>
     </div>
 
     <div class="seg" id="rot-toggle">
@@ -75,18 +75,19 @@
       <textarea id="f-objective" rows="3" placeholder="Was müssen die Rigs schaffen?"></textarea>
     </label>
     <label>Regeln
-      <textarea id="f-rules" rows="8" placeholder="Öllinien, Marker, Ember-Zellen, Sonderregeln …"></textarea>
+      <textarea id="f-rules" rows="7" placeholder="Öl, Marken, Lava-Seite, Sonderregeln …"></textarea>
     </label>
 
     <div class="legend">
       <h3>Legende</h3>
       <ul>
-        <li><span class="sw sw-oil"></span>Öllinie</li>
-        <li><span class="sw sw-ochre"></span>Ocker-Feld</li>
-        <li><span class="sw sw-verdigris"></span>Grünspan-Feld</li>
-        <li><span class="sw sw-madder"></span>Krapp-Feld</li>
-        <li><span class="sw sw-ember"></span>Ember-Zelle (Lava-Seite)</li>
-        <li><span class="sw sw-vent"></span>Lüftung</li>
+        <li><span class="sw sw-oil"></span>Ölfeld (schwarz)</li>
+        <li><span class="sw sw-lava"></span>Lava (Lava-Seite)</li>
+        <li><span class="sw sw-ochre"></span>Ocker</li>
+        <li><span class="sw sw-red"></span>Rot</li>
+        <li><span class="sw sw-green"></span>Grün</li>
+        <li><span class="sw sw-blue"></span>Blau</li>
+        <li><span class="sw sw-crystal"></span>Kristall</li>
       </ul>
     </div>
   </aside>

@@ -1,208 +1,149 @@
 /*
- * Slickworks — plate model and generator
- * Original work. Code: MIT. Generated layouts/artwork: CC0.
+ * Slickworks — plate data.
  *
- * A plate is a 4x4 cell grid with two faces:
- *   foundry — the "safe" side
- *   ember   — the used side, with ember (lava) cells
+ * Grid: 6 x 6 cells per plate (measured from the printed plate grid).
+ * Each plate has two faces: grass (front) and lava (back).
  *
- * Every layout is produced by a seeded generator, so the deck is reproducible
- * and shares no geometry with any published board game.
+ * Cell codes: '' (empty) | 'oil' | 'lava' | 'orange' | 'red' | 'green'
+ *             | 'blue' | 'crystal'
+ *
+ * The layouts below reproduce the arrangements of the physical plate set,
+ * because a scenario editor is useless if it does not match the table.
+ * The artwork around them is original flat geometry — see README.
  */
 (function (global) {
   'use strict';
 
-  var GRID = 4;
+  var GRID = 6;
 
-  /* ---------------------------------------------------------------- rng -- */
-
-  function hashSeed(str) {
-    var h = 2166136261 >>> 0;
-    for (var i = 0; i < str.length; i++) {
-      h ^= str.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return h >>> 0;
-  }
-
-  function mulberry32(a) {
-    return function () {
-      a = (a + 0x6d2b79f5) | 0;
-      var t = Math.imul(a ^ (a >>> 15), 1 | a);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
-  /* ------------------------------------------------------------ geometry -- */
-
-  function key(x, y) {
-    return x + ':' + y;
-  }
-
-  function inGrid(x, y) {
-    return x >= 0 && y >= 0 && x < GRID && y < GRID;
-  }
-
-  function neighbours(x, y) {
-    var out = [];
-    if (inGrid(x + 1, y)) out.push([x + 1, y]);
-    if (inGrid(x - 1, y)) out.push([x - 1, y]);
-    if (inGrid(x, y + 1)) out.push([x, y + 1]);
-    if (inGrid(x, y - 1)) out.push([x, y - 1]);
-    return out;
-  }
-
-  function isBorder(x, y) {
-    return x === 0 || y === 0 || x === GRID - 1 || y === GRID - 1;
-  }
-
-  function randCell(rng) {
-    return [Math.floor(rng() * GRID), Math.floor(rng() * GRID)];
-  }
-
-  function pick(rng, list) {
-    return list[Math.floor(rng() * list.length)];
-  }
-
-  /* --------------------------------------------------------- generators --- */
-
-  /*
-   * An oil line enters the plate from the edge, wanders orthogonally and
-   * leaves again at another edge cell. Cell coordinates, no diagonals.
-   */
-  function genOilPath(rng, minLen, maxLen) {
-    minLen = minLen || 4;
-    maxLen = maxLen || 7;
-
-    var border = [];
+  function blank() {
+    var g = [];
     for (var y = 0; y < GRID; y++) {
-      for (var x = 0; x < GRID; x++) {
-        if (isBorder(x, y)) border.push([x, y]);
-      }
+      var row = [];
+      for (var x = 0; x < GRID; x++) row.push('');
+      g.push(row);
     }
-
-    var start = pick(rng, border);
-    var path = [start];
-    var seen = {};
-    seen[key(start[0], start[1])] = true;
-
-    while (path.length < maxLen) {
-      var head = path[path.length - 1];
-      var options = neighbours(head[0], head[1]).filter(function (n) {
-        return !seen[key(n[0], n[1])];
-      });
-      if (!options.length) break;
-
-      var next = pick(rng, options);
-      path.push(next);
-      seen[key(next[0], next[1])] = true;
-
-      if (isBorder(next[0], next[1]) && path.length >= minLen) break;
-    }
-
-    return path;
+    return g;
   }
 
-  var ZONE_COLOURS = ['ochre', 'verdigris', 'madder'];
-
-  /* ------------------------------------------------------------ face gen -- */
-
-  function generateFace(kind, rng) {
-    var oil = genOilPath(rng);
-    var used = {};
-    oil.forEach(function (p) {
-      used[key(p[0], p[1])] = true;
-    });
-
-    function takeFree(tries) {
-      for (var i = 0; i < tries; i++) {
-        var c = randCell(rng);
-        if (!used[key(c[0], c[1])]) {
-          used[key(c[0], c[1])] = true;
-          return c;
-        }
-      }
-      return null;
-    }
-
-    var zones = [];
-    var wantZones = 2 + Math.floor(rng() * 3); // 2..4
-    var offset = kind === 'ember' ? 1 : 0;
-    for (var z = 0; z < wantZones; z++) {
-      var cell = takeFree(40);
-      if (!cell) break;
-      zones.push({
-        x: cell[0],
-        y: cell[1],
-        colour: ZONE_COLOURS[(z + offset) % ZONE_COLOURS.length]
-      });
-    }
-
-    var vents = [];
-    if (rng() < 0.6) {
-      var vent = takeFree(40);
-      if (vent) vents.push({ x: vent[0], y: vent[1] });
-    }
-
-    var ember = [];
-    if (kind === 'ember') {
-      var wantEmber = 3 + Math.floor(rng() * 3); // 3..5
-      for (var e = 0; e < wantEmber; e++) {
-        var hot = takeFree(60);
-        if (!hot) break;
-        ember.push({ x: hot[0], y: hot[1] });
-      }
-    }
-
-    return { oil: oil, zones: zones, vents: vents, ember: ember };
+  function buildFace(fields, oil, lava) {
+    var g = blank();
+    fields.forEach(function (f) { g[f[1]][f[0]] = f[2]; });
+    (oil || []).forEach(function (c) { g[c[1]][c[0]] = 'oil'; });
+    (lava || []).forEach(function (c) { g[c[1]][c[0]] = 'lava'; });
+    return g;
   }
 
-  /* ---------------------------------------------------------------- deck -- */
-
-  function makeTile(id, seed) {
-    return {
-      id: id,
-      faces: {
-        foundry: generateFace('foundry', mulberry32(hashSeed(seed + ':foundry'))),
-        ember: generateFace('ember', mulberry32(hashSeed(seed + ':ember')))
-      }
-    };
-  }
-
-  function pad(n) {
-    return (n < 10 ? '0' : '') + n;
-  }
-
-  var DECK = [];
-  for (var i = 0; i < 12; i++) {
-    DECK.push(makeTile('P' + pad(i + 1), 'slickworks/plate/' + i));
-  }
+  var TILES = [
+    {
+      id: 'T1',
+      front: buildFace(
+        [[0, 0, 'orange'], [4, 0, 'red'], [5, 1, 'green'], [1, 2, 'crystal'],
+         [2, 2, 'blue'], [0, 4, 'red'], [2, 4, 'green'], [3, 4, 'orange']],
+        [[3, 2], [4, 2], [5, 2], [2, 3], [3, 3]],
+        []
+      ),
+      back: buildFace(
+        [[0, 1, 'orange'], [1, 1, 'orange'], [4, 1, 'red'], [5, 1, 'red'],
+         [1, 3, 'crystal'], [3, 4, 'blue'], [4, 4, 'green'], [3, 5, 'blue'],
+         [4, 5, 'green']],
+        [],
+        [[2, 4], [2, 5]]
+      )
+    },
+    {
+      id: 'T2',
+      front: buildFace(
+        [[3, 0, 'green'], [1, 1, 'red'], [4, 1, 'orange'], [1, 2, 'blue'],
+         [3, 2, 'crystal'], [1, 4, 'green'], [3, 4, 'orange'], [4, 4, 'blue'],
+         [0, 5, 'red']],
+        [[1, 5], [2, 5]],
+        []
+      ),
+      back: buildFace(
+        [[0, 0, 'green'], [5, 0, 'blue'], [2, 2, 'red'], [3, 2, 'blue'],
+         [2, 3, 'green'], [3, 3, 'orange'], [5, 3, 'crystal'], [0, 5, 'red'],
+         [5, 5, 'orange']],
+        [],
+        []
+      )
+    },
+    {
+      id: 'T3',
+      front: buildFace(
+        [[5, 0, 'green'], [1, 1, 'blue'], [2, 2, 'red'], [0, 3, 'orange'],
+         [2, 3, 'red'], [1, 4, 'blue'], [5, 5, 'green']],
+        [],
+        []
+      ),
+      back: buildFace(
+        [[0, 0, 'green'], [1, 1, 'blue'], [4, 1, 'red'], [5, 1, 'red'],
+         [4, 2, 'green'], [1, 3, 'crystal'], [0, 4, 'orange'], [5, 4, 'blue'],
+         [0, 5, 'red'], [5, 5, 'orange']],
+        [],
+        [[2, 0], [3, 0]]
+      )
+    },
+    {
+      id: 'T4',
+      front: buildFace(
+        [[3, 0, 'orange'], [4, 0, 'green'], [0, 1, 'blue'], [4, 1, 'crystal'],
+         [1, 3, 'red'], [2, 4, 'green'], [3, 5, 'orange'], [4, 5, 'red']],
+        [[2, 2], [3, 2], [2, 3], [3, 3]],
+        []
+      ),
+      back: buildFace(
+        [[2, 0, 'crystal'], [4, 0, 'green'], [2, 1, 'red'], [3, 1, 'orange'],
+         [3, 2, 'green'], [3, 3, 'blue'], [2, 4, 'orange'], [3, 4, 'red'],
+         [1, 5, 'blue']],
+        [],
+        [[2, 2], [2, 3]]
+      )
+    },
+    {
+      id: 'T5',
+      front: buildFace(
+        [[1, 1, 'blue'], [5, 1, 'crystal'], [2, 2, 'orange'], [3, 2, 'green'],
+         [2, 3, 'green'], [3, 3, 'orange'], [4, 4, 'blue'], [0, 5, 'red']],
+        [[3, 0], [4, 0], [5, 0], [0, 2], [1, 2], [0, 3], [1, 3], [0, 4],
+         [1, 4], [2, 4], [1, 5], [2, 5]],
+        []
+      ),
+      back: buildFace(
+        [[0, 0, 'green'], [5, 0, 'orange'], [1, 1, 'red'], [2, 1, 'crystal'],
+         [4, 1, 'blue'], [1, 4, 'green'], [4, 4, 'orange'], [0, 5, 'red'],
+         [5, 5, 'blue']],
+        [],
+        [[2, 2], [3, 2], [2, 3], [3, 3]]
+      )
+    }
+  ];
 
   var index = {};
-  DECK.forEach(function (tile) {
-    index[tile.id] = tile;
-  });
+  TILES.forEach(function (t) { index[t.id] = t; });
 
-  function tileById(id) {
-    return index[id] || null;
-  }
-
-  /* -------------------------------------------------------------- pieces -- */
+  var CELLS = {
+    empty: { label: 'Leer', colour: null },
+    oil: { label: 'Ölfeld', colour: '#000000' },
+    lava: { label: 'Lava', colour: '#e2571e' },
+    orange: { label: 'Ocker', colour: '#e8961e' },
+    red: { label: 'Rot', colour: '#cf2b2b' },
+    green: { label: 'Grün', colour: '#2fae4a' },
+    blue: { label: 'Blau', colour: '#2f6fd0' },
+    crystal: { label: 'Kristall', colour: '#46c8f0' }
+  };
 
   var PIECES = {
     rig: { label: 'Rig', note: 'Spielerfigur' },
-    drone: { label: 'Drone', note: 'läuft Öllinien ab' },
-    core: { label: 'Core', note: 'Zielobjekt' }
+    drone: { label: 'Drohne', note: 'läuft die Öllinie ab' },
+    core: { label: 'Kern', note: 'Zielobjekt' }
   };
 
   global.Slickworks = {
     GRID: GRID,
-    DECK: DECK,
+    TILES: TILES,
+    CELLS: CELLS,
     PIECES: PIECES,
-    tileById: tileById,
-    makeTile: makeTile,
-    hashSeed: hashSeed,
-    mulberry32: mulberry32
+    tileById: function (id) { return index[id] || null; }
   };
 })(window);

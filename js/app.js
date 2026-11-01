@@ -12,9 +12,9 @@
   var state = {
     board: new Array(BOARD * BOARD).fill(null),
     mode: 'tile',          // 'tile' | 'piece' | 'erase'
-    tileId: SW.DECK[0].id,
+    tileId: SW.TILES[0].id,
     pieceType: 'rig',
-    face: 'foundry',
+    face: 'front',
     rot: 0,
     meta: { title: '', author: '', objective: '', rules: '' }
   };
@@ -28,8 +28,6 @@
 
   var toastTimer = null;
 
-  /* ------------------------------------------------------------- helpers -- */
-
   function toast(message) {
     toastEl.textContent = message;
     toastEl.classList.add('is-visible');
@@ -39,8 +37,8 @@
     }, 2200);
   }
 
-  /* Which micro-cell of a plate was clicked? Coordinates are converted back
-     into the plate's own (unrotated) space so markers stick to the artwork. */
+  /* Which cell of a plate was clicked? Convert back into plate space so
+     markers stay glued to the artwork when the plate is rotated. */
   function subCell(el, event, rot) {
     var r = el.getBoundingClientRect();
     var vx = Math.min(SW.GRID - 1, Math.max(0, Math.floor((event.clientX - r.left) / r.width * SW.GRID)));
@@ -61,7 +59,7 @@
   function buildPalette() {
     paletteEl.innerHTML = '';
 
-    SW.DECK.forEach(function (tile) {
+    SW.TILES.forEach(function (tile) {
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'tile-btn';
@@ -81,7 +79,7 @@
       btn.className = 'piece-btn';
       btn.dataset.piece = type;
       btn.innerHTML =
-        '<svg viewBox="0 0 25 25" aria-hidden="true">' + SW.renderPiece(type, 0, 0, 0) + '</svg>' +
+        '<svg viewBox="0 0 20 20" aria-hidden="true">' + SW.renderPiece(type, 0, 0, 0) + '</svg>' +
         SW.PIECES[type].label;
       btn.title = SW.PIECES[type].note;
       btn.addEventListener('click', function () {
@@ -143,10 +141,13 @@
         return;
       }
 
-      var tile = SW.tileById(rec.tileId);
       el.className = 'cell';
       el.innerHTML =
-        SW.renderTile(tile, { face: rec.face, rot: rec.rot, pieces: rec.pieces }) +
+        SW.renderTile(SW.tileById(rec.tileId), {
+          face: rec.face,
+          rot: rec.rot,
+          pieces: rec.pieces
+        }) +
         '<div class="ctrls">' +
         '<button type="button" data-act="rot" title="Drehen">⟳</button>' +
         '<button type="button" data-act="flip" title="Seite wechseln">⇅</button>' +
@@ -160,16 +161,16 @@
   function summary() {
     var plates = 0;
     var markers = 0;
-    var ember = 0;
+    var lava = 0;
 
     state.board.forEach(function (rec) {
       if (!rec) return;
       plates += 1;
       markers += rec.pieces.length;
-      if (rec.face === 'ember') ember += 1;
+      if (rec.face === 'back') lava += 1;
     });
 
-    return plates + ' Platten · ' + markers + ' Marker · ' + ember + ' auf der Ember-Seite';
+    return plates + ' Platten · ' + markers + ' Marker · ' + lava + ' auf der Lava-Seite';
   }
 
   /* ------------------------------------------------------- interactions -- */
@@ -221,10 +222,9 @@
 
     if (action === 'rot') {
       rec.rot = (rec.rot + 1) % 4;
-      /* markers live in plate space, so they rotate with the plate */
       renderBoard();
     } else if (action === 'flip') {
-      rec.face = rec.face === 'foundry' ? 'ember' : 'foundry';
+      rec.face = rec.face === 'front' ? 'back' : 'front';
       renderBoard();
     } else if (action === 'del') {
       state.board[index] = null;
@@ -253,7 +253,7 @@
       syncSegments();
       syncPalette();
     } else if (event.key === 'f' || event.key === 'F') {
-      state.face = state.face === 'foundry' ? 'ember' : 'foundry';
+      state.face = state.face === 'front' ? 'back' : 'front';
       syncSegments();
       syncPalette();
     }
@@ -302,7 +302,7 @@
   function exportScenario() {
     return {
       format: 'slickworks-scenario',
-      version: 1,
+      version: 2,
       generator: 'slickworks/plate-foundry',
       title: state.meta.title.trim(),
       author: state.meta.author.trim(),
@@ -336,7 +336,7 @@
       return {
         tileId: rec.tileId,
         rot: ((rec.rot | 0) % 4 + 4) % 4,
-        face: rec.face === 'ember' ? 'ember' : 'foundry',
+        face: rec.face === 'back' ? 'back' : 'front',
         pieces: (rec.pieces || []).filter(function (p) {
           return SW.PIECES[p.type];
         }).map(function (p) {

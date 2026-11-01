@@ -87,7 +87,7 @@
       '</div>' +
       '<div class="legend-meta">' +
       '<strong>' + esc(rec.tileId) + '</strong>' +
-      '<span>' + (rec.face === 'ember' ? 'Ember-Seite' : 'Foundry-Seite') + '</span>' +
+      '<span>' + (rec.face === 'back' ? 'Lava-Seite' : 'Gras-Seite') + '</span>' +
       '</div>' +
       '</li>';
   }).join('');
@@ -106,9 +106,10 @@
       '<dl class="facts">' +
         '<div><dt>Platten</dt><dd>' + plateCount + '</dd></div>' +
         '<div><dt>Marker</dt><dd>' + markerCount + '</dd></div>' +
-        '<div><dt>Raster</dt><dd>' + BOARD + ' × ' + BOARD + '</dd></div>' +
+        '<div><dt>Plattenraster</dt><dd>' + BOARD + ' × ' + BOARD + '</dd></div>' +
+        '<div><dt>Zellen</dt><dd>' + SW.GRID + ' × ' + SW.GRID + '</dd></div>' +
       '</dl>' +
-      '<p class="cover-foot">Ein eigenständiges, prozedural erzeugtes Platten-System.</p>' +
+      '<p class="cover-foot">Plattensatz im 6 × 6-Raster · Szenario-Dossier</p>' +
     '</section>' +
 
     '<section class="page">' +
