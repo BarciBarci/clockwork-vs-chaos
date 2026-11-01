@@ -47,22 +47,37 @@ Vektorgeometrie, kein Bitmap, keine Textur, keine Schrift.
 | --- | --- |
 | Tile legen | Tile aus dem `Tiles`-Panel ins Raster **ziehen**, oder anklicken und Zelle anklicken |
 | Tile nur einmal | Es gibt insgesamt fünf Tiles. Liegt ein Tile auf dem Raster, ist sein Platz in der Palette gesperrt (abgedunkelt, grüner Haken) — erst `✕` am Tile gibt es wieder frei |
+| Tile vergrößern | **Doppelklick** auf ein gelegtes Tile — es öffnet sich groß, und erst dort werden Pieces gesetzt |
 | Tile verschieben | gelegtes Tile an einer freien Stelle anfassen und auf eine andere Zelle ziehen |
-| Piece verschieben | Piece selbst anfassen und an eine andere Stelle ziehen — im selben Tile oder auf ein anderes |
 | Seite wählen | `Front` / `Back` oben oder `F` |
 | Drehen | `R` oder 0°/90°/180°/270° |
-| Gelegtes Tile drehen | ⟳ beim Überfahren der Zelle |
-| Gelegtes Tile wenden | ⇅ beim Überfahren der Zelle |
+| Gelegtes Tile drehen | ⟳ beim Überfahren der Zelle, oder ⟳ im großen Tile |
+| Gelegtes Tile wenden | ⇅ beim Überfahren der Zelle, oder ⇅ im großen Tile |
 | Tile entfernen | ✕ beim Überfahren der Zelle |
-| Piece setzen | Piece aus dem `Pieces`-Panel ins Raster ziehen oder auf ein **gelegtes** Tile klicken |
-| Zielzelle sehen | Beim Überfahren zeigt eine gestrichelte Markierung die Zelle, in der Tile bzw. Piece landen |
-| Piece löschen | `Delete piece` wählen, auf das Piece klicken |
+| Piece setzen | Tile per Doppelklick öffnen, Piece in der Leiste wählen, auf das Raster im großen Tile klicken |
+| Piece positionieren | Mit `Move` ein gelegtes Piece anfassen und schieben — im Raster oder im großen Tile |
+| Piece löschen | `Remove piece` (großes Tile) bzw. `Delete piece` (Panel) wählen und das Piece anklicken |
 | Kompass drehen | auf den Kompass unter dem Raster klicken (90°-Schritte) |
 | Special Rules | Kästchen `Special Rules` anhaken, Text schreiben, optional Themenchips anklicken |
 | Other Rules | Kästchen `Other Rules / Escalations` anhaken und Text schreiben |
 | Bild einfügen | `Choose image` — wird auf 1600 px verkleinert, als JPEG im Szenario gespeichert |
 | Szenario sichern | `Save JSON` |
 | Dossier | `Print dossier` → Druckdialog → Als PDF speichern |
+
+### Das große Tile
+
+Ein Doppelklick auf eine gelegte Platte öffnet sie bildschirmfüllend über einem
+6 × 6-Raster. Dort ist jede Zelle groß genug, um Pieces exakt zu setzen:
+
+| Werkzeug | Wirkung |
+| --- | --- |
+| `Move` | Gelegtes Piece anfassen und schieben. Standardwerkzeug beim Öffnen |
+| Ein Piece (z. B. `The Bomb`) | Klick setzt das Piece auf die getroffene Zelle; es bleibt am Zeiger und lässt sich im selben Zug noch verschieben. Ein zweiter Klick setzt ein weiteres — auch über einem bereits liegenden Piece |
+| `Remove piece` | Entfernt das oberste Piece unter dem Zeiger |
+| ⟳ / ⇅ | Dreht bzw. wendet die offene Platte; Pieces behalten dabei ihre Lage auf der Platte |
+
+<kbd>Esc</kbd> oder `Done` schließt das Tile. Raster und großes Tile zeigen
+denselben Datensatz — was oben passiert, ist sofort auch unten zu sehen.
 
 Pieces werden in der Zelle platziert, auf die der Zeiger zeigt. Bei gedrehtem
 Tile rechnet der Editor die Klickposition in den Plattenraum zurück, damit das

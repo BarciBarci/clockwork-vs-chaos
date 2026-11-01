@@ -65,8 +65,18 @@
     var r = el.getBoundingClientRect();
     var vx = Math.min(SW.GRID - 1, Math.max(0, Math.floor((event.clientX - r.left) / r.width * SW.GRID)));
     var vy = Math.min(SW.GRID - 1, Math.max(0, Math.floor((event.clientY - r.top) / r.height * SW.GRID)));
-    var x = vx;
-    var y = vy;
+    return visualToPlate(vx, vy, rot);
+  }
+
+  /* Same conversion, but null when the point sits outside the plate. */
+  function pointToPlate(rect, clientX, clientY, rot) {
+    var vx = Math.floor((clientX - rect.left) / rect.width * SW.GRID);
+    var vy = Math.floor((clientY - rect.top) / rect.height * SW.GRID);
+    if (vx < 0 || vy < 0 || vx >= SW.GRID || vy >= SW.GRID) return null;
+    return visualToPlate(vx, vy, rot);
+  }
+
+  function visualToPlate(x, y, rot) {
     for (var i = 0; i < rot; i++) {
       var nx = y;
       var ny = SW.GRID - 1 - x;
@@ -113,6 +123,12 @@
     }
 
     if (mode === 'erase') {
+      hideGhost();
+      return;
+    }
+
+    /* Pieces are placed inside the tile zoom, not on the board itself. */
+    if (mode === 'piece' && (!dragState || dragState.kind === 'piece')) {
       hideGhost();
       return;
     }
@@ -356,8 +372,7 @@
         toast('Place a tile first.');
         return;
       }
-      pushPiece(rec, state.pieceType, el, event);
-      renderBoard();
+      toast('Double-click the tile to place pieces.');
       return;
     }
 
@@ -443,6 +458,20 @@
     var cell = event.target.closest('.cell');
     if (!cell) return;
     place(Number(cell.dataset.index), cell, event);
+  });
+
+  /* Double-click opens the magnified editor for that plate. */
+  boardEl.addEventListener('dblclick', function (event) {
+    if (event.target.closest('[data-act]')) return;
+    var cell = event.target.closest('.cell');
+    if (!cell) return;
+
+    var index = Number(cell.dataset.index);
+    if (!state.board[index]) {
+      toast('Place a tile first.');
+      return;
+    }
+    openZoom(index);
   });
 
   /* ---------------------------------------------------------- drag & drop -- */
@@ -577,9 +606,320 @@
       toast('Place a tile first.');
       return;
     }
-    pushPiece(target, dragState.type, el, event);
+    toast('Double-click the tile to place pieces.');
+  }
+
+  /* ------------------------------------------------------------ tile zoom -- */
+
+  /* A placed tile opens in a magnified editor. Pieces are picked, placed and
+     positioned there, where the 6 × 6 sub-grid is large enough to aim at. */
+
+  var zoomEl = document.getElementById('zoom');
+  var zoomPlate = document.getElementById('zoom-plate');
+  var zoomPieces = document.getElementById('zoom-pieces');
+  var zoomTitle = document.getElementById('zoom-title');
+  var zoomStatus = document.getElementById('zoom-status');
+
+  var zoomLayer = null;
+  var zoomGhost = null;
+  var zoomRaf = 0;
+  var zoomReturnFocus = null;
+
+  var zoom = {
+    index: -1,
+    tool: null,
+    erase: false,
+    grab: null
+  };
+
+  function buildZoom() {
+    zoomLayer = document.createElement('div');
+    zoomLayer.className = 'zoom-layer';
+
+    var grid = document.createElement('div');
+    grid.className = 'zoom-grid';
+
+    zoomGhost = document.createElement('div');
+    zoomGhost.className = 'zoom-ghost';
+    zoomGhost.hidden = true;
+
+    zoomPlate.appendChild(zoomLayer);
+    zoomPlate.appendChild(grid);
+    zoomPlate.appendChild(zoomGhost);
+
+    zoomPieces.innerHTML = '';
+
+    var move = document.createElement('button');
+    move.type = 'button';
+    move.className = 'piece-btn';
+    move.dataset.zoomMove = '1';
+    move.innerHTML = '<span aria-hidden="true">✥</span> Move';
+    move.title = 'Drag a placed piece to reposition it';
+    zoomPieces.appendChild(move);
+
+    Object.keys(SW.PIECES).forEach(function (type) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'piece-btn';
+      btn.dataset.zoomPiece = type;
+      btn.innerHTML =
+        '<svg viewBox="0 0 20 20" aria-hidden="true">' + SW.renderIcon(type) + '</svg>' +
+        SW.PIECES[type].label;
+      btn.title = SW.PIECES[type].note;
+      zoomPieces.appendChild(btn);
+    });
+
+    var erase = document.createElement('button');
+    erase.type = 'button';
+    erase.className = 'piece-btn';
+    erase.dataset.zoomErase = '1';
+    erase.innerHTML = '<span aria-hidden="true">✕</span> Remove piece';
+    zoomPieces.appendChild(erase);
+  }
+
+  function openZoom(index) {
+    var rec = state.board[index];
+    if (!rec) return;
+
+    zoom.index = index;
+    zoom.grab = null;
+
+    if (state.mode === 'piece') {
+      zoom.tool = state.pieceType;
+      zoom.erase = false;
+    } else if (state.mode === 'erase') {
+      zoom.erase = true;
+      zoom.tool = null;
+    }
+
+    zoomReturnFocus = document.activeElement;
+    zoomEl.hidden = false;
+    toastEl.classList.remove('is-visible');
+
+    syncZoomPieces();
+    renderZoom();
+
+    var done = zoomEl.querySelector('.zoom-actions [data-zoom-close]');
+    if (done) done.focus();
+  }
+
+  function closeZoom() {
+    if (zoom.index < 0) return;
+    zoom.index = -1;
+    zoom.grab = null;
+    hideZoomGhost();
+    zoomEl.hidden = true;
+
+    if (zoomReturnFocus && typeof zoomReturnFocus.focus === 'function') {
+      zoomReturnFocus.focus();
+    }
+    zoomReturnFocus = null;
+  }
+
+  function renderZoom() {
+    if (zoom.index < 0) return;
+
+    var rec = state.board[zoom.index];
+    if (!rec) {
+      closeZoom();
+      renderBoard();
+      return;
+    }
+
+    var tile = SW.tileById(rec.tileId);
+
+    zoomLayer.innerHTML = SW.renderTile(tile, {
+      face: rec.face,
+      rot: rec.rot,
+      pieces: rec.pieces
+    });
+
+    zoomTitle.textContent = tile.id + ' · ' +
+      (rec.face === 'back' ? 'Back' : 'Front') + ' · ' + (rec.rot * 90) + '°';
+
+    zoomStatus.textContent = rec.pieces.length === 1
+      ? '1 piece on this tile'
+      : rec.pieces.length + ' pieces on this tile';
+  }
+
+  /* Board and zoom share the same record, so both stay in step. Rendering is
+     synchronous here; only pointer drags are throttled to a frame. */
+  function commitZoom() {
+    renderZoom();
     renderBoard();
   }
+
+  function scheduleZoom() {
+    if (zoomRaf) return;
+    zoomRaf = requestAnimationFrame(function () {
+      zoomRaf = 0;
+      renderZoom();
+    });
+  }
+
+  function syncZoomPieces() {
+    Array.prototype.forEach.call(zoomPieces.children, function (btn) {
+      var on = zoom.erase
+        ? btn.dataset.zoomErase === '1'
+        : zoom.tool
+          ? btn.dataset.zoomPiece === zoom.tool
+          : btn.dataset.zoomMove === '1';
+      btn.classList.toggle('is-active', on);
+    });
+  }
+
+  function showZoomGhost(at, f, rot) {
+    var a = toVisual(at[0], at[1], rot);
+    var b = toVisual(at[0] + f.w - 1, at[1] + f.h - 1, rot);
+    var u = 100 / SW.GRID;
+
+    zoomGhost.style.left = Math.min(a[0], b[0]) * u + '%';
+    zoomGhost.style.top = Math.min(a[1], b[1]) * u + '%';
+    zoomGhost.style.width = (Math.abs(b[0] - a[0]) + 1) * u + '%';
+    zoomGhost.style.height = (Math.abs(b[1] - a[1]) + 1) * u + '%';
+    zoomGhost.hidden = false;
+  }
+
+  function hideZoomGhost() {
+    if (zoomGhost) zoomGhost.hidden = true;
+  }
+
+  function zoomCellAt(event) {
+    var rec = state.board[zoom.index];
+    if (!rec) return null;
+    return pointToPlate(zoomPlate.getBoundingClientRect(), event.clientX, event.clientY, rec.rot);
+  }
+
+  zoomEl.addEventListener('click', function (event) {
+    if (event.target.closest('[data-zoom-close]')) {
+      closeZoom();
+      return;
+    }
+
+    var act = event.target.closest('[data-zoom-act]');
+    if (!act) return;
+
+    var rec = state.board[zoom.index];
+    if (!rec) return;
+
+    if (act.dataset.zoomAct === 'rot') rec.rot = (rec.rot + 1) % 4;
+    if (act.dataset.zoomAct === 'flip') rec.face = rec.face === 'front' ? 'back' : 'front';
+
+    renderZoom();
+    renderBoard();
+  });
+
+  zoomPieces.addEventListener('click', function (event) {
+    var btn = event.target.closest('button');
+    if (!btn) return;
+
+    if (btn.dataset.zoomErase === '1') {
+      zoom.erase = true;
+      zoom.tool = null;
+    } else if (btn.dataset.zoomMove === '1') {
+      zoom.erase = false;
+      zoom.tool = null;
+    } else if (btn.dataset.zoomPiece) {
+      zoom.erase = false;
+      zoom.tool = btn.dataset.zoomPiece;
+    } else {
+      return;
+    }
+
+    syncZoomPieces();
+    hideZoomGhost();
+  });
+
+  zoomPlate.addEventListener('mousedown', function (event) {
+    if (event.button !== 0) return;
+
+    var rec = state.board[zoom.index];
+    if (!rec) return;
+
+    var hit = zoomCellAt(event);
+    if (!hit) return;
+    event.preventDefault();
+
+    var at = pieceAt(rec, hit[0], hit[1]);
+
+    if (zoom.erase) {
+      if (at < 0) {
+        toast('No piece there.');
+        return;
+      }
+      rec.pieces.splice(at, 1);
+      commitZoom();
+      return;
+    }
+
+    /* A stamp places even on top of another piece — panels are often the
+       surface a mech stands on, so overlap has to stay possible. */
+    if (zoom.tool) {
+      var f = foot(zoom.tool);
+      var spot = anchorTo(hit, f);
+      var fresh = { type: zoom.tool, x: spot[0], y: spot[1], rot: 0 };
+      rec.pieces.push(fresh);
+      /* Keep hold of it, so one gesture can place and position. */
+      zoom.grab = { piece: fresh, dx: hit[0] - fresh.x, dy: hit[1] - fresh.y };
+      commitZoom();
+      return;
+    }
+
+    /* Move tool: grabbing a piece keeps the offset, so it never jumps. */
+    if (at >= 0) {
+      var held = rec.pieces[at];
+      zoom.grab = { piece: held, dx: hit[0] - held.x, dy: hit[1] - held.y };
+      hideZoomGhost();
+    }
+  });
+
+  zoomPlate.addEventListener('mousemove', function (event) {
+    if (zoom.grab) return;
+
+    if (zoom.erase || !zoom.tool) {
+      hideZoomGhost();
+      return;
+    }
+
+    var rec = state.board[zoom.index];
+    if (!rec) return;
+
+    var hit = zoomCellAt(event);
+    if (!hit) {
+      hideZoomGhost();
+      return;
+    }
+
+    var f = foot(zoom.tool);
+    showZoomGhost(anchorTo(hit, f), f, rec.rot);
+  });
+
+  zoomPlate.addEventListener('mouseleave', hideZoomGhost);
+
+  window.addEventListener('mousemove', function (event) {
+    if (!zoom.grab) return;
+
+    var rec = state.board[zoom.index];
+    if (!rec) return;
+
+    var hit = zoomCellAt(event);
+    if (!hit) return;
+
+    var piece = zoom.grab.piece;
+    var f = foot(piece.type);
+
+    piece.x = Math.max(0, Math.min(SW.GRID - f.w, hit[0] - zoom.grab.dx));
+    piece.y = Math.max(0, Math.min(SW.GRID - f.h, hit[1] - zoom.grab.dy));
+
+    scheduleZoom();
+  });
+
+  window.addEventListener('mouseup', function () {
+    if (!zoom.grab) return;
+    zoom.grab = null;
+    renderZoom();
+    renderBoard();
+  });
 
   /* -------------------------------------------------------------- compass -- */
 
@@ -615,7 +955,35 @@
   });
 
   document.addEventListener('keydown', function (event) {
-    if (event.target.matches('input, textarea')) return;
+    if (event.target && event.target.matches && event.target.matches('input, textarea')) return;
+
+    /* Inside the tile zoom R and F act on the open plate, not the palette. */
+    if (zoom.index >= 0) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeZoom();
+        return;
+      }
+
+      var open = state.board[zoom.index];
+      if (!open) return;
+
+      if (event.key === 'r' || event.key === 'R') {
+        open.rot = (open.rot + 1) % 4;
+        renderZoom();
+        renderBoard();
+        return;
+      }
+
+      if (event.key === 'f' || event.key === 'F') {
+        open.face = open.face === 'front' ? 'back' : 'front';
+        renderZoom();
+        renderBoard();
+        return;
+      }
+
+      return;
+    }
 
     if (event.key === 'r' || event.key === 'R') {
       state.rot = (state.rot + 1) % 4;
@@ -949,6 +1317,7 @@
   /* ----------------------------------------------------------------- init -- */
 
   buildPalette();
+  buildZoom();
   buildBoard();
   createGhost();
   syncSegments();

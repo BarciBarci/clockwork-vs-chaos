@@ -51,9 +51,8 @@
     <div class="piece-grid" id="palette-pieces"></div>
 
     <p class="hint">
-      Drag a tile or piece onto the grid — or select one and click the exact
-      cell. The dashed outline shows where it will land. Drag a placed tile by
-      its background, and a placed piece on the piece itself, to move either.
+      Drag a tile onto the grid — or select one and click the exact cell.
+      Double-click a placed tile to open it and set pieces inside.
       <kbd>R</kbd> rotates, <kbd>F</kbd> flips the side. Five tiles exist in
       all — a placed tile locks its slot.
     </p>
@@ -126,6 +125,39 @@
 </main>
 
 <div class="toast" id="toast"></div>
+
+<div class="zoom" id="zoom" hidden>
+  <div class="zoom-scrim" data-zoom-close="1"></div>
+
+  <div class="zoom-card" role="dialog" aria-modal="true" aria-labelledby="zoom-title">
+    <div class="zoom-head">
+      <h2 id="zoom-title">Tile</h2>
+      <div class="zoom-actions">
+        <button type="button" class="btn" data-zoom-act="rot" title="Rotate 90°">⟳ Rotate</button>
+        <button type="button" class="btn" data-zoom-act="flip" title="Flip side">⇅ Flip</button>
+        <button type="button" class="btn btn-primary" data-zoom-close="1">Done</button>
+      </div>
+    </div>
+
+    <div class="zoom-body">
+      <div class="zoom-stage">
+        <div class="zoom-plate" id="zoom-plate"></div>
+        <p class="zoom-status" id="zoom-status"></p>
+      </div>
+
+      <aside class="zoom-side">
+        <h3>Pieces</h3>
+        <div class="piece-grid" id="zoom-pieces"></div>
+        <p class="hint">
+          <strong>Move</strong> drags a placed piece. Pick a piece to stamp it
+          — the stamp stays under the cursor, so one gesture places and slides
+          it. <strong>Remove</strong> deletes the piece on top. <kbd>Esc</kbd>
+          closes.
+        </p>
+      </aside>
+    </div>
+  </div>
+</div>
 
 <script src="js/tiles.js"></script>
 <script src="js/render.js"></script>
