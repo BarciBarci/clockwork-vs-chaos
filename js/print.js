@@ -1,11 +1,11 @@
 /*
- * Slickworks — dossier renderer.
+ * Clockwork vs Chaos — dossier renderer.
  * Reads the scenario handed over by the editor and builds printable pages.
  */
 (function () {
   'use strict';
 
-  var SW = window.Slickworks;
+  var SW = window.PlateFoundry;
   var BOARD = 5;
   var root = document.getElementById('pages');
 
@@ -32,7 +32,8 @@
 
   var raw = null;
   try {
-    raw = localStorage.getItem('slickworks:scenario');
+    raw = localStorage.getItem('clockwork:scenario') ||
+      localStorage.getItem('slickworks:scenario');
   } catch (error) {
     empty('This browser does not allow access to localStorage.');
     return;
@@ -51,8 +52,8 @@
     return;
   }
 
-  if (scenario.format !== 'slickworks-scenario') {
-    empty('The stored record does not belong to Slickworks.');
+  if (scenario.format !== 'clockwork-scenario' && scenario.format !== 'slickworks-scenario') {
+    empty('The stored record does not belong to Clockwork vs Chaos.');
     return;
   }
 
@@ -131,7 +132,7 @@
   root.innerHTML =
     '<section class="page cover">' +
       '<div class="cover-mark"><img src="assets/logo.svg" alt="" width="72" height="72"></div>' +
-      '<p class="kicker">Slickworks · Plate Foundry</p>' +
+      '<p class="kicker">Clockwork vs Chaos · Plate Foundry</p>' +
       '<h1>' + esc(scenario.title || 'Untitled') + '</h1>' +
       '<p class="byline">' + (scenario.author ? 'by ' + esc(scenario.author) : 'no author') + '</p>' +
       '<dl class="facts">' +

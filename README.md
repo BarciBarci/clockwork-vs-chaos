@@ -1,4 +1,4 @@
-# Slickworks — Plate Foundry
+# Clockwork vs Chaos — Plate Foundry
 
 Szenario-Editor für doppelseitige Öllinien-Platten im **6 × 6-Raster**.
 Platten legen, drehen, wenden, Marker setzen, Regeln schreiben, Szenario als JSON
@@ -115,7 +115,7 @@ Löschen genügt ein Klick auf irgendeine belegte Zelle.
 
 ```json
 {
-  "format": "slickworks-scenario",
+  "format": "clockwork-scenario",
   "version": 2,
   "title": "Ember Line 04",
   "author": "…",
@@ -196,7 +196,7 @@ sollte:
 
 Eine Garantie, dass das rechtlich nicht angreifbar ist, kann ich nicht geben —
 das ist keine Rechtsberatung. Vor einer kommerziellen Veröffentlichung: Anwalt
-fragen und Markenrecherche für „Slickworks“ machen (DPMA, EUIPO, USPTO).
+fragen und Markenrecherche für „Clockwork vs Chaos“ machen (DPMA, EUIPO, USPTO).
 
 ## Lizenz
 
@@ -205,7 +205,7 @@ fragen und Markenrecherche für „Slickworks“ machen (DPMA, EUIPO, USPTO).
   — siehe `ASSETS-LICENSE.md`. Die übernommenen Plattenanordnungen sind darin
   ausdrücklich **nicht** als eigenes Werk beansprucht.
 
-Der Name „Slickworks“ und das Logo sind nicht Teil der Lizenz. Wenn du das Projekt
+Der Name „Clockwork vs Chaos“ und das Logo sind nicht Teil der Lizenz. Wenn du das Projekt
 forkst, nimm einen eigenen Namen.
 
 ## Auf GitHub stellen
@@ -213,6 +213,6 @@ forkst, nimm einen eigenen Namen.
 ```sh
 git init
 git add .
-git commit -m "Slickworks: Szenario-Editor im 6x6-Plattenraster"
-gh repo create slickworks --public --source=. --push
+git commit -m "Clockwork vs Chaos: Szenario-Editor im 6x6-Plattenraster"
+gh repo create clockwork-vs-chaos --public --source=. --push
 ```

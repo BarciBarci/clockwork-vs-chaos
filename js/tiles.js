@@ -1,5 +1,5 @@
 /*
- * Slickworks — plate data.
+ * Clockwork vs Chaos — plate data.
  *
  * Grid: 6 x 6 cells per plate (measured from the printed plate grid).
  * Each plate has two faces: grass (front) and lava (back).
@@ -171,7 +171,7 @@
     shard: { label: 'Crystal Shard', note: 'Shard', w: 1, h: 1 }
   };
 
-  global.Slickworks = {
+  global.PlateFoundry = {
     GRID: GRID,
     TILES: TILES,
     CELLS: CELLS,

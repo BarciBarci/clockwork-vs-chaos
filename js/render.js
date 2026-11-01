@@ -1,5 +1,5 @@
 /*
- * Slickworks — flat SVG rendering of plates and pieces.
+ * Clockwork vs Chaos — flat SVG rendering of plates and pieces.
  * Pure geometry: no textures, no bitmaps, no scanned art.
  *
  * Piece labels and footprints follow the original S.C.R.A.P. asset set.
@@ -7,7 +7,7 @@
 (function (global) {
   'use strict';
 
-  var SW = global.Slickworks;
+  var SW = global.PlateFoundry;
   var GRID = SW.GRID;
   var CELL = 120 / GRID;        // 20 units per cell
   var uid = 0;

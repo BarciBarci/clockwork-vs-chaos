@@ -5,7 +5,7 @@ Alle in diesem Projekt erzeugten visuellen Werke stehen unter **CC0 1.0 Universa
 
 Das umfasst:
 
-- `assets/logo.svg` — das Slickworks-Logo
+- `assets/logo.svg` — das Logo von Clockwork vs Chaos
 - alle von `js/render.js` gezeichneten Platten, Marker, Symbole und Muster
 - alle vom Generator in `js/tiles.js` erzeugten Layouts (Öllinien, Farbfelder,
   Ember-Zellen, Lüftungen)
@@ -15,7 +15,7 @@ Bedingungen. Eine Namensnennung ist nicht erforderlich.
 
 ## Nicht abgedeckt
 
-- Der Name **Slickworks** und das Logo als Kennzeichen. Die CC0-Abgabe betrifft
+- Der Name **Clockwork vs Chaos** und das Logo als Kennzeichen. Die CC0-Abgabe betrifft
   urheberrechtliche Ansprüche an der Grafik, nicht markenrechtliche Ansprüche am
   Kennzeichen. Wenn du das Projekt forken und veröffentlichen willst, nimm einen eigenen
   Namen und ein eigenes Logo.

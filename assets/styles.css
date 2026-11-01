@@ -68,8 +68,8 @@ body {
 
 .brand strong {
   display: block;
-  font-size: 15px;
-  letter-spacing: .16em;
+  font-size: 14px;
+  letter-spacing: .08em;
   text-transform: uppercase;
 }
 
@@ -344,7 +344,7 @@ body {
   flex: none;
   padding: 0;
   border: 0;
-  border-radius: 50%;
+  border-radius: 9px;
   background: none;
   cursor: pointer;
 }

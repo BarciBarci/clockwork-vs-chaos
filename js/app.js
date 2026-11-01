@@ -1,13 +1,13 @@
 /*
- * Slickworks — scenario editor.
+ * Clockwork vs Chaos — scenario editor.
  * Plain DOM, no framework, no dependencies.
  */
 (function () {
   'use strict';
 
-  var SW = window.Slickworks;
+  var SW = window.PlateFoundry;
   var BOARD = 5;
-  var STORAGE_KEY = 'slickworks:scenario';
+  var STORAGE_KEY = 'clockwork:scenario';
 
   var SPECIAL_TOPICS = [
     'Bomb',
@@ -467,21 +467,24 @@
 
   /* -------------------------------------------------------------- compass -- */
 
-  /* Stone rose with four coloured needles, as in the original tool:
+  /* Square stone rose with four coloured needles, as in the original tool:
      north red, east green, south orange, west blue. */
   function compassSVG(step) {
     var deg = (step % 4) * 90;
     return '<svg viewBox="0 0 80 80" aria-hidden="true">' +
-      '<circle cx="40" cy="40" r="34" fill="#828990" stroke="#242830" stroke-width="2"/>' +
-      '<circle cx="40" cy="40" r="25" fill="#9ba2aa" stroke="#4d535b" stroke-width="1.2"/>' +
+      '<rect x="3" y="3" width="74" height="74" rx="7" fill="#828990"' +
+      ' stroke="#242830" stroke-width="2.4"/>' +
+      '<rect x="9" y="9" width="62" height="62" rx="4" fill="#9ba2aa"' +
+      ' stroke="#4d535b" stroke-width="1.3"/>' +
       '<g transform="rotate(' + deg + ' 40 40)" stroke="#242830" stroke-width="0.9"' +
       ' stroke-linejoin="round">' +
-        '<polygon points="40,8 46,35 40,31.5 34,35" fill="#cf2b2b"/>' +
-        '<polygon points="72,40 45,46 48.5,40 45,34" fill="#2fae4a"/>' +
-        '<polygon points="40,72 46,45 40,48.5 34,45" fill="#e8961e"/>' +
-        '<polygon points="8,40 35,46 31.5,40 35,34" fill="#2f6fd0"/>' +
+        '<polygon points="40,13 48,40 40,34 32,40" fill="#cf2b2b"/>' +
+        '<polygon points="67,40 40,48 46,40 40,32" fill="#2fae4a"/>' +
+        '<polygon points="40,67 48,40 40,46 32,40" fill="#e8961e"/>' +
+        '<polygon points="13,40 40,48 34,40 40,32" fill="#2f6fd0"/>' +
       '</g>' +
-      '<circle cx="40" cy="40" r="4.2" fill="#2b2f36" stroke="#dfe4ea" stroke-width="1"/>' +
+      '<rect x="35.5" y="35.5" width="9" height="9" rx="1.8" fill="#2b2f36"' +
+      ' stroke="#dfe4ea" stroke-width="1"/>' +
       '</svg>';
   }
 
@@ -670,9 +673,9 @@
 
   function exportScenario() {
     return {
-      format: 'slickworks-scenario',
+      format: 'clockwork-scenario',
       version: 3,
-      generator: 'slickworks/plate-foundry',
+      generator: 'clockwork/plate-foundry',
       title: state.meta.title.trim(),
       author: state.meta.author.trim(),
       objective: state.meta.objective.trim(),
@@ -703,7 +706,7 @@
   }
 
   function importScenario(data) {
-    if (!data || data.format !== 'slickworks-scenario' || !Array.isArray(data.board)) {
+    if (!data || (data.format !== 'clockwork-scenario' && data.format !== 'slickworks-scenario') || !Array.isArray(data.board)) {
       throw new Error('Unknown format.');
     }
     if (data.board.length !== BOARD * BOARD) {
@@ -782,7 +785,7 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = (state.meta.title || 'slickworks-scenario')
+    a.download = (state.meta.title || 'clockwork-scenario')
       .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.json';
     document.body.appendChild(a);
     a.click();
