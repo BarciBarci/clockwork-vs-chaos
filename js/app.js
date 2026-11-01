@@ -230,7 +230,8 @@
       btn.dataset.piece = type;
       btn.innerHTML =
         '<svg viewBox="0 0 20 20" aria-hidden="true">' + SW.renderIcon(type) + '</svg>' +
-        SW.PIECES[type].label;
+        SW.PIECES[type].label +
+        '<span class="piece-count" hidden></span>';
       btn.title = SW.PIECES[type].note;
       btn.draggable = true;
       btn.addEventListener('dragstart', function (event) {
@@ -243,6 +244,10 @@
         dragState = null;
       });
       btn.addEventListener('click', function () {
+        if (pieceLeft(type) <= 0) {
+          toast(spentLabel(type));
+          return;
+        }
         state.mode = 'piece';
         state.pieceType = type;
         syncPalette();
@@ -281,6 +286,7 @@
       var active = (state.mode === 'piece' && btn.dataset.piece === state.pieceType) ||
                    (state.mode === 'erase' && btn.dataset.erase === '1');
       btn.classList.toggle('is-active', active);
+      if (btn.dataset.piece) syncPieceButton(btn, btn.dataset.piece);
     });
   }
 
@@ -400,6 +406,50 @@
       if (state.board[i] && state.board[i].tileId === id) return i;
     }
     return -1;
+  }
+
+  /* Piece stock: the box holds one of most components, four gear rings. */
+  function pieceLimit(type) {
+    var def = SW.PIECES[type];
+    return def && def.max > 0 ? def.max : 1;
+  }
+
+  function pieceUsed(type) {
+    var n = 0;
+    state.board.forEach(function (rec) {
+      if (!rec) return;
+      rec.pieces.forEach(function (p) {
+        if (p.type === type) n += 1;
+      });
+    });
+    return n;
+  }
+
+  function pieceLeft(type) {
+    return Math.max(0, pieceLimit(type) - pieceUsed(type));
+  }
+
+  function spentLabel(type) {
+    var limit = pieceLimit(type);
+    var name = SW.PIECES[type].label;
+    return limit > 1
+      ? 'All ' + limit + ' ' + name + ' pieces are on the board.'
+      : name + ' is already on the board.';
+  }
+
+  /* Mirror the stock on one palette button: dimmed and check-marked once the
+     last copy is placed, with a counter while copies remain. */
+  function syncPieceButton(btn, type) {
+    var limit = pieceLimit(type);
+    var left = pieceLeft(type);
+
+    btn.classList.toggle('is-used', left === 0);
+
+    var badge = btn.querySelector('.piece-count');
+    if (!badge) return;
+
+    badge.hidden = limit <= 1 || left === 0;
+    badge.textContent = String(left);
   }
 
   /* Centre a footprint on the cell under the cursor, clamped to the plate. */
@@ -664,7 +714,8 @@
       btn.dataset.zoomPiece = type;
       btn.innerHTML =
         '<svg viewBox="0 0 20 20" aria-hidden="true">' + SW.renderIcon(type) + '</svg>' +
-        SW.PIECES[type].label;
+        SW.PIECES[type].label +
+        '<span class="piece-count" hidden></span>';
       btn.title = SW.PIECES[type].note;
       zoomPieces.appendChild(btn);
     });
@@ -684,7 +735,7 @@
     zoom.index = index;
     zoom.grab = null;
 
-    if (state.mode === 'piece') {
+    if (state.mode === 'piece' && pieceLeft(state.pieceType) > 0) {
       zoom.tool = state.pieceType;
       zoom.erase = false;
     } else if (state.mode === 'erase') {
@@ -740,6 +791,8 @@
     zoomStatus.textContent = rec.pieces.length === 1
       ? '1 piece on this tile'
       : rec.pieces.length + ' pieces on this tile';
+
+    syncZoomPieces();
   }
 
   /* Board and zoom share the same record, so both stay in step. Rendering is
@@ -765,6 +818,7 @@
           ? btn.dataset.zoomPiece === zoom.tool
           : btn.dataset.zoomMove === '1';
       btn.classList.toggle('is-active', on);
+      if (btn.dataset.zoomPiece) syncPieceButton(btn, btn.dataset.zoomPiece);
     });
   }
 
@@ -820,8 +874,13 @@
       zoom.erase = false;
       zoom.tool = null;
     } else if (btn.dataset.zoomPiece) {
+      var type = btn.dataset.zoomPiece;
+      if (pieceLeft(type) <= 0) {
+        toast(spentLabel(type));
+        return;
+      }
       zoom.erase = false;
-      zoom.tool = btn.dataset.zoomPiece;
+      zoom.tool = type;
     } else {
       return;
     }
@@ -855,18 +914,24 @@
     /* A stamp places even on top of another piece — panels are often the
        surface a mech stands on, so overlap has to stay possible. */
     if (zoom.tool) {
+      if (pieceLeft(zoom.tool) <= 0) {
+        toast(spentLabel(zoom.tool));
+        zoom.tool = null;
+        syncZoomPieces();
+        return;
+      }
+
       var f = foot(zoom.tool);
       var spot = anchorTo(hit, f);
       var fresh = { type: zoom.tool, x: spot[0], y: spot[1], rot: 0 };
       rec.pieces.push(fresh);
       /* Keep hold of it, so one gesture can place and position. */
       zoom.grab = { piece: fresh, dx: hit[0] - fresh.x, dy: hit[1] - fresh.y };
-
-      /* The stamp is spent: hand the tool back to Move, so the next click
-         repositions pieces instead of stamping a second copy. */
-      zoom.tool = null;
       zoom.erase = false;
-      syncZoomPieces();
+
+      /* The last copy is spent, so the stamp has nothing left to place: hand
+         the tool back to Move. Pieces with copies left stay armed. */
+      if (pieceLeft(zoom.tool) <= 0) zoom.tool = null;
       hideZoomGhost();
 
       commitZoom();

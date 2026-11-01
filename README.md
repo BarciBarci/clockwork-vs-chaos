@@ -56,6 +56,7 @@ Vektorgeometrie, kein Bitmap, keine Textur, keine Schrift.
 | Tile entfernen | ✕ beim Überfahren der Zelle |
 | Piece setzen | Tile per Doppelklick öffnen, Piece in der Leiste wählen, auf das Raster im großen Tile klicken |
 | Piece positionieren | Mit `Move` ein gelegtes Piece anfassen und schieben — im Raster oder im großen Tile |
+| Piece-Vorrat | Jedes Piece gibt es nur so oft, wie es in der Schachtel liegt. Ist der Vorrat aufgebraucht, wird der Eintrag abgedunkelt und mit ✓ markiert; erst wenn du ein Piece wieder entfernst, ist es erneut wählbar |
 | Piece löschen | `Remove piece` (großes Tile) bzw. `Delete piece` (Panel) wählen und das Piece anklicken |
 | Kompass drehen | auf den Kompass unter dem Raster klicken (90°-Schritte) |
 | Special Rules | Kästchen `Special Rules` anhaken, Text schreiben, optional Themenchips anklicken |
@@ -72,12 +73,26 @@ Ein Doppelklick auf eine gelegte Platte öffnet sie bildschirmfüllend über ein
 | Werkzeug | Wirkung |
 | --- | --- |
 | `Move` | Gelegtes Piece anfassen und schieben. Standardwerkzeug beim Öffnen |
-| Ein Piece (z. B. `The Bomb`) | Klick setzt das Piece auf die getroffene Zelle; es bleibt am Zeiger und lässt sich im selben Zug noch verschieben. Danach springt das Werkzeug automatisch auf `Move` zurück, damit der nächste Klick nichts doppelt setzt. Ein weiteres Piece setzt du, indem du es erneut in der Leiste wählst |
+| Ein Piece (z. B. `The Bomb`) | Klick setzt das Piece auf die getroffene Zelle; es bleibt am Zeiger und lässt sich im selben Zug noch verschieben. Ist damit die letzte Kopie verbraucht, springt das Werkzeug auf `Move` zurück; sind noch Kopien übrig (Gear Ring), bleibt der Stempel aktiv |
 | `Remove piece` | Entfernt das oberste Piece unter dem Zeiger |
 | ⟳ / ⇅ | Dreht bzw. wendet die offene Platte; Pieces behalten dabei ihre Lage auf der Platte |
 
 <kbd>Esc</kbd> oder `Done` schließt das Tile. Raster und großes Tile zeigen
 denselben Datensatz — was oben passiert, ist sofort auch unten zu sehen.
+
+### Piece-Vorrat
+
+Gezählt wird über das ganze Szenario, nicht pro Tile — die Bauteile sind
+physisch nur einmal vorhanden:
+
+| Piece | Stück |
+| --- | --- |
+| School, Lava Wall, Boss Mech, Minion, Player Mech, The Bomb, Goal Zone, Crystal Shard | 1 |
+| Gear Ring | 4 |
+
+Der Vorrat steht in `js/tiles.js` als `max` an jedem Eintrag von `PIECES` und
+lässt sich dort in einer Zeile ändern. Bei mehreren Kopien (Gear Ring) zeigt
+der Knopf die Restmenge; ist sie bei 0, wird er abgedunkelt und mit ✓ markiert.
 
 Pieces werden in der Zelle platziert, auf die der Zeiger zeigt. Bei gedrehtem
 Tile rechnet der Editor die Klickposition in den Plattenraum zurück, damit das

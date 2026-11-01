@@ -258,6 +258,33 @@ body {
   box-shadow: 0 0 0 2px rgba(255, 176, 32, .32);
 }
 
+.piece-btn.is-used {
+  cursor: not-allowed;
+  color: var(--ink-soft);
+  background: var(--paper-2);
+  border-style: dashed;
+}
+
+.piece-btn.is-used svg { opacity: .4; }
+
+.piece-btn.is-used::after {
+  content: "✓";
+  margin-left: auto;
+  color: #1d7a3a;
+  font-weight: 700;
+}
+
+.piece-count {
+  margin-left: auto;
+  min-width: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--paper-2);
+  color: var(--ink-soft);
+  font: 600 10px/16px var(--mono);
+  text-align: center;
+}
+
 .hint {
   margin: 10px 0 0;
   font-size: 11.5px;

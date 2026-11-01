@@ -160,15 +160,15 @@
   ];
 
   var PIECES = {
-    school: { label: 'School', note: 'Wall panel, 3 × 6', w: 3, h: 6, mask: WALL_MASK },
-    lava: { label: 'Lava Wall', note: 'Lava wall, 3 × 6', w: 3, h: 6, mask: WALL_MASK },
-    gear: { label: 'Gear Ring', note: 'Gear ring', w: 1, h: 1 },
-    'minion-1': { label: 'Boss Mech', note: 'Boss, 2 × 2', w: 2, h: 2 },
-    'minion-2': { label: 'Minion', note: 'Enemy', w: 1, h: 1 },
-    'minion-3': { label: 'Player Mech', note: 'Player figure', w: 1, h: 1 },
-    bomb: { label: 'The Bomb', note: 'Explosive', w: 1, h: 1 },
-    tape: { label: 'Goal Zone', note: 'Objective zone', w: 1, h: 1 },
-    shard: { label: 'Crystal Shard', note: 'Shard', w: 1, h: 1 }
+    school: { label: 'School', note: 'Wall panel, 3 × 6', w: 3, h: 6, mask: WALL_MASK, max: 1 },
+    lava: { label: 'Lava Wall', note: 'Lava wall, 3 × 6', w: 3, h: 6, mask: WALL_MASK, max: 1 },
+    gear: { label: 'Gear Ring', note: 'Gear ring', w: 1, h: 1, max: 4 },
+    'minion-1': { label: 'Boss Mech', note: 'Boss, 2 × 2', w: 2, h: 2, max: 1 },
+    'minion-2': { label: 'Minion', note: 'Enemy', w: 1, h: 1, max: 1 },
+    'minion-3': { label: 'Player Mech', note: 'Player figure', w: 1, h: 1, max: 1 },
+    bomb: { label: 'The Bomb', note: 'Explosive', w: 1, h: 1, max: 1 },
+    tape: { label: 'Goal Zone', note: 'Objective zone', w: 1, h: 1, max: 1 },
+    shard: { label: 'Crystal Shard', note: 'Shard', w: 1, h: 1, max: 1 }
   };
 
   global.PlateFoundry = {
