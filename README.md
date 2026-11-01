@@ -19,8 +19,8 @@ Jede Platte ist **6 × 6 Zellen** groß und doppelseitig:
 
 | Seite | Grund | Merkmal |
 | --- | --- | --- |
-| **Gras** (front) | helles Papier | schwarze Ölfelder, farbige Felder |
-| **Lava** (back) | dunkles Gestein | orangefarbene Lava-Felder, farbige Felder |
+| **Front** | helles Papier | schwarze Ölfelder, farbige Felder |
+| **Back** | dunkles Gestein | orangefarbene Lava-Felder, farbige Felder |
 
 Zelltypen:
 
@@ -44,38 +44,39 @@ Vektorgeometrie, kein Bitmap, keine Textur, keine Schrift.
 
 | Aktion | So geht's |
 | --- | --- |
-| Platte legen | Platte mit der Maus ins Raster **ziehen**, oder anklicken und Zelle anklicken |
-| Platte verschieben | gelegte Platte auf eine andere Zelle ziehen |
-| Seite wählen | `Gras` / `Lava` oben oder `F` |
+| Tile legen | Tile mit der Maus ins Raster **ziehen**, oder anklicken und Zelle anklicken |
+| Tile verschieben | gelegtes Tile auf eine andere Zelle ziehen |
+| Seite wählen | `Front` / `Back` oben oder `F` |
 | Drehen | `R` oder 0°/90°/180°/270° |
-| Gelegte Platte drehen | ⟳ beim Überfahren der Zelle |
-| Gelegte Platte wenden | ⇅ beim Überfahren der Zelle |
-| Platte entfernen | ✕ beim Überfahren der Zelle |
-| Marker setzen | Marker ins Raster ziehen oder auf eine **gelegte** Platte klicken |
-| Marker löschen | „Marker löschen“ wählen, auf den Marker klicken |
+| Gelegtes Tile drehen | ⟳ beim Überfahren der Zelle |
+| Gelegtes Tile wenden | ⇅ beim Überfahren der Zelle |
+| Tile entfernen | ✕ beim Überfahren der Zelle |
+| Piece setzen | Piece ins Raster ziehen oder auf ein **gelegtes** Tile klicken |
+| Piece löschen | „Piece löschen“ wählen, auf das Piece klicken |
 | Kompass drehen | auf den Kompass unter dem Raster klicken (90°-Schritte) |
 | Szenario sichern | „JSON speichern“ |
 | Dossier | „Dossier drucken“ → Druckdialog → Als PDF speichern |
 
-Marker werden in der Zelle platziert, auf die der Zeiger zeigt. Bei gedrehter
-Platte rechnet der Editor die Klickposition in den Plattenraum zurück, damit der
-Marker am gezeichneten Feld klebt.
+Pieces werden in der Zelle platziert, auf die der Zeiger zeigt. Bei gedrehtem
+Tile rechnet der Editor die Klickposition in den Plattenraum zurück, damit das
+Piece am gezeichneten Feld klebt.
 
-### Marker
+### Pieces
 
-Neun Typen, jeweils als eigene flache Grafik gezeichnet:
+Bezeichnungen und Grundflächen stammen unverändert aus dem Original-Werkzeug
+(i18n-Dictionary und Asset-Matrix des ausgelieferten Editors):
 
-| Marker | Aufbau |
-| --- | --- |
-| Rig | Mech von oben: Schulterpanzer, Cockpit-Sichtschlitz, Beine, Kernlicht |
-| Drohne A | Kugelkörper mit zwei Antennen und Leuchtaugen |
-| Drohne B | Rautenkörper mit rotem Kern und Querachse |
-| Drohne C | Sechseck-Panzerung mit Visier |
-| Bombe | Stachelkugel mit Glanzlicht und Zünder |
-| Lava-Block | Dunkler Block mit glühenden Rissen |
-| Barrikade | Warnbake mit Pfosten und Schrägstreifen |
-| Splitter | Facettenkristall mit zwei Schattierungen |
-| Absperrband | Gelb-schwarzes Streifenband |
+| Piece | Fläche | Original-Schlüssel |
+| --- | --- | --- |
+| School | 3 × 6 | `school` |
+| Lava Wall | 3 × 6 | `lava` |
+| Gear Ring | 1 × 1 | `gear` |
+| Boss Mech | 2 × 2 | `minion-1` |
+| Minion | 1 × 1 | `minion-2` |
+| Player Mech | 1 × 1 | `minion-3` |
+| The Bomb | 1 × 1 | `bomb` |
+| Goal Zone | 1 × 1 | `tape` |
+| Crystal Shard | 1 × 1 | `shard` |
 
 ## Dateiformat
 

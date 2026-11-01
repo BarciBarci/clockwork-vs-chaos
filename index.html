@@ -31,11 +31,11 @@
 <main class="workspace">
 
   <aside class="panel palette">
-    <h2>Platten</h2>
+    <h2>Tiles</h2>
 
     <div class="seg" id="face-toggle">
-      <button type="button" data-face="front" class="is-active">Gras</button>
-      <button type="button" data-face="back">Lava</button>
+      <button type="button" data-face="front" class="is-active">Front</button>
+      <button type="button" data-face="back">Back</button>
     </div>
 
     <div class="seg" id="rot-toggle">
@@ -47,13 +47,13 @@
 
     <div class="tile-grid" id="palette-tiles"></div>
 
-    <h2 style="margin-top:16px">Marker</h2>
+    <h2 style="margin-top:16px">Pieces</h2>
     <div class="piece-grid" id="palette-pieces"></div>
 
     <p class="hint">
-      Platte oder Marker mit der Maus ins Raster ziehen — oder anklicken und
-      dann eine Zelle anklicken. Gelegte Platten lassen sich ebenfalls
-      verschieben. <kbd>R</kbd> dreht, <kbd>F</kbd> wechselt die Seite.
+      Tile oder Piece mit der Maus ins Raster ziehen — oder anklicken und dann
+      eine Zelle anklicken. Gelegte Tiles lassen sich verschieben. <kbd>R</kbd>
+      dreht, <kbd>F</kbd> wechselt die Seite.
     </p>
   </aside>
 
@@ -75,7 +75,7 @@
       <input id="f-author" type="text" maxlength="80" placeholder="dein Name">
     </label>
     <label>Ziel
-      <textarea id="f-objective" rows="3" placeholder="Was müssen die Rigs schaffen?"></textarea>
+      <textarea id="f-objective" rows="3" placeholder="Was müssen die Mechs schaffen?"></textarea>
     </label>
     <label>Regeln
       <textarea id="f-rules" rows="7" placeholder="Öl, Marken, Lava-Seite, Sonderregeln …"></textarea>
@@ -85,7 +85,7 @@
       <h3>Legende</h3>
       <ul>
         <li><span class="sw sw-oil"></span>Ölfeld (schwarz)</li>
-        <li><span class="sw sw-lava"></span>Lava (Lava-Seite)</li>
+        <li><span class="sw sw-lava"></span>Lava (Back)</li>
         <li><span class="sw sw-ochre"></span>Ocker</li>
         <li><span class="sw sw-red"></span>Rot</li>
         <li><span class="sw sw-green"></span>Grün</li>

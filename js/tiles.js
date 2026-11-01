@@ -137,16 +137,20 @@
 
   var DIRS = ['N', 'O', 'S', 'W'];
 
+  /*
+   * Labels and footprints match the original S.C.R.A.P. asset set
+   * (slugs, names and cell matrices taken from the shipped tool).
+   */
   var PIECES = {
-    rig: { label: 'Rig', note: 'Spielerfigur' },
-    'minion-a': { label: 'Drohne A', note: 'Minion-Typ A' },
-    'minion-b': { label: 'Drohne B', note: 'Minion-Typ B' },
-    'minion-c': { label: 'Drohne C', note: 'Minion-Typ C' },
-    bomb: { label: 'Bombe', note: 'Sprengsatz' },
-    lava: { label: 'Lava-Block', note: 'Lava-Feld' },
-    barricade: { label: 'Barrikade', note: 'Absperrung' },
-    shard: { label: 'Splitter', note: 'Bruchstück' },
-    tape: { label: 'Absperrband', note: 'Markierung' }
+    school: { label: 'School', note: 'Wandfeld, 3 × 6', w: 3, h: 6 },
+    lava: { label: 'Lava Wall', note: 'Lavawand, 3 × 6', w: 3, h: 6 },
+    gear: { label: 'Gear Ring', note: 'Zahnkranz', w: 1, h: 1 },
+    'minion-1': { label: 'Boss Mech', note: 'Bossgegner, 2 × 2', w: 2, h: 2 },
+    'minion-2': { label: 'Minion', note: 'Gegner', w: 1, h: 1 },
+    'minion-3': { label: 'Player Mech', note: 'Spielerfigur', w: 1, h: 1 },
+    bomb: { label: 'The Bomb', note: 'Sprengsatz', w: 1, h: 1 },
+    tape: { label: 'Goal Zone', note: 'Zielzone', w: 1, h: 1 },
+    shard: { label: 'Crystal Shard', note: 'Splitter', w: 1, h: 1 }
   };
 
   global.Slickworks = {

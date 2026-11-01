@@ -92,7 +92,7 @@
       btn.className = 'piece-btn';
       btn.dataset.piece = type;
       btn.innerHTML =
-        '<svg viewBox="0 0 20 20" aria-hidden="true">' + SW.renderPiece(type, 0, 0, 0) + '</svg>' +
+        '<svg viewBox="0 0 20 20" aria-hidden="true">' + SW.renderIcon(type) + '</svg>' +
         SW.PIECES[type].label;
       btn.title = SW.PIECES[type].note;
       btn.draggable = true;
@@ -117,7 +117,7 @@
     erase.type = 'button';
     erase.className = 'piece-btn';
     erase.dataset.erase = '1';
-    erase.innerHTML = '<span aria-hidden="true">✕</span> Marker löschen';
+    erase.innerHTML = '<span aria-hidden="true">✕</span> Piece löschen';
     erase.addEventListener('click', function () {
       state.mode = 'erase';
       syncPalette();
@@ -195,7 +195,7 @@
       if (rec.face === 'back') lava += 1;
     });
 
-    return plates + ' Platten · ' + markers + ' Marker · ' + lava + ' auf der Lava-Seite';
+    return plates + ' Tiles · ' + markers + ' Pieces · ' + lava + ' auf Back';
   }
 
   /* ------------------------------------------------------- interactions -- */
@@ -217,11 +217,10 @@
 
     if (state.mode === 'piece') {
       if (!rec) {
-        toast('Erst eine Platte legen.');
+        toast('Erst ein Tile legen.');
         return;
       }
-      var spot = subCell(el, event, rec.rot);
-      rec.pieces.push({ type: state.pieceType, x: spot[0], y: spot[1], rot: 0 });
+      pushPiece(rec, state.pieceType, el, event);
       renderBoard();
       return;
     }
@@ -230,15 +229,34 @@
       if (!rec || !rec.pieces.length) return;
       var hit = subCell(el, event, rec.rot);
       for (var i = rec.pieces.length - 1; i >= 0; i--) {
-        var p = rec.pieces[i];
-        if (p.x === hit[0] && p.y === hit[1]) {
+        if (coversCell(rec.pieces[i], hit[0], hit[1])) {
           rec.pieces.splice(i, 1);
           renderBoard();
           return;
         }
       }
-      toast('Dort liegt kein Marker.');
+      toast('Dort liegt kein Piece.');
     }
+  }
+
+  function foot(type) {
+    return SW.PIECES[type] || { w: 1, h: 1 };
+  }
+
+  function coversCell(piece, x, y) {
+    var f = foot(piece.type);
+    return x >= piece.x && x < piece.x + f.w && y >= piece.y && y < piece.y + f.h;
+  }
+
+  function pushPiece(rec, type, el, event) {
+    var f = foot(type);
+    var spot = subCell(el, event, rec.rot);
+    rec.pieces.push({
+      type: type,
+      x: Math.min(spot[0], SW.GRID - f.w),
+      y: Math.min(spot[1], SW.GRID - f.h),
+      rot: 0
+    });
   }
 
   function handleCtrl(index, action) {
@@ -346,11 +364,10 @@
 
     var target = state.board[index];
     if (!target) {
-      toast('Erst eine Platte legen.');
+      toast('Erst ein Tile legen.');
       return;
     }
-    var spot = subCell(el, event, target.rot);
-    target.pieces.push({ type: dragState.type, x: spot[0], y: spot[1], rot: 0 });
+    pushPiece(target, dragState.type, el, event);
     renderBoard();
   }
 
@@ -483,11 +500,12 @@
         pieces: (rec.pieces || []).filter(function (p) {
           return SW.PIECES[p.type];
         }).map(function (p) {
+          var f = SW.PIECES[p.type];
           return {
             type: p.type,
-            x: Math.min(SW.GRID - 1, Math.max(0, p.x | 0)),
-            y: Math.min(SW.GRID - 1, Math.max(0, p.y | 0)),
-            rot: ((p.rot | 0) % 4 + 4) % 4
+            x: Math.min(SW.GRID - f.w, Math.max(0, p.x | 0)),
+            y: Math.min(SW.GRID - f.h, Math.max(0, p.y | 0)),
+            rot: 0
           };
         })
       };
