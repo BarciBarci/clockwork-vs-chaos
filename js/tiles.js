@@ -165,10 +165,10 @@
     gear: { label: 'Gear Ring', note: 'Gear ring', w: 1, h: 1, max: 4 },
     'minion-1': { label: 'Boss Mech', note: 'Boss, 2 × 2', w: 2, h: 2, max: 1 },
     'minion-2': { label: 'Minion', note: 'Enemy', w: 1, h: 1, max: 1 },
-    'minion-3': { label: 'Player Mech', note: 'Player figure', w: 1, h: 1, max: 1 },
+    'minion-3': { label: 'Player Mech', note: 'Player figure, 4 in the box', w: 1, h: 1, max: 4 },
     bomb: { label: 'The Bomb', note: 'Explosive', w: 1, h: 1, max: 1 },
     tape: { label: 'Goal Zone', note: 'Objective zone', w: 1, h: 1, max: 1 },
-    shard: { label: 'Crystal Shard', note: 'Shard', w: 1, h: 1, max: 1 }
+    shard: { label: 'Crystal Shard', note: 'Shard, 4 in the box', w: 1, h: 1, max: 4 }
   };
 
   global.PlateFoundry = {
