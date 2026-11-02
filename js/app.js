@@ -396,8 +396,13 @@
     }
   }
 
-  function foot(type) {
-    return SW.PIECES[type] || { w: 1, h: 1 };
+  /* Footprint of a piece. A quarter turn swaps width and height, which is what
+     turns a 3 × 6 panel into a 6 × 3 one. */
+  function foot(type, rot) {
+    var def = SW.PIECES[type] || { w: 1, h: 1 };
+    return ((rot | 0) % 2)
+      ? { w: def.h, h: def.w }
+      : { w: def.w, h: def.h };
   }
 
   /* Each of the five tiles is a single physical piece. */
@@ -463,7 +468,7 @@
   }
 
   function coversCell(piece, x, y) {
-    var f = foot(piece.type);
+    var f = foot(piece.type, piece.rot);
     return x >= piece.x && x < piece.x + f.w && y >= piece.y && y < piece.y + f.h;
   }
 
@@ -474,11 +479,12 @@
     return -1;
   }
 
-  function pushPiece(rec, type, el, event) {
-    var f = foot(type);
+  function pushPiece(rec, type, el, event, rot) {
+    var r = ((rot | 0) % 4 + 4) % 4;
+    var f = foot(type, r);
     var spot = subCell(el, event, rec.rot);
     var at = anchorTo(spot, f);
-    rec.pieces.push({ type: type, x: at[0], y: at[1], rot: 0 });
+    rec.pieces.push({ type: type, x: at[0], y: at[1], rot: r });
   }
 
   function handleCtrl(index, action) {
@@ -646,7 +652,7 @@
         return;
       }
       from.pieces.splice(dragState.piece, 1);
-      pushPiece(dest, piece.type, el, event);
+      pushPiece(dest, piece.type, el, event, piece.rot);
       renderBoard();
       return;
     }
@@ -672,6 +678,7 @@
 
   var zoomLayer = null;
   var zoomGhost = null;
+  var zoomSel = null;
   var zoomRaf = 0;
   var zoomReturnFocus = null;
 
@@ -679,7 +686,8 @@
     index: -1,
     tool: null,
     erase: false,
-    grab: null
+    grab: null,
+    sel: -1
   };
 
   function buildZoom() {
@@ -693,9 +701,14 @@
     zoomGhost.className = 'zoom-ghost';
     zoomGhost.hidden = true;
 
+    zoomSel = document.createElement('div');
+    zoomSel.className = 'zoom-sel';
+    zoomSel.hidden = true;
+
     zoomPlate.appendChild(zoomLayer);
     zoomPlate.appendChild(grid);
     zoomPlate.appendChild(zoomGhost);
+    zoomPlate.appendChild(zoomSel);
 
     zoomPieces.innerHTML = '';
 
@@ -734,6 +747,7 @@
 
     zoom.index = index;
     zoom.grab = null;
+    zoom.sel = -1;
 
     if (state.mode === 'piece' && pieceLeft(state.pieceType) > 0) {
       zoom.tool = state.pieceType;
@@ -758,6 +772,7 @@
     if (zoom.index < 0) return;
     zoom.index = -1;
     zoom.grab = null;
+    zoom.sel = -1;
     hideZoomGhost();
     zoomEl.hidden = true;
 
@@ -793,6 +808,49 @@
       : rec.pieces.length + ' pieces on this tile';
 
     syncZoomPieces();
+    showZoomSelection(rec);
+  }
+
+  /* Outline around the piece the rotate button acts on. */
+  function showZoomSelection(rec) {
+    if (!zoomSel) return;
+
+    var piece = rec.pieces[zoom.sel];
+    if (!piece) {
+      zoomSel.hidden = true;
+      return;
+    }
+
+    var f = foot(piece.type, piece.rot);
+    var a = toVisual(piece.x, piece.y, rec.rot);
+    var b = toVisual(piece.x + f.w - 1, piece.y + f.h - 1, rec.rot);
+    var u = 100 / SW.GRID;
+
+    zoomSel.style.left = Math.min(a[0], b[0]) * u + '%';
+    zoomSel.style.top = Math.min(a[1], b[1]) * u + '%';
+    zoomSel.style.width = (Math.abs(b[0] - a[0]) + 1) * u + '%';
+    zoomSel.style.height = (Math.abs(b[1] - a[1]) + 1) * u + '%';
+    zoomSel.hidden = false;
+  }
+
+  /* Turn the selected piece in place; the plate stays where it is. */
+  function rotateSelected() {
+    var rec = state.board[zoom.index];
+    if (!rec) return;
+
+    var piece = rec.pieces[zoom.sel];
+    if (!piece) {
+      toast('Click a piece first, then rotate it.');
+      return;
+    }
+
+    piece.rot = ((piece.rot | 0) + 1) % 4;
+
+    var f = foot(piece.type, piece.rot);
+    piece.x = Math.max(0, Math.min(SW.GRID - f.w, piece.x));
+    piece.y = Math.max(0, Math.min(SW.GRID - f.h, piece.y));
+
+    commitZoom();
   }
 
   /* Board and zoom share the same record, so both stay in step. Rendering is
@@ -853,14 +911,19 @@
     var act = event.target.closest('[data-zoom-act]');
     if (!act) return;
 
+    if (act.dataset.zoomAct === 'rot') {
+      rotateSelected();
+      return;
+    }
+
     var rec = state.board[zoom.index];
     if (!rec) return;
 
-    if (act.dataset.zoomAct === 'rot') rec.rot = (rec.rot + 1) % 4;
-    if (act.dataset.zoomAct === 'flip') rec.face = rec.face === 'front' ? 'back' : 'front';
-
-    renderZoom();
-    renderBoard();
+    if (act.dataset.zoomAct === 'flip') {
+      rec.face = rec.face === 'front' ? 'back' : 'front';
+      renderZoom();
+      renderBoard();
+    }
   });
 
   zoomPieces.addEventListener('click', function (event) {
@@ -907,6 +970,8 @@
         return;
       }
       rec.pieces.splice(at, 1);
+      if (zoom.sel === at) zoom.sel = -1;
+      else if (zoom.sel > at) zoom.sel -= 1;
       commitZoom();
       return;
     }
@@ -925,6 +990,7 @@
       var spot = anchorTo(hit, f);
       var fresh = { type: zoom.tool, x: spot[0], y: spot[1], rot: 0 };
       rec.pieces.push(fresh);
+      zoom.sel = rec.pieces.length - 1;
       /* Keep hold of it, so one gesture can place and position. */
       zoom.grab = { piece: fresh, dx: hit[0] - fresh.x, dy: hit[1] - fresh.y };
       zoom.erase = false;
@@ -941,8 +1007,10 @@
     /* Move tool: grabbing a piece keeps the offset, so it never jumps. */
     if (at >= 0) {
       var held = rec.pieces[at];
+      zoom.sel = at;
       zoom.grab = { piece: held, dx: hit[0] - held.x, dy: hit[1] - held.y };
       hideZoomGhost();
+      showZoomSelection(rec);
     }
   });
 
@@ -979,7 +1047,7 @@
     if (!hit) return;
 
     var piece = zoom.grab.piece;
-    var f = foot(piece.type);
+    var f = foot(piece.type, piece.rot);
 
     piece.x = Math.max(0, Math.min(SW.GRID - f.w, hit[0] - zoom.grab.dx));
     piece.y = Math.max(0, Math.min(SW.GRID - f.h, hit[1] - zoom.grab.dy));
@@ -1042,9 +1110,7 @@
       if (!open) return;
 
       if (event.key === 'r' || event.key === 'R') {
-        open.rot = (open.rot + 1) % 4;
-        renderZoom();
-        renderBoard();
+        rotateSelected();
         return;
       }
 
@@ -1284,11 +1350,14 @@
           return SW.PIECES[p.type];
         }).map(function (p) {
           var f = SW.PIECES[p.type];
+          var r = ((p.rot | 0) % 4 + 4) % 4;
+          var fw = (r % 2) ? f.h : f.w;
+          var fh = (r % 2) ? f.w : f.h;
           return {
             type: p.type,
-            x: Math.min(SW.GRID - f.w, Math.max(0, p.x | 0)),
-            y: Math.min(SW.GRID - f.h, Math.max(0, p.y | 0)),
-            rot: 0
+            x: Math.min(SW.GRID - fw, Math.max(0, p.x | 0)),
+            y: Math.min(SW.GRID - fh, Math.max(0, p.y | 0)),
+            rot: r
           };
         })
       };

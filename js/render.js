@@ -334,20 +334,33 @@
   }
 
   /* Board piece, centred in its footprint */
-  function renderPiece(type, cellX, cellY, w, h) {
+  /* `rot` turns the piece in place. The art is laid out for the unrotated box
+     and turned about the centre of the footprint it occupies after the turn,
+     so a 3 × 6 panel becomes a 6 × 3 one that fills its box. */
+  function renderPiece(type, cellX, cellY, w, h, rot, fw, fh) {
     w = w || 1;
     h = h || 1;
+    rot = ((rot | 0) % 4 + 4) % 4;
+    fw = fw || w;
+    fh = fh || h;
+
+    var cx = (cellX + fw / 2) * CELL;
+    var cy = (cellY + fh / 2) * CELL;
 
     if (type === 'school' || type === 'lava') {
-      return '<g class="piece">' + renderPanel(type, cellX, cellY) + '</g>';
+      var sx = cellX + fw / 2 - w / 2;
+      var sy = cellY + fh / 2 - h / 2;
+      return '<g class="piece">' +
+        '<g transform="rotate(' + rot * 90 + ' ' + cx + ' ' + cy + ')">' +
+          renderPanel(type, sx, sy) +
+        '</g></g>';
     }
 
-    var cx = (cellX + w / 2) * CELL;
-    var cy = (cellY + h / 2) * CELL;
     var s = Math.min(w, h);
 
-    return '<g class="piece" transform="translate(' + cx + ' ' + cy + ') scale(' + s + ')">' +
-      glyph(type) + '</g>';
+    return '<g class="piece" transform="translate(' + cx + ' ' + cy + ')' +
+      (rot ? ' rotate(' + rot * 90 + ')' : '') +
+      ' scale(' + s + ')">' + glyph(type) + '</g>';
   }
 
   /* --------------------------------------------------------------- cells -- */
@@ -356,6 +369,9 @@
     return '<rect x="' + (x * CELL + 1) + '" y="' + (y * CELL + 1) + '" width="' + (CELL - 2) +
       '" height="' + (CELL - 2) + '" rx="1.6" fill="' + fill + '"/>';
   }
+
+  /* Carved rune: spear-headed, so the point always shows the direction. */
+  var RUNE = 'M0 -7.4L4.8 -1.2L1.7 -1.2L1.7 5.6L-1.7 5.6L-1.7 -1.2L-4.8 -1.2Z';
 
   /* A carved rune plate: stone slab, chipped edge, colour wash and the rune
      itself pointing in its direction. */
@@ -374,8 +390,11 @@
       '<path d="M' + (px + CELL - 5) + ' ' + (py + 3.2) + 'l1.5 2"' +
       ' stroke="#948c7c" stroke-width="0.8" stroke-linecap="round"/>' +
       '<g transform="translate(' + cx + ' ' + cy + ') rotate(' + dir * 90 + ')">' +
-        '<path d="M0 -6.2L4.2 1.2L0 -0.4L-4.2 1.2Z" fill="' + colour + '"' +
-        ' stroke="#26251f" stroke-width="0.9" stroke-linejoin="round"/>' +
+        '<path d="' + RUNE + '" transform="translate(0 0.9)" fill="#8b8272"' +
+        ' fill-opacity="0.55"/>' +
+        '<path d="' + RUNE + '" fill="' + colour + '"' +
+        ' stroke="#26251f" stroke-width="0.95" stroke-linejoin="round"/>' +
+        '<path d="M-0.9 -4V3.4" stroke="#ffffff" stroke-opacity="0.30" stroke-width="0.8"/>' +
       '</g>';
   }
 
@@ -468,7 +487,10 @@
 
     (options.pieces || []).forEach(function (p) {
       var def = SW.PIECES[p.type] || { w: 1, h: 1 };
-      body.push(renderPiece(p.type, p.x, p.y, def.w, def.h));
+      var r = ((p.rot | 0) % 4 + 4) % 4;
+      var fw = (r % 2) ? def.h : def.w;
+      var fh = (r % 2) ? def.w : def.h;
+      body.push(renderPiece(p.type, p.x, p.y, def.w, def.h, r, fw, fh));
     });
 
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img"' +

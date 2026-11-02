@@ -35,7 +35,7 @@ Zelltypen:
 | `oil` | Ölfeld | **vollflächig schwarzes Quadrat** |
 | `lava` | Lava (nur Back) | oranges Feld mit glühendem Kern |
 | `rock` | Gebirgsfeld (nur Back) | dunkelgrauer Fels mit Facetten |
-| `orange` `red` `green` `blue` | farbiges Feld | gezeichnete **Steinplatte** mit farbiger **Rune** |
+| `orange` `red` `green` `blue` | farbiges Feld | gezeichnete **Steinplatte** mit farbiger Speerspitzen-**Rune** |
 | `crystal` | Brunnen | runder Steinbrunnen mit leuchtendem Wasser |
 | *(leer)* | – | Grund der Seite |
 
@@ -57,8 +57,8 @@ Vektorgeometrie, kein Bitmap, keine Textur, keine Schrift.
 | Tile verschieben | gelegtes Tile an einer freien Stelle anfassen und auf eine andere Zelle ziehen |
 | Seite wählen | `Front` / `Back` oben oder `F` |
 | Drehen | `R` oder 0°/90°/180°/270° |
-| Gelegtes Tile drehen | ⟳ beim Überfahren der Zelle, oder ⟳ im großen Tile |
-| Gelegtes Tile wenden | ⇅ beim Überfahren der Zelle, oder ⇅ im großen Tile |
+| Gelegtes Tile drehen | ⟳ beim Überfahren der Zelle (nicht im großen Tile) |
+| Gelegtes Tile wenden | ⇅ beim Überfahren der Zelle, oder `Flip tile` im großen Tile |
 | Tile entfernen | ✕ beim Überfahren der Zelle |
 | Piece setzen | Tile per Doppelklick öffnen, Piece in der Leiste wählen, auf das Raster im großen Tile klicken |
 | Piece positionieren | Mit `Move` ein gelegtes Piece anfassen und schieben — im Raster oder im großen Tile |
@@ -78,10 +78,14 @@ Ein Doppelklick auf eine gelegte Platte öffnet sie bildschirmfüllend über ein
 
 | Werkzeug | Wirkung |
 | --- | --- |
-| `Move` | Gelegtes Piece anfassen und schieben. Standardwerkzeug beim Öffnen |
+| `Move` | Gelegtes Piece anfassen und schieben. Zugleich die Auswahl: das zuletzt angefasste Piece bekommt einen weißen Rahmen. Standardwerkzeug beim Öffnen |
 | Ein Piece (z. B. `The Bomb`) | Klick setzt das Piece auf die getroffene Zelle; es bleibt am Zeiger und lässt sich im selben Zug noch verschieben. Ist damit die letzte Kopie verbraucht, springt das Werkzeug auf `Move` zurück; sind noch Kopien übrig (Gear Ring, Player Mech, Crystal Shard), bleibt der Stempel aktiv |
 | `Remove piece` | Entfernt das oberste Piece unter dem Zeiger |
-| ⟳ / ⇅ | Dreht bzw. wendet die offene Platte; Pieces behalten dabei ihre Lage auf der Platte |
+| `⟳ Rotate piece` | Dreht das **ausgewählte Piece** auf der Stelle. Die Platte bleibt stehen; ein 3 × 6-Panel wird dabei zum 6 × 3-Panel, ein Mech schaut in eine andere Richtung. Tastenkürzel <kbd>R</kbd> |
+| `⇅ Flip tile` | Wendet die offene Platte auf die andere Seite. Tastenkürzel <kbd>F</kbd> |
+
+Die **Platte selbst** wird weiterhin über `⟳` auf dem Raster gedreht (beim
+Überfahren der Zelle), nicht im großen Tile.
 
 <kbd>Esc</kbd> oder `Done` schließt das Tile. Raster und großes Tile zeigen
 denselben Datensatz — was oben passiert, ist sofort auch unten zu sehen.
@@ -184,6 +188,10 @@ Löschen genügt ein Klick auf irgendeine belegte Zelle.
 `board` hat immer 25 Einträge (5 × 5 Platten, zeilenweise). `null` = leer.
 `rot` ist 0–3 (90°-Schritte im Uhrzeigersinn), `compass` ebenfalls 0–3,
 `x`/`y` sind Zellen im 6 × 6-Innenraster der Platte.
+
+Jedes Piece trägt ein eigenes `rot`: 0 = wie gezeichnet, 1–3 = auf der Stelle
+gedreht. Bei einem 3 × 6-Panel tauschen `w` und `h` dabei die Rolle, das Piece
+belegt also bei ungeradem `rot` 6 × 3 Zellen.
 
 ## Wie die Anordnungen ermittelt wurden
 

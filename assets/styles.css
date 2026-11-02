@@ -792,6 +792,16 @@ body::before {
   background: rgba(255, 176, 32, .22);
 }
 
+.zoom-sel {
+  position: absolute;
+  pointer-events: none;
+  border: 2px solid rgba(255, 255, 255, .9);
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 1px rgba(16, 24, 32, .55),
+    inset 0 0 0 1px rgba(16, 24, 32, .35);
+}
+
 .zoom-status {
   margin: 0;
   font: 11px/1.4 var(--mono);
