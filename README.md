@@ -35,7 +35,7 @@ Zelltypen:
 | `oil` | Ölfeld | **vollflächig schwarzes Quadrat** |
 | `lava` | Lava (nur Back) | oranges Feld mit glühendem Kern |
 | `rock` | Gebirgsfeld (nur Back) | dunkelgrauer Fels mit Facetten |
-| `orange` `red` `green` `blue` | farbiges Feld | gezeichnete **Steinplatte** mit farbiger Speerspitzen-**Rune** |
+| `orange` `red` `green` `blue` | farbiges Feld | **runder Runenstein** mit farbig eingemeißelter Rune |
 | `crystal` | Brunnen | runder Steinbrunnen mit leuchtendem Wasser |
 | *(leer)* | – | Grund der Seite |
 

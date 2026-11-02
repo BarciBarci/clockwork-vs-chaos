@@ -371,30 +371,27 @@
   }
 
   /* Carved rune: spear-headed, so the point always shows the direction. */
-  var RUNE = 'M0 -7.4L4.8 -1.2L1.7 -1.2L1.7 5.6L-1.7 5.6L-1.7 -1.2L-4.8 -1.2Z';
+  /* A Nordic rune, drawn as one continuous stroke so it can be carved in the
+     colour of the field. Rotating it turns the mark to its direction. */
+  var RUNE = 'M0 -6.4V6.4M0 -6.4L4.3 -3.4L0 -0.4M0 -0.4L4.6 6.1';
 
-  /* A carved rune plate: stone slab, chipped edge, colour wash and the rune
-     itself pointing in its direction. */
+  /* Round rune stone: a disc of rock with the rune carved into it. */
   function drawRune(x, y, cx, cy, colour, dir) {
-    var px = x * CELL;
-    var py = y * CELL;
+    var r = 8.4;
+    var turn = 'translate(' + cx + ' ' + cy + ') rotate(' + dir * 90 + ')';
 
-    return '<rect x="' + (px + 1) + '" y="' + (py + 1) + '" width="' + (CELL - 2) +
-      '" height="' + (CELL - 2) + '" rx="2" fill="#a9a294"/>' +
-      '<rect x="' + (px + 2.2) + '" y="' + (py + 2.2) + '" width="' + (CELL - 4.4) +
-      '" height="' + (CELL - 4.4) + '" rx="1.6" fill="#ded8cb"/>' +
-      '<rect x="' + (px + 2.2) + '" y="' + (py + 2.2) + '" width="' + (CELL - 4.4) +
-      '" height="' + (CELL - 4.4) + '" rx="1.6" fill="' + colour + '" fill-opacity="0.30"/>' +
-      '<path d="M' + (px + 3.2) + ' ' + (py + CELL - 4.2) + 'l2.4 1.2"' +
-      ' stroke="#948c7c" stroke-width="0.8" stroke-linecap="round"/>' +
-      '<path d="M' + (px + CELL - 5) + ' ' + (py + 3.2) + 'l1.5 2"' +
-      ' stroke="#948c7c" stroke-width="0.8" stroke-linecap="round"/>' +
-      '<g transform="translate(' + cx + ' ' + cy + ') rotate(' + dir * 90 + ')">' +
-        '<path d="' + RUNE + '" transform="translate(0 0.9)" fill="#8b8272"' +
-        ' fill-opacity="0.55"/>' +
-        '<path d="' + RUNE + '" fill="' + colour + '"' +
-        ' stroke="#26251f" stroke-width="0.95" stroke-linejoin="round"/>' +
-        '<path d="M-0.9 -4V3.4" stroke="#ffffff" stroke-opacity="0.30" stroke-width="0.8"/>' +
+    return '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r + 0.8) + '" fill="#6f6759"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#c6bfaf"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r - 0.9) + '" fill="#ded8cb"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r - 0.9) + '" fill="' + colour +
+        '" fill-opacity="0.22"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r - 0.9) + '" fill="none"' +
+        ' stroke="#8b8272" stroke-width="0.7" stroke-opacity="0.55"/>' +
+      '<g transform="' + turn + '">' +
+        '<path d="' + RUNE + '" fill="none" stroke="#26251f" stroke-width="3.4"' +
+          ' stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path d="' + RUNE + '" fill="none" stroke="' + colour + '" stroke-width="2.1"' +
+          ' stroke-linecap="round" stroke-linejoin="round"/>' +
       '</g>';
   }
 
