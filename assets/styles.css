@@ -362,6 +362,20 @@ body::before {
   color: var(--ink-soft);
 }
 
+.fan-note {
+  margin: 14px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-soft);
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.fan-note em {
+  font-style: normal;
+  color: var(--ink);
+}
+
 /* --------------------------------------------------------------- board -- */
 
 .board-wrap {

@@ -1,4 +1,12 @@
-# Clockwork vs Chaos — Plate Foundry
+# Clockwork vs Chaos — a Mechs vs. Minions level generator
+
+**by Barci + AI** – ein nicht-kommerzielles Fan-Projekt.
+
+> **Nicht-kommerzielles Fan-Projekt.** *Mechs vs. Minions* ist ein Markenzeichen
+> von Riot Games. Dieses Projekt steht in keiner Verbindung zu Riot Games und
+> wird von dort nicht unterstützt oder gebilligt. Es enthält **keine**
+> Spielgrafiken, Scans oder Regeltexte aus dem Spiel — alle Kacheln und Marker
+> sind eigene Vektorgrafik.
 
 Szenario-Editor für doppelseitige Öllinien-Platten im **6 × 6-Raster**.
 Platten legen, drehen, wenden, Marker setzen, Regeln schreiben, Szenario als JSON
@@ -276,6 +284,9 @@ sollte:
 - **Nicht übernommen:** Grafik, Logo, Name, Regel- und Kartentexte, Schriftarten.
   Gezeichnet wird ausschließlich flache Geometrie (Quadrate, Rauten, Kreise).
 - **Eigener Name und eigenes Logo**, damit keine Kennzeichenrechte berührt werden.
+- **Mechs vs. Minions** wird nur beschreibend genannt („ein Level-Generator für
+  Mechs vs. Minions“). Der Name des Spiels und alle zugehörigen Marken gehören
+  Riot Games; aus der Nennung folgt keine Verbindung zu Riot.
 
 Eine Garantie, dass das rechtlich nicht angreifbar ist, kann ich nicht geben —
 das ist keine Rechtsberatung. Vor einer kommerziellen Veröffentlichung: Anwalt
