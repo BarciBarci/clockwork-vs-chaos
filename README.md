@@ -8,6 +8,8 @@ sichern und als druckbares Dossier ausgeben.
 ./serve.sh            # http://localhost:8085
 ```
 
+**Live:** https://barcibarci.github.io/clockwork-vs-chaos/
+
 Ein lokaler Server ist nötig, weil der Editor `localStorage` als Übergabe an die
 Druckseite nutzt.
 
@@ -289,11 +291,24 @@ fragen und Markenrecherche für „Clockwork vs Chaos“ machen (DPMA, EUIPO, US
 Der Name „Clockwork vs Chaos“ und das Logo sind nicht Teil der Lizenz. Wenn du das Projekt
 forkst, nimm einen eigenen Namen.
 
-## Auf GitHub stellen
+## Auf GitHub
+
+Das Projekt liegt unter
+**https://github.com/BarciBarci/clockwork-vs-chaos** und ist über GitHub Pages
+veröffentlicht:
+
+**https://barcibarci.github.io/clockwork-vs-chaos/**
+
+Ein `git push` auf `main` genügt, Pages baut die Seite danach selbst neu
+(Einstellungen → Pages → Branch `main`, Ordner `/`).
+
+Von Null aufsetzen:
 
 ```sh
 git init
 git add .
-git commit -m "Clockwork vs Chaos: Szenario-Editor im 6x6-Plattenraster"
-gh repo create clockwork-vs-chaos --public --source=. --push
+ git commit -m "Clockwork vs Chaos: Szenario-Editor im 6x6-Plattenraster"
+ gh repo create clockwork-vs-chaos --public --source=. --push
+ gh api -X POST repos/<user>/clockwork-vs-chaos/pages \
+   -f 'source[branch]=main' -f 'source[path]=/'
 ```
