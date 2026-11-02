@@ -172,6 +172,7 @@
   };
 
   global.PlateFoundry = {
+    VERSION: '1.0.0',
     GRID: GRID,
     TILES: TILES,
     CELLS: CELLS,

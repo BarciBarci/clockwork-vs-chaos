@@ -120,12 +120,20 @@ Die Seitenumbrüche werden nicht fest vergeben: `js/print.js` legt jeden
 Absatz als eigenen Block an, misst ihn in einer A4-Kopie und verteilt die
 Blöcke so, dass keine Seite überläuft. Eine Überschrift bleibt dabei nie
 allein am Seitenfuß stehen. Dadurch trägt **jede** Seite ihre eigene Kopfzeile
-(Logo, „Clockwork vs Chaos", Szenariotitel) und Fußzeile („Scenario dossier",
-Seitenzahl `03 / 05`). Die Karte ist mit Koordinaten (A–E, 1–5) versehen, damit
-sich Felder in den Regeln eindeutig ansprechen lassen. Gedruckt wird auf warmem
-Papier mit `print-color-adjust: exact`, damit Bänder, Tabellen und
-Regel-Kästen auch als PDF farbig bleiben — im Druckdialog muss dafür
-„Hintergrundgrafiken“ aktiv sein.
+(Logo, „Clockwork vs Chaos", Szenariotitel) und Fußzeile („Scenario dossier ·
+v1.0.0", Seitenzahl `03 / 05`).
+
+Die Karte ist mit Koordinaten (A–E, 1–5) versehen, damit sich Felder in den
+Regeln eindeutig ansprechen lassen. Darunter steht die **Kompassrose** mit dem
+eingestellten Winkel — dieselbe Grafik wie im Editor.
+
+Unter **Tiles used** steht zu jeder verwendeten Platte, welche Pieces darauf
+liegen (Mehrfachstücke als `Gear Ring × 2`), damit sich der Tisch ohne den
+Editor aufbauen lässt.
+
+Gedruckt wird auf warmem Papier mit `print-color-adjust: exact`, damit Bänder,
+Tabellen und Regel-Kästen auch als PDF farbig bleiben — im Druckdialog muss
+dafür „Hintergrundgrafiken“ aktiv sein.
 
 Die **Oberfläche ist englisch** (wie das Original-Werkzeug); diese
 Dokumentation bleibt deutsch.
@@ -168,7 +176,9 @@ Löschen genügt ein Klick auf irgendeine belegte Zelle.
 ```json
 {
   "format": "clockwork-scenario",
-  "version": 2,
+  "version": 3,
+  "generator": "clockwork/plate-foundry",
+  "generatorVersion": "1.0.0",
   "title": "Ember Line 04",
   "author": "…",
   "objective": "…",
@@ -192,6 +202,21 @@ Löschen genügt ein Klick auf irgendeine belegte Zelle.
 Jedes Piece trägt ein eigenes `rot`: 0 = wie gezeichnet, 1–3 = auf der Stelle
 gedreht. Bei einem 3 × 6-Panel tauschen `w` und `h` dabei die Rolle, das Piece
 belegt also bei ungeradem `rot` 6 × 3 Zellen.
+
+## Version
+
+Die Software trägt eine Version, die an drei Stellen auftaucht:
+
+| Ort | Beispiel |
+| --- | --- |
+| Kopfleiste des Editors | `Plate Foundry · v1.0.0` |
+| Fußzeile jeder Dossier-Seite | `Scenario dossier · v1.0.0` |
+| Exportierte JSON | `"generatorVersion": "1.0.0"` |
+
+Sie steht als einzelne Konstante in `js/tiles.js` (`PlateFoundry.VERSION`) und
+wird von dort gelesen — für eine neue Ausgabe genügt es, diese eine Zeile zu
+ändern. Die Format-Version (`"version": 3` in der JSON) ist davon unabhängig
+und beschreibt den Aufbau der Datei.
 
 ## Wie die Anordnungen ermittelt wurden
 

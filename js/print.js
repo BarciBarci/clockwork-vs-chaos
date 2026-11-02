@@ -103,6 +103,23 @@
 
   var legendHtml = legend.map(function (rec) {
     var tile = SW.tileById(rec.tileId);
+    var counts = {};
+    var order = [];
+
+    rec.pieces.forEach(function (piece) {
+      if (!counts[piece.type]) {
+        counts[piece.type] = 0;
+        order.push(piece.type);
+      }
+      counts[piece.type] += 1;
+    });
+
+    var list = order.map(function (type) {
+      var def = SW.PIECES[type];
+      var label = def ? def.label : type;
+      return counts[type] > 1 ? label + ' × ' + counts[type] : label;
+    }).join(' · ');
+
     return '<li class="tile-card">' +
       '<div class="art">' +
       SW.renderTile(tile, { face: rec.face, rot: 0 }) +
@@ -110,6 +127,7 @@
       '<div class="tile-meta">' +
       '<strong>' + esc(tile.id) + '</strong>' +
       '<span>' + (rec.face === 'back' ? 'Back' : 'Front') + '</span>' +
+      '<span class="tile-pieces">' + (list || 'no pieces') + '</span>' +
       '</div>' +
       '</li>';
   }).join('');
@@ -118,7 +136,8 @@
   var markerCount = scenario.board.reduce(function (sum, rec) {
     return sum + (rec ? rec.pieces.length : 0);
   }, 0);
-  var compassDeg = (((scenario.compass | 0) % 4 + 4) % 4) * 90;
+  var compassStep = ((scenario.compass | 0) % 4 + 4) % 4;
+  var compassDeg = compassStep * 90;
 
   var title = (scenario.title || 'Untitled').trim();
 
@@ -158,9 +177,19 @@
       '</div>' +
       '<figcaption class="fig-cap">' +
         '<span>Fig. 1 — plate layout, ' + BOARD + ' × ' + BOARD + '</span>' +
-        '<span>Compass ' + compassDeg + '°</span>' +
       '</figcaption>' +
     '</figure>',
+    'figure'
+  );
+
+  pushBlock(
+    '<div class="compass-row">' +
+      '<div class="compass-art">' + SW.renderCompass(compassStep) + '</div>' +
+      '<div class="compass-meta">' +
+        '<strong>Compass ' + compassDeg + '°</strong>' +
+        '<span>north as marked on the plate set</span>' +
+      '</div>' +
+    '</div>',
     'figure'
   );
 
@@ -232,7 +261,7 @@
         '<p class="cover-foot">6 × 6 plate set · scenario dossier</p>' +
       '</div>' +
       '<footer class="page-foot">' +
-        '<span>Scenario dossier</span>' +
+        '<span>Scenario dossier · <span class="foot-version">v' + esc(SW.VERSION) + '</span></span>' +
         '<span class="foot-num">01 / __</span>' +
       '</footer>' +
     '</section>';
@@ -249,7 +278,7 @@
 
   function footHtml(page, total) {
     return '<footer class="page-foot">' +
-      '<span>Scenario dossier</span>' +
+      '<span>Scenario dossier · <span class="foot-version">v' + esc(SW.VERSION) + '</span></span>' +
       '<span class="foot-num">' + pad(page) + ' / ' + pad(total) + '</span>' +
     '</footer>';
   }

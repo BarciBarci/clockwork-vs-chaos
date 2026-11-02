@@ -513,6 +513,28 @@
       '</svg>';
   }
 
+  /* Square stone rose with four coloured needles, as in the original tool:
+     north red, east green, south orange, west blue. */
+  function renderCompass(step) {
+    var deg = ((step | 0) % 4 + 4) % 4 * 90;
+    return '<svg viewBox="0 0 80 80" aria-hidden="true">' +
+      '<rect x="3" y="3" width="74" height="74" rx="7" fill="#828990"' +
+      ' stroke="#242830" stroke-width="2.4"/>' +
+      '<rect x="9" y="9" width="62" height="62" rx="4" fill="#9ba2aa"' +
+      ' stroke="#4d535b" stroke-width="1.3"/>' +
+      '<g transform="rotate(' + deg + ' 40 40)" stroke="#242830" stroke-width="0.9"' +
+      ' stroke-linejoin="round">' +
+        '<polygon points="40,13 48,40 40,34 32,40" fill="#cf2b2b"/>' +
+        '<polygon points="67,40 40,48 46,40 40,32" fill="#2fae4a"/>' +
+        '<polygon points="40,67 48,40 40,46 32,40" fill="#e8961e"/>' +
+        '<polygon points="13,40 40,48 34,40 40,32" fill="#2f6fd0"/>' +
+      '</g>' +
+      '<rect x="35.5" y="35.5" width="9" height="9" rx="1.8" fill="#2b2f36"' +
+      ' stroke="#dfe4ea" stroke-width="1"/>' +
+      '</svg>';
+  }
+
+  SW.renderCompass = renderCompass;
   SW.renderTile = renderTile;
   SW.renderPiece = renderPiece;
   SW.renderIcon = renderIcon;

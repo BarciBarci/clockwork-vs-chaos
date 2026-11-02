@@ -135,6 +135,12 @@
 
   .page-foot .foot-num { color: var(--ink); flex: none; }
 
+  .page-foot .foot-version {
+    text-transform: none;
+    letter-spacing: .06em;
+    color: var(--ink);
+  }
+
   /* ----------------------------------------------------------------- cover -- */
 
   .page--cover .page-body {
@@ -329,6 +335,38 @@
     color: var(--ink-soft);
   }
 
+  /* ------------------------------------------------------------- compass -- */
+
+  .compass-row {
+    display: flex;
+    align-items: center;
+    gap: 4mm;
+    margin: 5mm 0 0;
+    padding: 3.5mm 4mm;
+    background: #f6f8fa;
+    border: 1px solid var(--line);
+    border-radius: 2.5mm;
+    break-inside: avoid;
+  }
+
+  .compass-art { width: 18mm; flex: none; }
+  .compass-art svg { display: block; width: 100%; height: auto; }
+
+  .compass-meta { display: flex; flex-direction: column; gap: 1mm; }
+
+  .compass-meta strong {
+    font-size: 10.5pt;
+    letter-spacing: .08em;
+  }
+
+  .compass-meta span {
+    font-family: var(--mono);
+    font-size: 7.5pt;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
   /* ---------------------------------------------------------------- prose -- */
 
   .para {
@@ -391,6 +429,15 @@
     letter-spacing: .12em;
     text-transform: uppercase;
     color: var(--ink-soft);
+  }
+
+  .tile-meta .tile-pieces {
+    font-family: var(--sans);
+    font-size: 8.5pt;
+    line-height: 1.35;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink);
   }
 
   /* --------------------------------------------------------------- figure -- */

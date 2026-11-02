@@ -119,6 +119,15 @@ body::before {
   color: #8fa4b8;
 }
 
+.brand .version {
+  font-weight: 400;
+  color: #6f8498;
+  text-transform: none;
+  letter-spacing: .08em;
+}
+
+.brand .version::before { content: "· "; }
+
 .topbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .btn {
