@@ -261,6 +261,7 @@ Nicht geschätzt, sondern gemessen:
 ├── index.html          Editor
 ├── dossier.html        Druckseite
 ├── serve.sh            lokaler Server
+├── NOTICE              Marken- und Rechteinhaber-Hinweis
 ├── assets/
 │   ├── logo.svg        eigenes Logo
 │   └── styles.css
@@ -288,6 +289,11 @@ sollte:
   Mechs vs. Minions“). Der Name des Spiels und alle zugehörigen Marken gehören
   Riot Games; aus der Nennung folgt keine Verbindung zu Riot.
 
+Riot Games veröffentlicht eine **Fan Content Policy** (auf riotgames.com unter
+„Legal“); sie regelt, was für Fan-Inhalte erlaubt ist, und ist auf digitale
+Riot-Spiele zugeschnitten — für ein Tool zu einem Brettspiel ist die Anwendung
+nicht eindeutig. Wer es genauer wissen will, liest sie im Original.
+
 Eine Garantie, dass das rechtlich nicht angreifbar ist, kann ich nicht geben —
 das ist keine Rechtsberatung. Vor einer kommerziellen Veröffentlichung: Anwalt
 fragen und Markenrecherche für „Clockwork vs Chaos“ machen (DPMA, EUIPO, USPTO).
@@ -301,6 +307,34 @@ fragen und Markenrecherche für „Clockwork vs Chaos“ machen (DPMA, EUIPO, US
 
 Der Name „Clockwork vs Chaos“ und das Logo sind nicht Teil der Lizenz. Wenn du das Projekt
 forkst, nimm einen eigenen Namen.
+
+## Rechtliches
+
+Die vollständige Fassung steht in [`NOTICE`](NOTICE) — hier die Kernpunkte:
+
+- **Was MIT und CC0 abdecken:** ausschließlich den Code und die in diesem Projekt
+  gezeichnete Grafik. Keine der beiden Lizenzen überträgt Rechte am Spiel, am Namen
+  *Mechs vs. Minions*, an Marken oder an sonstigem Material von Riot Games, Inc.
+- **Was wem gehört:** *Mechs vs. Minions*, *Riot Games* und alle zugehörigen Namen,
+  Logos, Figuren, Karten- und Regeltexte sind Marken bzw. geschütztes Material von
+  Riot Games, Inc. Alle Rechte daran bleiben bei den jeweiligen Inhabern. Die
+  Nennung erfolgt nur beschreibend; daraus folgt keine Verbindung zu Riot.
+- **Was hier nicht drin ist:** keine Spielgrafiken, keine Scans oder Fotos, keine
+  Regel- oder Kartentexte, keine Schriften aus dem Spiel — nur selbst gezeichnete
+  flache Geometrie.
+- **Fan-Projekt, nicht kommerziell:** kostenlos, ohne Werbung, ohne Bezahlschranke,
+  ohne Spenden gegen Freischaltung.
+
+### Wenn du Rechteinhaber bist
+
+Wenn du Rechteinhaber bist und der Meinung bist, dass dieses Repository deine Rechte
+verletzt, öffne bitte ein Issue:
+
+**https://github.com/BarciBarci/clockwork-vs-chaos/issues**
+
+Betroffene Inhalte werden dann umgehend entfernt oder das Repository wird offline
+genommen — ohne dass ein förmlicher rechtlicher Schritt nötig ist. Es besteht keine
+Absicht, gegen den Willen des Rechteinhabers weiter zu veröffentlichen.
 
 ## Auf GitHub
 

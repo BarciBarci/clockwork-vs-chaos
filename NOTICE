@@ -1,0 +1,75 @@
+Clockwork vs Chaos — a level generator for the board game Mechs vs. Minions
+==============================================================================
+
+Copyright (c) 2026 Slickworks contributors
+
+This repository contains an unofficial, non-commercial fan tool. It is not
+affiliated with, endorsed by, sponsored by, or approved by Riot Games, Inc.
+
+Trademarks and game content
+---------------------------
+
+"Mechs vs. Minions", "Riot Games" and all related names,
+logos, characters, artwork, card texts, rulebook texts and other game content
+are trademarks or copyrighted material of Riot Games, Inc. and/or its
+affiliates. All rights in that material remain with their respective owners.
+
+The name is used here only descriptively, to say what this tool is for. Its use
+does not imply any connection to Riot Games.
+
+The functional plate layouts reproduced in js/tiles.js — which cell holds oil,
+which cell holds a coloured field of which colour, and which side of a plate
+carries lava or rock — are recorded game information needed to use the tool with
+the physical board game. They are not claimed as an original work of this
+project and no exclusive rights are asserted in them.
+
+No artwork, scan, photograph, rulebook text or card text from the game is
+included in this repository. Every plate, marker and icon is drawn from scratch
+as flat geometry in js/render.js and assets/logo.svg.
+
+Scope of the licences
+---------------------
+
+- Code (js/, *.html, *.css, serve.sh): MIT License, see LICENSE.
+- Drawn graphics (assets/logo.svg and everything js/render.js draws):
+  CC0 1.0 Universal, see ASSETS-LICENSE.md.
+
+Both licences cover only the material created for this project. Neither licence
+grants any right in the game, its name, its trademarks or any other material
+owned by Riot Games, Inc.
+
+No warranty
+-----------
+
+This project is provided "as is", without warranty of any kind. It is not legal
+advice, and nothing in this file is a legal opinion about whether publishing it
+is permissible in your jurisdiction.
+
+Notice and takedown
+-------------------
+
+If you are a rights holder and you believe this repository infringes your
+rights, please open an issue at
+
+    https://github.com/BarciBarci/clockwork-vs-chaos/issues
+
+or contact the maintainer through that repository. The maintainer's intent is
+to respect third-party rights: specific content will be removed or the
+repository will be taken offline promptly, without requiring a formal legal
+step, and no continued use is intended against the rights holder's wishes.
+
+-------------------------------------------------------------------------------
+
+Kurzfassung auf Deutsch
+-----------------------
+
+Dies ist ein nicht-kommerzielles Fan-Projekt ohne Verbindung zu Riot Games.
+"Mechs vs. Minions" und alle Spielinhalte sind Marken bzw. urheberrechtlich
+geschütztes Material von Riot Games, Inc.; alle Rechte daran liegen bei den
+jeweiligen Inhabern. Der Name wird nur beschreibend verwendet. Die in
+js/tiles.js hinterlegten Plattenbelegungen sind funktionale Spielinformation
+und werden nicht als eigenes Werk beansprucht. Enthalten sind keine Spielgrafiken,
+Scans oder Regeltexte, sondern ausschließlich selbst gezeichnete Vektorgrafik.
+MIT (Code) und CC0 (Grafik) betreffen nur dieses Projekt und übertragen keine
+Rechte am Spiel. Rechteinhaber können sich über ein Issue im Repository melden;
+betroffene Inhalte werden dann umgehend entfernt.
