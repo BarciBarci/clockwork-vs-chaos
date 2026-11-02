@@ -246,7 +246,7 @@
     '<section class="page page--cover">' +
       '<div class="page-body">' +
         '<div class="cover-logo"><img src="assets/logo.svg" alt="" width="98" height="98"></div>' +
-        '<p class="kicker">Clockwork vs Chaos · Plate Foundry</p>' +
+        '<p class="kicker">Clockwork vs Chaos · Level generator for Mechs vs. Minions</p>' +
         '<h1 class="cover-title">' + esc(title) + '</h1>' +
         '<p class="byline">' +
           (scenario.author ? 'by ' + esc(scenario.author) : 'no author given') +

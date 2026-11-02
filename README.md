@@ -219,7 +219,7 @@ Die Software trägt eine Version, die an drei Stellen auftaucht:
 
 | Ort | Beispiel |
 | --- | --- |
-| Kopfleiste des Editors | `Plate Foundry · v1.0.0` |
+| Kopfleiste des Editors | `Level generator for Mechs vs. Minions · v1.0.0` |
 | Fußzeile jeder Dossier-Seite | `Scenario dossier · v1.0.0` |
 | Exportierte JSON | `"generatorVersion": "1.0.0"` |
 

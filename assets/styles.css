@@ -1,4 +1,4 @@
-/* Slickworks — Plate Foundry. Original visual language: technical drawing. */
+/* Clockwork vs Chaos — level generator. Original visual language: technical drawing. */
 
 :root {
   --paper: #eef1f4;
@@ -93,9 +93,12 @@ body::before {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
   text-decoration: none;
   color: inherit;
 }
+
+.brand span { min-width: 0; }
 
 .brand img {
   display: block;
@@ -114,7 +117,8 @@ body::before {
   display: block;
   font-style: normal;
   font-size: 11px;
-  letter-spacing: .22em;
+  letter-spacing: .14em;
+  line-height: 1.35;
   text-transform: uppercase;
   color: #8fa4b8;
 }
