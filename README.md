@@ -131,7 +131,7 @@ Absatz als eigenen Block an, misst ihn in einer A4-Kopie und verteilt die
 Blöcke so, dass keine Seite überläuft. Eine Überschrift bleibt dabei nie
 allein am Seitenfuß stehen. Dadurch trägt **jede** Seite ihre eigene Kopfzeile
 (Logo, „Clockwork vs Chaos", Szenariotitel) und Fußzeile („Scenario dossier ·
-v1.0.0", Seitenzahl `03 / 05`).
+v1.1.0", Seitenzahl `03 / 05`).
 
 Die Karte ist mit Koordinaten (A–E, 1–5) versehen, damit sich Felder in den
 Regeln eindeutig ansprechen lassen. Darunter steht die **Kompassrose** mit dem
@@ -188,7 +188,7 @@ Löschen genügt ein Klick auf irgendeine belegte Zelle.
   "format": "clockwork-scenario",
   "version": 3,
   "generator": "clockwork/plate-foundry",
-  "generatorVersion": "1.0.0",
+  "generatorVersion": "1.1.0",
   "title": "Ember Line 04",
   "author": "…",
   "objective": "…",
@@ -219,9 +219,9 @@ Die Software trägt eine Version, die an drei Stellen auftaucht:
 
 | Ort | Beispiel |
 | --- | --- |
-| Kopfleiste des Editors | `Level generator for a cooperative board game · v1.0.0` |
-| Fußzeile jeder Dossier-Seite | `Scenario dossier · v1.0.0` |
-| Exportierte JSON | `"generatorVersion": "1.0.0"` |
+| Kopfleiste des Editors | `Level generator for a cooperative board game · v1.1.0` |
+| Fußzeile jeder Dossier-Seite | `Scenario dossier · v1.1.0` |
+| Exportierte JSON | `"generatorVersion": "1.1.0"` |
 
 Sie steht als einzelne Konstante in `js/tiles.js` (`PlateFoundry.VERSION`) und
 wird von dort gelesen — für eine neue Ausgabe genügt es, diese eine Zeile zu
