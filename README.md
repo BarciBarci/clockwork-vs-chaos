@@ -1,4 +1,4 @@
-# Clockwork vs Chaos — a Mechs vs. Minions level generator
+# Clockwork vs Chaos — a level generator for a cooperative board game
 
 **by Barci + AI** – ein nicht-kommerzielles Fan-Projekt.
 
@@ -219,7 +219,7 @@ Die Software trägt eine Version, die an drei Stellen auftaucht:
 
 | Ort | Beispiel |
 | --- | --- |
-| Kopfleiste des Editors | `Level generator for Mechs vs. Minions · v1.0.0` |
+| Kopfleiste des Editors | `Level generator for a cooperative board game · v1.0.0` |
 | Fußzeile jeder Dossier-Seite | `Scenario dossier · v1.0.0` |
 | Exportierte JSON | `"generatorVersion": "1.0.0"` |
 
@@ -285,9 +285,12 @@ sollte:
 - **Nicht übernommen:** Grafik, Logo, Name, Regel- und Kartentexte, Schriftarten.
   Gezeichnet wird ausschließlich flache Geometrie (Quadrate, Rauten, Kreise).
 - **Eigener Name und eigenes Logo**, damit keine Kennzeichenrechte berührt werden.
-- **Mechs vs. Minions** wird nur beschreibend genannt („ein Level-Generator für
-  Mechs vs. Minions“). Der Name des Spiels und alle zugehörigen Marken gehören
-  Riot Games; aus der Nennung folgt keine Verbindung zu Riot.
+- **Die Marke steht nirgends im Produkt.** Titel, Kopfleiste, Dossier-Kicker und
+  Repository-Beschreibung sagen nur „a level generator for a cooperative board
+  game“. Der Name des Spiels erscheint ausschließlich dort, wo er rechtlich
+  nötig ist: im Disclaimer über und unter dem Board, in `NOTICE` und in diesem
+  Abschnitt. Der Name und alle zugehörigen Marken gehören Riot Games; aus der
+  Nennung folgt keine Verbindung zu Riot.
 
 Riot Games regelt Fan-Projekte in der Policy **„Legal Jibber Jabber“**
 (riotgames.com/en/legal, Stand August 2018). Zwei Regeln daraus sind für dieses
@@ -303,11 +306,13 @@ Dazu kommt eine Jederzeit-Klausel: Riot kann jedes Fan-Projekt jederzeit
 untersagen. Genau dafür gibt es den Takedown-Weg weiter unten — meldet sich
 Riot, geht das Projekt offline, ohne Diskussion.
 
-Wer das Risiko weiter senken will, nimmt die Marke ganz aus dem Projekt: Titel,
-Untertitel, Dossier-Kicker und Repository-Beschreibung auf eine neutrale
-Formulierung umstellen („for a cooperative board game“) und das Spiel nur
-noch im Fließtext des README nennen. Funktional ändert das nichts, es kostet nur
-Auffindbarkeit.
+**Entscheidung für dieses Projekt:** Die Marke ist aus dem Produkt entfernt —
+Titel, Untertitel, Dossier-Kicker und Repository-Beschreibung nennen nur noch
+„a cooperative board game“. Sie bleibt an genau drei Stellen stehen, an denen
+sie der Abgrenzung dient: im Disclaimer über und unter dem Board, in `NOTICE`
+und in diesem Abschnitt. Eine Nicht-Bestätigung ohne Nennung des Namens ist
+nicht möglich. Der Preis ist Auffindbarkeit: Über eine Suche nach dem Spiel ist
+das Projekt über Titel oder Beschreibung nicht mehr zu finden.
 
 Eine Garantie, dass das rechtlich nicht angreifbar ist, kann ich nicht geben —
 das ist keine Rechtsberatung. Vor einer kommerziellen Veröffentlichung: Anwalt
