@@ -9,10 +9,10 @@ affiliated with, endorsed by, sponsored by, or approved by Riot Games, Inc.
 Trademarks and game content
 ---------------------------
 
-"Mechs vs. Minions", "Riot Games" and all related names,
-logos, characters, artwork, card texts, rulebook texts and other game content
-are trademarks or copyrighted material of Riot Games, Inc. and/or its
-affiliates. All rights in that material remain with their respective owners.
+"Mechs vs. Minions", "Riot Games" and all related names, logos, characters,
+artwork, card texts, rulebook texts and other game content are trademarks or
+copyrighted material of Riot Games, Inc. and/or its affiliates. All rights in
+that material remain with their respective owners.
 
 The name is used here only descriptively, to say what this tool is for. Its use
 does not imply any connection to Riot Games.
@@ -44,6 +44,25 @@ No warranty
 This project is provided "as is", without warranty of any kind. It is not legal
 advice, and nothing in this file is a legal opinion about whether publishing it
 is permissible in your jurisdiction.
+
+Riot's fan policy
+-----------------
+
+Riot Games publishes its fan policy as "Legal Jibber Jabber"
+(https://www.riotgames.com/en/legal, last updated August 2018).
+
+Two of its rules matter here, and this project does not claim otherwise:
+
+- Rule 5 forbids the use of any Riot logo or trademark "anywhere in your
+  Project". On a literal reading, that includes the purely descriptive mention
+  of "Mechs vs. Minions" used in this repository.
+- Rule 3 forbids games and apps that use Riot's IP. Whether a scenario editor
+  for the physical board game counts as such an app is a matter of
+  interpretation.
+
+The policy also states that Riot may shut down any fan project at any time.
+This project relies on Riot's general tolerance of free, non-commercial fan
+tools and will be taken offline without argument if Riot objects.
 
 Notice and takedown
 -------------------

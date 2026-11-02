@@ -289,10 +289,25 @@ sollte:
   Mechs vs. Minions“). Der Name des Spiels und alle zugehörigen Marken gehören
   Riot Games; aus der Nennung folgt keine Verbindung zu Riot.
 
-Riot Games veröffentlicht eine **Fan Content Policy** (auf riotgames.com unter
-„Legal“); sie regelt, was für Fan-Inhalte erlaubt ist, und ist auf digitale
-Riot-Spiele zugeschnitten — für ein Tool zu einem Brettspiel ist die Anwendung
-nicht eindeutig. Wer es genauer wissen will, liest sie im Original.
+Riot Games regelt Fan-Projekte in der Policy **„Legal Jibber Jabber“**
+(riotgames.com/en/legal, Stand August 2018). Zwei Regeln daraus sind für dieses
+Projekt wichtig, und ich schönrede sie hier nicht:
+
+- **Regel 5** verbietet, Riot-Marken „irgendwo im Projekt“ zu verwenden. Dem
+  Wortlaut nach ist damit auch die rein beschreibende Nennung von
+  „Mechs vs. Minions“ nicht erlaubt.
+- **Regel 3** verbietet Spiele und Apps, die Riots IP verwenden. Ob ein
+  Level-Generator für das Brettspiel darunter fällt, ist Auslegungssache.
+
+Dazu kommt eine Jederzeit-Klausel: Riot kann jedes Fan-Projekt jederzeit
+untersagen. Genau dafür gibt es den Takedown-Weg weiter unten — meldet sich
+Riot, geht das Projekt offline, ohne Diskussion.
+
+Wer das Risiko weiter senken will, nimmt die Marke ganz aus dem Projekt: Titel,
+Untertitel, Dossier-Kicker und Repository-Beschreibung auf eine neutrale
+Formulierung umstellen („for a cooperative board game“) und das Spiel nur
+noch im Fließtext des README nennen. Funktional ändert das nichts, es kostet nur
+Auffindbarkeit.
 
 Eine Garantie, dass das rechtlich nicht angreifbar ist, kann ich nicht geben —
 das ist keine Rechtsberatung. Vor einer kommerziellen Veröffentlichung: Anwalt
