@@ -23,8 +23,10 @@ Jede Platte ist **6 × 6 Zellen** groß und doppelseitig:
 | **Back** | **hellrote Felsfläche** mit Rissen | dunkelgraue Gebirgsfelder, kräftige Lava, farbige Felder |
 
 Beide Gründe sind als eigene Vektorgrafik gezeichnet (`js/render.js`, Funktion
-`groundTexture`): ein Farbverlauf plus deterministisch gestreute Elemente, damit
-eine Platte bei jedem Zeichnen gleich aussieht.
+`groundTexture`): ein Farbverlauf, ein gewundener Trampelpfad und
+deterministisch gestreute Elemente, damit eine Platte bei jedem Zeichnen gleich
+aussieht. Der Pfad ist bewusst gerichtet — daran sieht man sofort, ob eine
+Platte gedreht ist.
 
 Zelltypen:
 
@@ -33,12 +35,12 @@ Zelltypen:
 | `oil` | Ölfeld | **vollflächig schwarzes Quadrat** |
 | `lava` | Lava (nur Back) | oranges Feld mit glühendem Kern |
 | `rock` | Gebirgsfeld (nur Back) | dunkelgrauer Fels mit Facetten |
-| `orange` `red` `green` `blue` | farbiges Feld | Farbquadrat mit **Richtungspfeil** |
-| `crystal` | Kristall | Cyan-Quadrat mit Raute |
+| `orange` `red` `green` `blue` | farbiges Feld | gezeichnete **Steinplatte** mit farbiger **Rune** |
+| `crystal` | Brunnen | runder Steinbrunnen mit leuchtendem Wasser |
 | *(leer)* | – | Grund der Seite |
 
-Der Pfeil im Farbfeld ist die Richtung der Rune: 0 = Nord, 1 = Ost, 2 = Süd,
-3 = West. Er dreht mit der Platte mit.
+Die Rune zeigt die Richtung: 0 = Nord, 1 = Ost, 2 = Süd, 3 = West. Sie dreht
+mit der Platte mit.
 
 Die Anordnungen der fünf Plattenpaare `T1`–`T5` sind aus dem Plattensatz
 übernommen, weil ein Szenario-Editor nutzlos ist, wenn er nicht zum Tisch passt.

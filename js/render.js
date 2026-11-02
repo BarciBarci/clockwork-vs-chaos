@@ -165,6 +165,25 @@
       '" stroke="#ffffff" stroke-opacity="0.28" stroke-width="0.8"/>';
   }
 
+  /* A worn path crossing the plate. Being directional, it also makes rotation
+     of the artwork readable at a glance. */
+  function dirtPath(rnd) {
+    var y0 = 6 + rnd() * 108;
+    var y1 = 6 + rnd() * 108;
+    var c1 = 18 + rnd() * 26;
+    var c2 = 76 + rnd() * 26;
+    var d = 'M-6 ' + y0.toFixed(1) +
+      'C' + c1.toFixed(1) + ' ' + (y0 + (rnd() - 0.5) * 46).toFixed(1) +
+      ' ' + c2.toFixed(1) + ' ' + (y1 + (rnd() - 0.5) * 46).toFixed(1) +
+      ' 126 ' + y1.toFixed(1);
+    var w = 8 + rnd() * 6;
+
+    return '<path d="' + d + '" fill="none" stroke="#8a6738" stroke-opacity="0.20"' +
+        ' stroke-width="' + w.toFixed(1) + '" stroke-linecap="round"/>' +
+      '<path d="' + d + '" fill="none" stroke="#b18e60" stroke-opacity="0.18"' +
+        ' stroke-width="' + (w * 0.45).toFixed(1) + '" stroke-linecap="round"/>';
+  }
+
   /* Terrain of one face, painted under the fields. */
   function groundTexture(face, seed) {
     var pal = FACE[face];
@@ -173,8 +192,10 @@
     var i;
 
     if (face === 'front') {
+      for (i = 0; i < 2; i++) out.push(dirtPath(rnd));
+
       for (i = 0; i < 3; i++) {
-        out.push(blob(8 + rnd() * 104, 8 + rnd() * 104, 7 + rnd() * 9, rnd, pal.soil, 0.15));
+        out.push(blob(8 + rnd() * 104, 8 + rnd() * 104, 7 + rnd() * 9, rnd, pal.soil, 0.12));
       }
 
       for (i = 0; i < 30; i++) {
@@ -336,18 +357,57 @@
       '" height="' + (CELL - 2) + '" rx="1.6" fill="' + fill + '"/>';
   }
 
+  /* A carved rune plate: stone slab, chipped edge, colour wash and the rune
+     itself pointing in its direction. */
+  function drawRune(x, y, cx, cy, colour, dir) {
+    var px = x * CELL;
+    var py = y * CELL;
+
+    return '<rect x="' + (px + 1) + '" y="' + (py + 1) + '" width="' + (CELL - 2) +
+      '" height="' + (CELL - 2) + '" rx="2" fill="#a9a294"/>' +
+      '<rect x="' + (px + 2.2) + '" y="' + (py + 2.2) + '" width="' + (CELL - 4.4) +
+      '" height="' + (CELL - 4.4) + '" rx="1.6" fill="#ded8cb"/>' +
+      '<rect x="' + (px + 2.2) + '" y="' + (py + 2.2) + '" width="' + (CELL - 4.4) +
+      '" height="' + (CELL - 4.4) + '" rx="1.6" fill="' + colour + '" fill-opacity="0.30"/>' +
+      '<path d="M' + (px + 3.2) + ' ' + (py + CELL - 4.2) + 'l2.4 1.2"' +
+      ' stroke="#948c7c" stroke-width="0.8" stroke-linecap="round"/>' +
+      '<path d="M' + (px + CELL - 5) + ' ' + (py + 3.2) + 'l1.5 2"' +
+      ' stroke="#948c7c" stroke-width="0.8" stroke-linecap="round"/>' +
+      '<g transform="translate(' + cx + ' ' + cy + ') rotate(' + dir * 90 + ')">' +
+        '<path d="M0 -6.2L4.2 1.2L0 -0.4L-4.2 1.2Z" fill="' + colour + '"' +
+        ' stroke="#26251f" stroke-width="0.9" stroke-linejoin="round"/>' +
+      '</g>';
+  }
+
+  /* Stone basin with glowing water — the well. */
+  function drawWell(x, y) {
+    var cx = (x + 0.5) * CELL;
+    var cy = (y + 0.5) * CELL;
+
+    function rim(a) {
+      return 'cx="' + cx + '" cy="' + cy + '" r="' + a + '"';
+    }
+
+    return '<circle ' + rim(9.8) + ' fill="#8ceaff" fill-opacity="0.12"/>' +
+      '<circle ' + rim(9.1) + ' fill="#6f6759"/>' +
+      '<circle ' + rim(8.2) + ' fill="#b3ab9c"/>' +
+      '<circle ' + rim(7.3) + ' fill="none" stroke="#6f6759" stroke-width="0.7" stroke-opacity="0.55"/>' +
+      '<path d="M' + (cx - 7.6) + ' ' + cy + 'h15.2 M' + cx + ' ' + (cy - 7.6) + 'v15.2"' +
+      ' stroke="#6f6759" stroke-width="0.7" stroke-opacity="0.35"/>' +
+      '<circle ' + rim(6.2) + ' fill="#0b5a76"/>' +
+      '<circle ' + rim(5.3) + ' fill="#2fb6d8"/>' +
+      '<ellipse cx="' + cx + '" cy="' + (cy - 0.7) + '" rx="3.5" ry="2.2"' +
+      ' fill="#bfefff" fill-opacity="0.85"/>' +
+      '<circle cx="' + (cx - 2.4) + '" cy="' + (cy + 1.6) + '" r="0.8" fill="#9ce9ff" fill-opacity="0.7"/>' +
+      '<circle cx="' + (cx + 2.6) + '" cy="' + (cy + 1.1) + '" r="0.6" fill="#9ce9ff" fill-opacity="0.6"/>';
+  }
+
   function drawCell(cell, x, y) {
     if (!cell) return '';
     var cx = (x + 0.5) * CELL;
     var cy = (y + 0.5) * CELL;
 
-    if (cell === 'crystal') {
-      return cellRect(x, y, '#46c8f0') +
-        '<rect x="' + (cx - 4) + '" y="' + (cy - 4) + '" width="8" height="8"' +
-        ' transform="rotate(45 ' + cx + ' ' + cy + ')" fill="#ffffff" fill-opacity="0.75"/>' +
-        '<rect x="' + (cx - 2) + '" y="' + (cy - 2) + '" width="4" height="4"' +
-        ' transform="rotate(45 ' + cx + ' ' + cy + ')" fill="#0f6c8a"/>';
-    }
+    if (cell === 'crystal') return drawWell(x, y);
 
     if (cell === 'lava') {
       var lx = x * CELL;
@@ -384,11 +444,7 @@
     var info = SW.CELLS[cell.colour];
     if (!info || !info.colour) return '';
 
-    return cellRect(x, y, info.colour) +
-      '<g transform="translate(' + cx + ' ' + cy + ') rotate(' + (cell.dir || 0) * 90 + ')">' +
-        '<path d="M0 -4.2L3.2 1.2L0 -0.1L-3.2 1.2Z" fill="#ffffff"' +
-        ' stroke="rgba(16,24,32,0.5)" stroke-width="0.7" stroke-linejoin="round"/>' +
-      '</g>';
+    return drawRune(x, y, cx, cy, info.colour, cell.dir || 0);
   }
 
   /* --------------------------------------------------------------- plate -- */
